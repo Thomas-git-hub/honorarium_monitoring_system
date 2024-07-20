@@ -1,0 +1,62 @@
+{{-- <ul class="menu-inner py-1">
+      <li class="menu-item {{ request()->routeIs('#') ? 'active' : '' }}">
+        <a href="{{ route('#') }}" class="menu-link">
+          <i class="menu-icon tf-icons bx bx-home"></i>
+          <div data-i18n="Home">Home</div>
+        </a>
+      </li> --}}
+
+
+
+
+-----------------------------
+
+
+
+ <div class="layout-wrapper layout-content-navbar">
+
+        <!-- Layout container -->
+        <div class="layout-container">
+
+            <!-- Menu -->
+            @include('components.sidebar')
+            <!--/ Menu -->
+
+            <!-- Layout page -->
+            <div class="layout-page">
+
+                <!-- Navbar -->
+                @include('components.navbar')
+                <!--/ Navbar -->
+
+                <!-- Content wrapper -->
+                <div class="content-wrapper">
+                    <!-- Content -->
+                    <div class="container-fluid">
+                        <h1>hello world</h1>
+                    </div>
+                    <!--/ Content -->
+
+                    <!-- Footer -->
+                    <footer class="content-footer footer bg-footer-theme">
+                        Footer
+                    </footer>
+                    <!--/ Footer -->
+
+                    <!-- Content area backdrop -->
+                    <div class="content-backdrop fade"></div>
+                </div>
+                <!--/ Content wrapper -->
+
+            </div>
+            <!--/ Layout page -->
+
+        </div>
+        <!--/ Layout container -->
+
+        <!-- Overlay -->
+        <div class="layout-overlay layout-menu-toggle"></div>
+
+        <!-- Drag Target Area To SlideIn Menu On Small Screens -->
+        <div class="drag-target"></div>
+    </div>
