@@ -89,10 +89,11 @@
             <h4 class="mb-2">Welcome to BUGS Honorarium Monitoring System</h4>
             <p class="mb-4">Please sign-in to your account to track your honorarium</p>
 
-            <form id="formAuthentication" class="mb-3" action="index.html" method="GET">
+            <form id="formAuthentication" method="POST" action="{{ route('login.user') }}" class="mb-3">
+                @csrf
               <div class="mb-3">
                 <label for="email" class="form-label">BU Email</label>
-                <input type="text" class="form-control" id="email" name="email-username" placeholder="@bicol-u.edu.ph" autofocus />
+                <input type="text" class="form-control" id="email" name="email" placeholder="@bicol-u.edu.ph" autofocus />
               </div>
               <div class="mb-3 form-password-toggle">
                 <div class="d-flex justify-content-between">
@@ -114,11 +115,11 @@
               </div>
               <div class="mb-3">
                 <div class="form-check">
-                  <input class="form-check-input" type="checkbox" id="remember-me" />
+                  <input class="form-check-input" type="checkbox" id="remember-me" name="remember"/>
                   <label class="form-check-label" for="remember-me"> Remember Me </label>
                 </div>
               </div>
-              <button class="btn btn-primary d-grid w-100">Sign in</button>
+              <button type="submit" class="btn btn-primary d-grid w-100">Sign in</button>
             </form>
 
             <p class="text-center">
@@ -164,6 +165,8 @@
     <script src="../../assets/vendor/libs/i18n/i18n.js"></script>
     <script src="../../assets/vendor/libs/typeahead-js/typeahead.js"></script>
     <script src="../../assets/vendor/js/menu.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 
     <!-- endbuild -->
 

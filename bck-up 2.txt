@@ -1,0 +1,503 @@
+<!-- Core JS -->
+    <!-- build:js assets/vendor/js/core.js -->
+
+    <script src="assets/vendor/libs/jquery/jquery.js"></script>
+    <script src="assets/vendor/libs/popper/popper.js"></script>
+    <script src="assets/vendor/js/bootstrap.js"></script>
+    <script src="assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
+    <script src="assets/vendor/libs/hammer/hammer.js"></script>
+    <script src="assets/vendor/libs/sweetalert2/sweetalert2.js"></script>
+    <script src="assets/vendor/js/menu.js"></script>
+    <script src="assets/vendor/libs/flatpickr/flatpickr.js">
+
+    <!-- endbuild -->
+
+    <!-- Vendors JS -->
+
+    <!-- Main JS -->
+    <script src="assets/js/main.js"></script>
+
+    <!-- civilian CDN -->
+    <!-- Datatables -->
+    <link href="https://cdn.datatables.net/v/bs5/jq-3.7.0/jszip-3.10.1/dt-2.0.8/af-2.7.0/b-3.0.2/b-colvis-3.0.2/b-html5-3.0.2/b-print-3.0.2/date-1.5.2/kt-2.12.1/r-3.0.2/rg-1.5.0/rr-1.5.0/sc-2.4.3/sb-1.7.1/sp-2.3.1/sl-2.0.3/sr-1.4.1/datatables.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+    <script src="https://cdn.datatables.net/v/bs5/jq-3.7.0/jszip-3.10.1/dt-2.0.8/af-2.7.0/b-3.0.2/b-colvis-3.0.2/b-html5-3.0.2/b-print-3.0.2/date-1.5.2/kt-2.12.1/r-3.0.2/rg-1.5.0/rr-1.5.0/sc-2.4.3/sb-1.7.1/sp-2.3.1/sl-2.0.3/sr-1.4.1/datatables.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+{{--INBOX DATATABLES START --}}
+    <script>
+        $(function () {
+
+            var data = [
+                { name: 'John Doe', subject: 'Budget Office Acknowledge the Transaction', date: 'Jul 5'},
+                { name: 'John Doe Jr.', subject: 'Faculty 1 recieved his Honorarium', date: 'Jul 5'},
+                { name: 'John Doe Papa Dot', subject: 'Thank you for the info. will be there', date: 'Jul 5'},
+                { name: 'John Doe Papa Dot Jr.', subject: 'Transaction has proceeded to Accounting', date: 'Jul 5'},
+                // Add more objects as needed
+            ];
+            var table = $('#inboxTable').DataTable({
+                data:data,
+                processing: false,
+                serverSide: false,
+                pageLength: 100,
+                paging: false, // Disable pagination
+
+                dom: '<"top"f>rt<"bottom"ip>',
+                language: {
+                    search: "", // Remove the default search label
+                    searchPlaceholder: "Search..." // Set the placeholder text
+                },
+                columns: [
+                    {
+                        data: null,
+                        orderable: false,
+                        render: function(data, type, row) {
+                            return '<input type="checkbox" class="form-check-input row-checkbox">';
+                        }
+                    },
+                    {data: 'name', name: 'name', title: 'Name'},
+                    {data: 'subject', name: 'subject', title: 'Subject'},
+                    {data: 'date', name: 'date', title: 'Date'},
+
+                    // Delete by Row
+                    // {
+                    //     data: null,
+                    //     orderable: false,
+                    //     render: function(data, type, row) {
+                    //         return '<button class="delete-row">Delete</button>';
+                    //     }
+                    // }
+                ],
+                createdRow: function(row, data) {
+                    // Add class to unopened rows
+                    $(row).addClass('unopened');
+                }
+            });
+            console.log(table);
+
+            // Prevent checkbox click from triggering row click event
+            $('#inboxTable tbody').on('click', 'input.row-checkbox', function(e) {
+                e.stopPropagation();
+            });
+
+            // // Row click event
+            $(document).ready(function() {
+                // Initialize DataTable
+                var table = $('#inboxTable').DataTable();
+
+                // Row click event
+                $('#inboxTable tbody').on('click', 'tr', function() {
+                    var rowData = table.row($(this).closest('tr')).data();
+
+                    // If the row is unopened, change its class to opened
+                    if ($(this).hasClass('unopened')) {
+                        $(this).removeClass('unopened').addClass('opened');
+                    }
+
+                    // Redirect to another page with full details (example)
+                    window.location.href = `/admin_open_email?id=${rowData.id}`;
+                });
+            });
+
+            // Toggle Check All/Uncheck All button click event
+            $('#toggleCheck').on('click', function() {
+                var allChecked = $('#inboxTable tbody input.row-checkbox').length === $('#inboxTable tbody input.row-checkbox:checked').length;
+                $('#inboxTable tbody input.row-checkbox').prop('checked', !allChecked);
+
+                // Update button text
+                $(this).text(allChecked ? 'Check All' : 'Uncheck All');
+            });
+
+             // Delete Selected button click event
+             $('#deleteSelected').on('click', function() {
+                $('#inboxTable tbody input.row-checkbox:checked').each(function() {
+                    var row = $(this).closest('tr');
+                    table.row(row).remove().draw(false);
+                });
+            });
+
+            // Delete row button click event
+            $('#inboxTable tbody').on('click', '.delete-row', function(e) {
+                e.stopPropagation();
+                var row = $(this).closest('tr');
+                table.row(row).remove().draw(false);
+            });
+        });
+
+    </script>
+{{-- DATATABLES END --}}
+
+
+
+
+{{--FACULTY DATATABLES START --}}
+<script>
+    $(function () {
+        var data = [
+            {
+                faculty: '<strong>John Doe</strong>',
+                id_number: '<p class="text-primary">1-id-no-2024</p>',
+                academic_rank: '<span class="badge bg-success">Associate  Professor II</span>',
+                college: 'College of Arts',
+                account_status: '<span class="text-danger">Inactive</span>',
+                // action: '<button class="btn btn-info">View</button>'
+            },
+            {
+                faculty: '<strong>John Doe</strong>',
+                id_number: '<p class="text-primary">1-id-no-2024</p>',
+                academic_rank: '<span class="badge bg-warning">Part-time</span>',
+                college: 'College of Science',
+                account_status: '<span class="text-success">active</span>',
+                // action: '<button class="btn btn-info">View</button>'
+            }
+            // Add more objects as needed
+        ];
+
+        var table = $('#facultyTable').DataTable({
+            data: data,
+            processing: false,
+            serverSide: false,
+            pageLength: 10,
+            paging: true, // Disable pagination
+
+            dom: '<"top"lf>rt<"bottom"ip>',
+            language: {
+                search: "", // Remove the default search label
+                searchPlaceholder: "Search..." // Set the placeholder text
+            },
+            columns: [
+                { data: 'faculty', name: 'faculty', title: 'Faculty' },
+                { data: 'id_number', name: 'id_number', title: 'ID Number' },
+                { data: 'academic_rank', name: 'academic_rank', title: 'academic_rank' },
+                { data: 'college', name: 'college', title: 'College' },
+                { data: 'account_status', name: 'account_status', title: 'Account Status' },
+                // { data: 'action', name: 'action', title: 'Action' }
+            ],
+            createdRow: function(row, data) {
+                // Add class to unopened rows
+                $(row).addClass('unopened');
+            }
+        });
+
+        // Row click event
+        $('#facultyTable tbody').on('click', 'tr', function() {
+            var rowData = table.row($(this).closest('tr')).data();
+
+            // If the row is unopened, change its class to opened
+            if ($(this).hasClass('unopened')) {
+                // $(this).removeClass('unopened').addClass('opened');
+            }
+
+            // Redirect to another page with full details (example)
+            window.location.href = `/admin_view_faculty?id=${rowData.id_number}`;
+        });
+    });
+</script>
+{{--FACULTY DATATABLES END --}}
+
+
+
+{{--HONORARIUM DATATABLES START --}}
+<script>
+    $(document).ready(function() {
+        var data = [
+            {
+                honorarium: '<strong>Honorariums for Guest Lectures</strong>',
+                date_added: 'July 24, 2024',
+                updated_at: 'July 25, 2024',
+                action: '<button type="button" class="btn btn-success me-2 edit-btn"><span class="tf-icons bx bx-pencil bx-18px me-2"></span>Edit</button>'
+            },
+            {
+                honorarium: '<strong>Teaching Assistantships (TAs)</strong>',
+                date_added: 'July 24, 2024',
+                updated_at: 'July 25, 2024',
+                action: '<button type="button" class="btn btn-success me-2 edit-btn"><span class="tf-icons bx bx-pencil bx-18px me-2"></span>Edit</button>'
+            },
+            {
+                honorarium: '<strong>Research Assistantships (RAs)</strong>',
+                date_added: 'July 24, 2024',
+                updated_at: 'July 25, 2024',
+                action: '<button type="button" class="btn btn-success me-2 edit-btn"><span class="tf-icons bx bx-pencil bx-18px me-2"></span>Edit</button>'
+            }
+        ];
+
+        var table = $('#honorariumTable').DataTable({
+            data: data,
+            columns: [
+                { data: 'honorarium', title: 'Honorarium' },
+                { data: 'date_added', title: 'Date Added' },
+                { data: 'updated_at', title: 'Updated At' },
+                { data: 'action', title: 'Action' }
+            ]
+        });
+
+        // Event delegation for edit buttons
+        $('#honorariumTable').on('click', '.edit-btn', function() {
+            var row = $(this).closest('tr');
+            var rowData = table.row(row).data();
+
+            // Show input fields for editing
+            var editForm = `
+                <div class="d-flex flex-row align-items-center gap-2">
+                    <div class="form-group">
+                        <input type="text" class="form-control" value="${rowData.honorarium.replace(/<\/?strong>/g, '')}" id="editHonorarium" />
+                    </div>
+                    <div class="form-group">
+                        <button type="button" class="btn btn-icon me-2 btn-label-success btn-sm" id="saveBtn"><i class='bx bxs-check-circle'></i></button>
+                        <button type="button" class="btn btn-icon me-2 btn-danger btn-sm" id="cancelBtn"><i class='bx bxs-x-circle'></i></button>
+                    </div>
+                </div>
+            `;
+
+            $(row).find('td').eq(0).html(editForm); // Replace the honorarium cell with the edit form
+            $(row).find('td').eq(3).html(''); // Remove the action button for now
+
+            // Handle Save button
+            $('#saveBtn').click(function() {
+                var newHonorarium = $('#editHonorarium').val();
+                var now = new Date();
+                var updatedDate = now.toLocaleDateString(); // Get the current date in locale format
+
+                rowData.honorarium = '<strong>' + newHonorarium + '</strong>';
+                rowData.updated_last = updatedDate; // Update the date
+                table.row(row).data(rowData).draw();
+            });
+
+            // Handle Cancel button
+            $('#cancelBtn').click(function() {
+                table.row(row).data(rowData).draw(); // Reset the row to its original state
+            });
+        });
+    });
+    </script>
+{{--HONORARIUM DATATABLES END --}}
+
+
+
+{{-- SENDING EMAIL FOR SPINNER AND STATUS START --}}
+<script>
+    $(document).ready(function() {
+
+        // Ensure success and failed messages are hidden on page load
+        $('#emailSuccess').hide();
+        $('#emailFailed').hide();
+
+        $('#sendButton').on('click', function(event) {
+            event.preventDefault(); // Prevent the form from submitting
+
+            // Show the spinner and hide success and failed messages
+            $('#spinner').show();
+            $('#emailSuccess').hide();
+            $('#emailFailed').hide();
+
+            // Simulate an asynchronous operation (e.g., an AJAX request)
+            setTimeout(function() {
+                // Hide the spinner
+                $('#spinner').hide();
+
+                // Logic to determine success or failure
+                const isSuccess = Math.random() > 0.5; // Replace with actual success/failure logic
+                if (isSuccess) {
+                    $('#emailSuccess').show();
+                } else {
+                    $('#emailFailed').show();
+                }
+            }, 2000); // Simulate a 2-second delay for the operation
+        });
+    });
+    </script>
+{{-- SENDING EMAIL FOR SPINNER AND STATUS END--}}
+
+
+
+{{-- CLEARING AND HIDING OF REPLY EMAIL CARD START--}}
+<script>
+    $(document).ready(function() {
+        // Show the message card when the reply button is clicked
+        $('#replyEmail').on('click', function() {
+            $('#messageCard').show();
+        });
+
+        // Hide the card and clear the input fields when the trigger button is clicked
+        $('#removeEmailReply').on('click', function() {
+            $('#messageCard').hide();
+            $('#emailReply').find('input[type="text"], textarea').val('');
+        });
+    });
+</script>
+{{-- CLEARING AND HIDING OF REPLY EMAIL CARD END--}}
+
+
+
+{{-- BACK NAVIGATION BUTTON START --}}
+<script>
+    $(document).ready(function() {
+        $('#navigatePrevious').on('click', function() {
+            window.history.back();
+        });
+    });
+</script>
+{{-- BACK NAVIGATION BUTTON START --}}
+
+
+
+{{-- ADDING OF HONORARIUM START --}}
+<script>
+    $(document).ready(function() {
+        let counter = 1; // Initialize counter
+
+        // Function to update numbering for all honorarium entries
+        function updateNumbering() {
+            let i = 1;
+            $('.honorarium-entry').each(function() {
+                $(this).find('.pe-3 span').text(i);
+                i++;
+            });
+            // Reset counter to the next number after the last entry
+            counter = i;
+        }
+
+        // Add new honorarium input field
+        $('#addHonorariumField').click(function() {
+            var newField = `
+            <div class="d-flex align-items-center mb-3 honorarium-entry">
+                <div class="pe-3">
+                    <span class="fw-bold text-primary">${counter}.</span>
+                </div>
+                <div class="form-floating flex-grow-1">
+                    <input type="text" name="honorarium[]" class="form-control" placeholder="Enter Honorarium" aria-describedby="floatingInputHelp" required />
+                    <label>Honorarium</label>
+                </div>
+                <button type="button" class="btn btn-icon btn-label-danger btn-lg ms-2 removeHonorariumField">
+                    <span class="tf-icons bx bxs-minus-circle bx-22px"></span>
+                </button>
+            </div>`;
+
+            // Insert new input field before the buttons container
+            $('#honorariumFieldsContainer').append(newField);
+            $('#saveHonorarium').show();
+
+            // Increment the counter
+            counter++;
+        });
+
+        // Remove honorarium input field
+        $(document).on('click', '.removeHonorariumField', function() {
+            $(this).closest('.honorarium-entry').remove();
+
+            // Hide save button if no honorarium-entry divs remain
+            if ($('.honorarium-entry').length === 0) {
+                $('#saveHonorarium').hide();
+            }
+
+            // Update numbering for remaining fields
+            updateNumbering();
+        });
+
+        // Initialize numbering for existing fields on page load
+        updateNumbering();
+    });
+    </script>
+
+
+{{-- ADDING OF HONORARIUM END --}}
+
+
+{{-- ADDING NEW ENTRIES END --}}
+<script>
+    var dateRecieved = document.querySelector("#dateReceived");
+
+    dateRecieved.flatpickr({
+    altInput: true,
+    altFormat: "F j, Y",
+    dateFormat: "Y-m-d"
+    });
+</script>
+
+<script>
+    var yearPicker = document.querySelector("#yearPicker");
+
+    yearPicker.flatpickr({
+        dateFormat: "Y",  // Only show the year
+        viewMode: "years",  // Set view mode to years
+        defaultDate: "2024"  // Set default year to 2024
+    });
+</script>
+
+
+
+{{-- FORM VALIDATION FOR NEW ENTRIES --}}
+
+    <script>
+        $(document).ready(function() {
+            $('input[name="requirements"]').change(function() {
+                if ($(this).val() === 'complete') {
+                    $('#addToQueue').show();
+                    $('#messageIncomplete').hide();
+                } else if ($(this).val() === 'incomplete') {
+                    $('#addToQueue').hide();
+                    $('#messageIncomplete').show();
+                }
+            });
+
+            $('#newEntriesForm').on('submit', function(e) {
+                e.preventDefault();
+                let isValid = true;
+
+                $('#newEntriesForm input, #newEntriesForm select').each(function() {
+                    if ($(this).val() === '' || $(this).val() === null) {
+                        isValid = false;
+                    }
+                });
+
+                if (isValid) {
+                    $.ajax({
+                        type: 'POST',
+                        url: '{{ route('form.submit') }}',
+                        data: $('#newEntriesForm').serialize(),
+                        success: function(response) {
+                            Swal.fire({
+                                title: '<div class="row text-success"><i class="bx bxs-badge-alt" style="font-size: 56px;"></i></div><div class="row text-success d-flex justify-content-center">Added to Queue Succesfully!</div>',
+                                text: 'Form added to queue.',
+                                showClass: {
+                                    popup: 'animate__animated animate__bounceIn'
+                                },
+                                customClass: {
+                                    confirmButton: 'btn btn-success'
+                                },
+                                buttonsStyling: false
+                            }).then(() => {
+                                $('#newEntriesForm').off('submit').submit();
+                            });
+                        },
+                        error: function(response) {
+                            alert('Error in submission');
+                        }
+                    });
+                } else {
+                    Swal.fire({
+                        title: '<div class="row text-danger"><i class="bx bxs-error-alt" style="font-size: 56px;"></i></div><div class="row text-danger d-flex justify-content-center">Fill in the Blanks!</div>',
+                        text: 'Please fill all the fields',
+                        showClass: {
+                            popup: 'animate__animated animate__shakeX'
+                        },
+                        customClass: {
+                            confirmButton: 'btn btn-danger'
+                        },
+                        buttonsStyling: false
+                    });
+                }
+            });
+        });
+    </script>
+
+
+
+
+{{-- ADDING NEW ENTRIES END --}}
+
+
+

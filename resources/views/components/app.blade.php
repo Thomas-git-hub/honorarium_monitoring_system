@@ -48,6 +48,7 @@
     <!--/ Layout wrapper -->
 
     @include('components.scripts')
+    @yield('components.specific_page_scripts')
 </body>
 
 </html>

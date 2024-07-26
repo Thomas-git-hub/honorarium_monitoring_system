@@ -114,6 +114,22 @@ return [
             'sslmode' => 'prefer',
         ],
 
+
+        'ors_pgsql' => [
+            'driver' => 'pgsql',
+            'url' => env('DB_URL'),
+            'host' => env('IBU_DB_HOST'),
+            'port' => env('IBU_DB_PORT'),
+            'database' => env('IBU_DB_DATABASE'),
+            'username' => env('IBU_DB_USERNAME'),
+            'password' => env('IBU_DB_PASSWORD'),
+            'charset' => env('DB_CHARSET', 'utf8'),
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'search_path' => 'public',
+            'sslmode' => 'prefer',
+        ],
+
         'sqlsrv' => [
             'driver' => 'sqlsrv',
             'url' => env('DB_URL'),
