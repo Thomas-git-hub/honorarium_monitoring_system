@@ -2,53 +2,162 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\TempPasswordMail;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
+use Yajra\DataTables\Facades\DataTables;
 
 class UserController extends Controller
 {
+    protected $redirectTo = '/admin_dashboard';
+
     public function index(){
 
         return view('index');
     }
 
     public function registration(){
-
-        // $users = User::first();
-        // $cacheKey = 'ibu_test_employee_first';
-
-        // // Try to get the cached data
-        // $users = Cache::remember($cacheKey, 60, function() {
-        //     return DB::connection('ibu_test')->table('employee')->first();
-        // });
-
-        // dd($users);
         return view('registration');
     }
 
-    public function login(Request $request){
-        // $request->validate([
-        //     'email' => 'required|email',
-        //     'password' => 'required',
-        // ]);
+    public function register(Request $request){
 
-        // $user = DB::connection('ibu_test')->table('employee_user')->where('email', $request->email)->first();
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email',
+        ]);
 
-        // if ($user) {
-        //     $credentials = $request->only('email', 'password');
-        //     $remember = $request->has('remember');
-        //     if (auth()->attempt($credentials)) {
-        //         return response()->json(['success' => true, 'message' => 'true']);
-        //     } else {
-        //         return response()->json(['success' => false, 'message' => 'Invalid Credentials']);
-        //     }
-        // } else {
-        //     return response()->json(['success' => false, 'message' => 'User Not Found']);
-        // }
+        if ($validator->fails()) {
+            return response()->json(['success' => false,'errors' => $validator->errors()]);
+        }
+
+        $existingUser = DB::connection('mysql')->table('users')->where('email', $request->email)->first();
+
+        if ($existingUser) {
+            return response()->json(['success' => false, 'message' => 'User already has an account'], 200);
+        }
+
+        $user = DB::connection('ors_pgsql')->table('employee_user')->where('email', $request->email)->first();
+
+        if ($user) {
+            $randomString = Str::random(16);
+            $mysqlUserId = DB::connection('mysql')->table('users')->insertGetId([
+                'email' => $request->email,
+                'password' => Hash::make($randomString),
+            ]);
+
+            $employeeDetails = DB::connection('ors_pgsql')->table('employee')
+            ->where('id', $user->id)
+            ->first();
+
+            if ($employeeDetails) {
+                DB::connection('mysql')->table('users')->where('id', $mysqlUserId)->update([
+                    'first_name' => $employeeDetails->employee_fname,
+                    'last_name' => $employeeDetails->employee_lname,
+                    'middle_name' => $employeeDetails->employee_mname,
+                    'ee_number' => $employeeDetails->employee_no,
+                    'position' => $employeeDetails->employee_academic_rank,
+                    'college_id' => $employeeDetails->college_id,
+                    'created_at' => now(),
+
+                ]);
+
+                Mail::to($user->email)->send(new TempPasswordMail($randomString));
+
+                return response()->json(['success' => true, 'data'=> $randomString,  'message' => 'Successfully created a temporary password. Please check your email.']);
+
+            }
+
+        }
+
+        return response()->json(['success' => false, 'message' => 'User Not Found']);
+    }
+
+    public function login(Request $request)
+    {
+
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email',
+            'password' => 'required|min:6',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['success' => false,'errors' => $validator->errors()], 200);
+        }
+
+        $credentials = $request->only('email', 'password');
+        $remember = $request->has('remember');
+
+        if (auth()->attempt($credentials, $remember)) {
+            if (auth()->user()->status == 'Active') {
+                return response()->json(['success' => true, 'redirect' => $this->redirectTo]);
+            } else {
+                auth()->logout();
+                return response()->json(['success' => false, 'message' => 'Your account is not active. Please contact the Admin.']);
+            }
+        }
+
+        return response()->json(['success' => false, 'message' => 'Invalid credentials']);
+    }
+
+    public function logout(Request $request)
+    {
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect('/');
+    }
+
+    public function list(Request $request)
+    {
+        $query = User::with('usertype')->whereNull('deleted_at');
+        $users = $query->get();
+
+        return DataTables::of($users)
+            ->addColumn('id', function($user) {
+                return $user->id;
+            })
+            ->addColumn('faculty', function($user) {
+                return ucfirst($user->first_name) . ' ' . ucfirst($user->last_name);
+            })
+            ->editColumn('created_at', function($user) {
+                return $user->created_at? $user->created_at->format('m/d/Y') : now();
+            })
+            ->editColumn('college', function($user) {
+                $collegeDetails = DB::connection('ors_pgsql')->table('college')
+                ->where('id', $user->college_id)
+                ->first();
+                return $collegeDetails->college_shortname ? $collegeDetails->college_shortname : '';
+            })
+
+            // ->addColumn('usertype', function($user) {
+            //     return $user->usertype ? $user->usertype->name : 'N/A';
+            // })
+            ->make(true);
+    }
+
+    public function getUser(Request $request) {
+        $searchTerm = $request->input('search'); // Capture search term
+
+        $faculties = DB::connection('ors_pgsql')->table('employee')
+                        ->where('active', 'T')
+                        ->where(function($query) use ($searchTerm) {
+                            $query->where(DB::raw("CONCAT(employee_fname, ' ', employee_lname)"), 'like', "%{$searchTerm}%")
+                                  ->orWhere('employee_fname', 'like', "%{$searchTerm}%")
+                                  ->orWhere('employee_lname', 'like', "%{$searchTerm}%");
+                        })
+                        ->get();
+
+        return response()->json($faculties);
     }
 
 

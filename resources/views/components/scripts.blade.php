@@ -10,6 +10,9 @@
     <script src="assets/vendor/libs/sweetalert2/sweetalert2.js"></script>
     <script src="assets/vendor/libs/datatables-bs5/datatables-bootstrap5.js"></script>
     <script src="assets/vendor/js/menu.js"></script>
+    <script src="assets/vendor/libs/select2/select2.js"></script>
+    <script src="assets/vendor/libs/toastr/toastr.js"></script>
+
 
     <!-- CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
@@ -24,12 +27,15 @@
 
     {{-- EMAIL DATATABLES START --}}
     <script>
+         const user = @json(Auth::user());
+         console.log(user);
+
         $(function () {
             var data = [
-                { name: 'John Doe', subject: 'Budget Office Acknowledge the Transaction', date: 'Jul 5' },
-                { name: 'John Doe Jr.', subject: 'Faculty 1 received his Honorarium', date: 'Jul 5' },
-                { name: 'John Doe Papa Dot', subject: 'Thank you for the info. will be there', date: 'Jul 5' },
-                { name: 'John Doe Papa Dot Jr.', subject: 'Transaction has proceeded to Accounting', date: 'Jul 5' },
+                { name: '<small class="text-success">To:&nbsp;&nbsp;</small>John Doe', subject: 'Budget Office Acknowledge the Transaction', date: 'Jul 5' },
+                { name: '<small class="text-success">To:&nbsp;&nbsp;</small>John Doe Jr.', subject: 'Faculty 1 received his Honorarium', date: 'Jul 5' },
+                { name: '<small class="text-success">To:&nbsp;&nbsp;</small>John Doe Papa Dot', subject: 'Thank you for the info. will be there', date: 'Jul 5' },
+                { name: '<small class="text-success">To:&nbsp;&nbsp;</small>John Doe Papa Dot Jr.', subject: 'Transaction has proceeded to Accounting', date: 'Jul 5' },
                 // Add more objects as needed
             ];
 
@@ -129,6 +135,60 @@
     </script>
 
 {{-- EMAIL DATATABLES END --}}
+
+
+
+{{-- ACKNOWLEDGEMENT DATATABLES START --}}
+<script>
+    $(function () {
+        var data = [
+            { batch_id: ' 001-08072024', from: 'Jane blu <small class="text-warning">(BUGS Admnistration)</small>', number_of_transactions: '5', date: 'Jul 5' },
+            { batch_id: ' 002-08072024', from: 'Jane blu <small class="text-warning">(BUGS Admnistration)</small>', number_of_transactions: '5', date: 'Jul 5' },
+            { batch_id: ' 003-08072024', from: 'Jane blu <small class="text-warning">(BUGS Admnistration)</small>', number_of_transactions: '5', date: 'Jul 5' },
+            { batch_id: ' 004-08072024', from: 'Jane blu <small class="text-warning">(BUGS Admnistration)</small>', number_of_transactions: '5', date: 'Jul 5' },
+            // Add more objects as needed
+        ];
+
+        var table = $('#acknowledgementTable').DataTable({
+            data: data,
+            processing: false,
+            serverSide: false,
+            pageLength: 100,
+            paging: true, // abled pagination
+            dom: '<"top"lf>rt<"bottom"ip>',
+            language: {
+                search: "", // Remove the default search label
+                searchPlaceholder: "Search..." // Set the placeholder text
+            },
+            columns: [
+                { data: 'batch_id', name: 'batch_id', title: 'Batch ID' },
+                { data: 'from', name: 'from', title: 'From' },
+                { data: 'number_of_transactions', name: 'number_of_transactions', title: 'No. of Transactions' },
+                { data: 'date', name: 'date', title: 'Date' },
+            ],
+            createdRow: function(row, data) {
+                // Add class to unopened rows
+                $(row).addClass('unopened');
+            }
+        });
+
+
+        // Row click event
+        $('#acknowledgementTable tbody').on('click', 'tr', function() {
+                var rowData = table.row($(this).closest('tr')).data();
+
+                // If the row is unopened, change its class to opened
+                if ($(this).hasClass('unopened')) {
+                    $(this).removeClass('unopened').addClass('opened');
+                }
+
+                // Redirect to another page with full details (example)
+                window.location.href = `/open_acknowledgement?id=${rowData.id}`;
+            });
+    });
+</script>
+
+{{-- ACKNOWLEDGEMENT DATATABLES END --}}
 
 
 

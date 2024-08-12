@@ -2,6 +2,8 @@
 
 @section('content')
 
+{{-- @include('administration.send_email') --}}
+
 <div class="row mt-4">
     <h4 class="card-title text-secondary">Adding Entries</h4>
 </div>
@@ -11,7 +13,7 @@
         <div class="card shadow-none bg-label-success">
         <div class="card-body text-success">
             <h5 class="card-title text-success">Faculty Honorarium has been Added to the Queue</h5>
-            <h1 class="text-success">5</h1>
+            <h1 class="text-success">{{$onQueue}}</h1>
         </div>
         </div>
     </div>
@@ -19,51 +21,64 @@
 
 <div class="row mt-4">
     <div class="col-md-6">
-        <div class="card">
+        <div class="card mb-5">
             <div class="card-header">
                 <p class="text-secondary">Add Entries</p>
             </div>
             <div class="card-body">
 
-                <form id="newEntriesForm" action="{{ route('form.submit') }}" method="POST">
+                <form id="newEntriesForm">
                     @csrf
 
                     <div class="mb-3">
                         <label for="flatpickr-human-friendly" class="form-label">Requirements Date Received</label>
-                        <input type="text" class="form-control flatpickr-date" placeholder="Month DD, YYYY" id="dateReceived" name="date_received" />
+                        <input type="text" class="form-control flatpickr-date" placeholder="Month DD, YYYY" id="dateReceived" name="date_of_trans" />
                     </div>
 
-                    <div class="mb-3">
+                    {{-- <div class="mb-3">
                         <label for="exampleDataList" class="form-label">Faculty</label>
                         <input class="form-control" list="datalistOptions" id="addEntryName" name="faculty" placeholder="Search by Name/ID Number...">
                         <datalist id="datalistOptions">
-                          {{-- <option value="San Francisco"></option> --}}
+                          <option value="San Francisco"></option>
                         </datalist>
+                    </div> --}}
+
+                    <div class="mb-3">
+                        <label for="facultySelect" class="form-label">Faculty</label>
+                        <select class="form-control" id="facultySelect" name="employee_id" style="width: 100%;">
+                            <option selected disabled>Search by Name/ID Number...</option>
+                        </select>
                     </div>
 
                     <div class="mb-3">
-                        <label for="defaultSelect" class="form-label">Honorarium</label>
-                        <select id="defaultSelect" class="form-select" name="honorarium">
+                        <label for="HonoSelect" class="form-label">Honorarium</label>
+                        <select id="HonoSelect" class="form-select" name="honorarium_id">
                           <option selected disabled>Select Honorarium</option>
-                          <option value="1">Honorariums for Guest Lectures</option>
+                          {{-- <option value="1">Honorariums for Guest Lectures</option>
                           <option value="2">Research Assistantships (RAs)</option>
-                          <option value="3">Teaching Assistantships (TAs)</option>
+                          <option value="3">Teaching Assistantships (TAs)</option> --}}
                         </select>
                     </div>
 
                     <div class="mb-3">
                         <label for="defaultSelect" class="form-label">Select Semester</label>
-                        <select id="defaultSelect" class="form-select" name="semester">
+                        <select id="defaultSelect" class="form-select" name="sem">
                           <option selected disabled>Select Semester</option>
-                          <option value="1">First Semester</option>
-                          <option value="2">Second Semester</option>
-                          <option value="3">Summer Term</option>
+                          <option value="First Semester">First Semester</option>
+                          <option value="Second Semester">Second Semester</option>
+                          <option value="Summer Term">Summer Term</option>
                         </select>
                     </div>
 
                     <div class="mb-3">
                         <label for="flatpickr-date" class="form-label">Semester Year</label>
-                        <input type="text" class="form-control flatpickr-date" placeholder="YYYY" id="yearPicker" name="year" />
+                        {{-- <input type="text" class="form-control flatpickr-date" placeholder="YYYY" id="yearPicker" name="year" /> --}}
+                        <select id="year" class="form-select" placeholder="YYYY" id="yearPicker" name="year">
+                            {{-- <option selected disabled>YYYY</option> --}}
+                            @for ($i = date('Y'); $i >= 2012; $i--)
+                                <option value="{{ $i }}">{{ $i }}</option>
+                            @endfor
+                        </select>
                     </div>
 
                     <div class="mb-5">
@@ -87,18 +102,18 @@
 
                     <div class="mb-5">
                         <div class="row">
-                            <label for="defaultSelect" class="form-label">Choose Whether Requirements are Complete/Incomplete</label>
+                            <label for="defaultSelect" class="form-label">Select Whether Requirements submitted by the Faculty are Complete or Incomplete</label>
                         </div>
                         <div class="row">
                             <div class="col-md">
                                 <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="requirements" id="radioComplete" value="complete" />
+                                    <input class="form-check-input" type="radio" name="is_complete" id="radioComplete" value="1" />
                                     <label class="form-check-label" for="radioComplete">Complete Requirements</label>
                                 </div>
                             </div>
                             <div class="col-md">
                                 <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="requirements" id="radioIncomplete" value="incomplete" />
+                                    <input class="form-check-input" type="radio" name="is_complete" id="radioIncomplete" value="0" />
                                     <label class="form-check-label" for="radioIncomplete">Incomplete Requirements</label>
                                 </div>
                             </div>
@@ -108,15 +123,60 @@
                     <div class="row mt-6">
                         <div class="col-md-12 d-grid mx-auto" >
                             <button class="btn btn-success gap-1" type="submit" id="addToQueue" style="display:none;"><i class='bx bxs-add-to-queue' ></i>Add to Queue</button>
-                        </div>
-                        <div class="col-md-12 d-grid mx-auto" >
-                            <button class="btn btn-primary gap-1" type="button" id="messageIncomplete" style="display:none;"><i class='bx bxs-send' ></i>Message</button>
+
+                            {{-- added Aug 12, 2024 w/ BUG NOW SHOWING SEND EMAIL TOAST --}}
+                            <button class="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasEnd" aria-controls="offcanvasEnd" id="sendEmailBtn" style="display: none;"><i class='bx bx-reply' >&nbsp;</i>Send Email</button>
                         </div>
                     </div>
                 </form>
 
             </div>
         </div>
+
+        {{-- <div class="d-flex justify-content-between">
+            <small class="text-danger" id="label" style="display: none;">Please specify the reason for holding this transaction.</small>
+            <div class="gap-2">
+                <!-- Spinner -->
+                <div class="spinner-border text-primary" role="status" id="spinner" style="display: none;">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <!-- Success Message -->
+                <div class="text-success d-flex flex-row gap-2" id="emailSuccess" style="display: none !important;">
+                    <b>Sent</b><i class='bx bx-check-circle fs-3'></i>
+                </div>
+                <!-- Failed Message -->
+                <div class="text-danger d-flex flex-row gap-2" id="emailFailed" style="display: none !important;">
+                    <b>Failed</b><i class='bx bx-x-circle fs-3'></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <form action="" id="">
+                <div class="card-body" style="display: none;" id="sendEmail">
+
+                    <div class="d-flex justify-content-end mb-3">
+                        <i class='bx bxs-envelope'></i>
+                    </div>
+                    <p><b><small>To:</small></b> John Doe Duridut&nbsp;<small style="font-style: italic;">johndoe@bicol-u.edu.ph</small></p>
+                    <div class="mb-4">
+                        <label for="defaultInput" class="form-label">Subject</label>
+                        <input id="defaultInput" class="form-control" type="text" placeholder="Subject"/>
+                    </div>
+                    <div>
+                        <textarea class="form-control" id="emailTextArea" rows="3" placeholder="Message" style="border: none;"></textarea>
+                    </div>
+                    <div class="border-top mt-3">
+                        <div class="d-flex flex-row justify-content-end mt-3 gap-2">
+                            <button type="button" class="btn btn-label-danger border-none" data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-custom-class="tooltip-danger" title="Discard email" id="removeEmailReply"><i class='bx bxs-trash-alt'></i></button>
+                            <button type="button" class="btn btn-primary" id="sendButton"><i class='bx bxs-send'>&nbsp;</i>Send</button>
+                        </div>
+                    </div>
+
+                </div>
+            </form>
+        </div> --}}
+
     </div>
     <div class="col-md-6">
         <div class="card">
@@ -144,11 +204,11 @@
 {{-- FORM VALIDATION FOR NEW ENTRIES --}}
 <script>
     $(document).ready(function() {
-        $('input[name="requirements"]').change(function() {
-            if ($(this).val() === 'complete') {
+        $('input[name="is_complete"]').change(function() {
+            if ($(this).val() === '1') {
                 $('#addToQueue').show();
                 $('#messageIncomplete').hide();
-            } else if ($(this).val() === 'incomplete') {
+            } else if ($(this).val() === '0') {
                 $('#addToQueue').hide();
                 $('#messageIncomplete').show();
             }
@@ -182,7 +242,15 @@
                             },
                             buttonsStyling: false
                         }).then(() => {
-                            $('#newEntriesForm').off('submit').submit();
+                            $('#facultyTable').DataTable().ajax.reload();
+                            $('#newEntriesForm input[type="text"]').val('');
+                            $('#newEntriesForm input[type="date"]').val('');
+                            $('#newEntriesForm select').each(function() {
+                                $(this).val($(this).find('option[selected]').val());
+                            });
+                            $('#newEntriesForm input[type="radio"]').prop('checked', false);
+                            $('#facultySelect, #HonoSelect').val(null).trigger('change');
+                            // $('#newEntriesForm').off('submit').submit();
                         });
                     },
                     error: function(response) {
@@ -211,10 +279,12 @@
 {{-- DATE PICKER START --}}
 <script>
     var flatpickrDate = document.querySelector(".flatpickr-date");
+    var year = $('#year').val();
 
     flatpickrDate.flatpickr({
     monthSelectorType: "static"
     });
+
 </script>
 {{-- DATE PICKER END --}}
 
@@ -237,9 +307,9 @@
         ];
 
         var table = $('#facultyTable').DataTable({
-            data: data,
-            processing: false,
-            serverSide: false,
+            processing: true,
+            serverSide: true,
+            ajax: '{{ route('admin_new_entries.list') }}',
             pageLength: 10,
             paging: true,
             dom: '<"top"lf>rt<"bottom"ip>',
@@ -248,16 +318,25 @@
                 searchPlaceholder: "Search..."
             },
             columns: [
-                { data: 'date_received', name: 'date_received', title: 'Date Received' },
+                { data: 'id', name: 'id', title: 'ID', visible: false},
+                { data: 'date_of_trans', name: 'date_of_trans', title: 'Date Received' },
                 { data: 'faculty', name: 'faculty', title: 'Faculty' },
                 { data: 'id_number', name: 'id_number', title: 'ID Number' },
                 { data: 'academic_rank', name: 'academic_rank', title: 'Academic Rank' },
                 { data: 'college', name: 'college', title: 'College' },
                 { data: 'honorarium', name: 'honorarium', title: 'Honorarium' },
-                { data: 'semester', name: 'semester', title: 'Semester' },
-                { data: 'semester_year', name: 'semester_year', title: 'Semester Year' },
-                { data: 'month_of', name: 'month_of', title: 'Month Of' },
-                { data: 'action', name: 'action', title: 'Action' }
+                { data: 'sem', name: 'sem', title: 'Semester' },
+                { data: 'year', name: 'year', title: 'Semester Year' },
+                { data: 'month', name: 'month', title: 'Month Of' },
+                { data: 'created_by', name: 'created_by', title: 'Created By' },
+                // { data: 'action', name: 'action', title: 'Action' }
+            ],
+            order: [[0, 'desc']], // Sort by date_received column by default
+            columnDefs: [
+                {
+                    type: 'date',
+                    targets: [0, 1] // Apply date sorting to date_received and date_on_hold columns
+                }
             ],
             createdRow: function(row, data) {
                 $(row).addClass('unopened');
@@ -330,6 +409,105 @@
             // Hide modal
             $('#editEntryModal').modal('hide');
         });
+
+        //Get Users
+        $('#facultySelect').select2({
+            placeholder: 'Search by Name/ID Number...',
+            allowClear: true,
+            ajax: {
+                url: '{{ route('getUser') }}',
+                dataType: 'json',
+                delay: 250,
+                data: function(params) {
+                    return {
+                        search: params.term // search term
+                    };
+                },
+                processResults: function(data) {
+                    var options = [];
+                    var searchTerm = $('#facultySelect').data('select2').dropdown.$search.val();
+
+                    data.forEach(function(user) {
+                        // Check if search term contains only numbers
+                        if (/^\d+$/.test(searchTerm)) {
+                            // If numbers, match with user ID
+                            options.push({
+                                id: user.id,
+                                text: user.employee_no,
+                            });
+                        } else {
+                            // Otherwise, match with name
+                            options.push({
+                                id: user.id,
+                                text: user.employee_fname + ' ' + user.employee_lname,
+                            });
+                        }
+                    });
+
+                    return {
+                        results: options
+                    };
+                },
+                cache: true
+            }
+        });
+
+        //Get Honorarium
+        $('#HonoSelect').select2({
+            placeholder: 'Select Honorarium',
+            allowClear: true
+        });
+        $.ajax({
+            url: '{{ route('getHonorarium') }}',
+            type: 'GET',
+            success: function(data) {
+                var options = [];
+                data.forEach(function(hono) {
+                    options.push({
+                        id: hono.id,
+                        text: hono.name,
+                    });
+                });
+
+                $('#HonoSelect').select2({
+                    data: options
+                });
+            },
+            error: function(xhr, status, error) {
+                console.error('Error fetching Honorarium:', error);
+            }
+        });
+
+        //Save Transaction
+
+        // $('#newEntriesForm').on('submit', function(e) {
+        //     e.preventDefault();
+
+        //     var formData = $(this).serialize();
+
+        //     $.ajax({
+        //         url: $(this).attr('action'),
+        //         type: 'POST',
+        //         data: formData,
+        //         success: function(response) {
+        //             Swal.fire({
+        //                 title: 'Success!',
+        //                 text: 'Form submitted successfully.',
+        //                 icon: 'success',
+        //                 confirmButtonText: 'OK'
+        //             });
+        //         },
+        //         error: function(xhr, status, error) {
+        //             Swal.fire({
+        //                 title: 'Error!',
+        //                 text: 'There was an error submitting the form.',
+        //                 icon: 'error',
+        //                 confirmButtonText: 'OK'
+        //             });
+        //         }
+        //     });
+        // });
+
     });
 </script>
 
@@ -371,15 +549,56 @@
 
 
 {{-- CLEARING AND HIDING OF REPLY EMAIL CARD START--}}
-<script>
+{{-- <script>
     $(document).ready(function() {
-        // Hide the modal and clear the input fields when the discard button is clicked
+        // Show the send email card, hide add to queue button, and scroll to send email when radioIncomplete is clicked
+        $('#radioIncomplete').on('click', function() {
+            $('#sendEmail').show();
+            $('#label').show();
+            $('#addToQueue').hide();
+            $('html, body').animate({
+                scrollTop: $("#sendEmail").offset().top
+            }, 10); // Adjust the duration as needed
+        });
+
+        // Hide the send email card and show add to queue button when radioComplete is clicked
+        $('#radioComplete').on('click', function() {
+            $('#sendEmail').hide();
+            $('#label').hide();
+            $('#addToQueue').show();
+        });
+
+        // Clear fields, hide email card, and reset the toggle when discard button is clicked
         $('#removeEmailReply').on('click', function() {
-            $('#onHoldMessage').modal('hide');
-            $('#emailReply').find('input[type="text"], textarea').val('');
+            $('#sendEmail').hide();
+            $('#sendEmail').find('input[type="text"], textarea').val('');
+            $('#addToQueue').hide();
+            $('#label').hide();
+            $('#spinner').hide();
+            $('#emailSuccess').hide();
+            $('#emailFailed').hide();
+            $('input[name="is_complete"]').prop('checked', false);
+        });
+
+        // Hide the send email card when send button is clicked
+        $('#sendButton').on('click', function() {
+            $('#sendEmail').hide();
         });
     });
-</script>
+</script> --}}
 {{-- CLEARING AND HIDING OF REPLY EMAIL CARD END--}}
+
+<script>
+    $('#radioIncomplete').on('click', function() {
+    // Show the addToQueue button
+    $('#sendEmailBtn').show();
+});
+
+$('#radioComplete').on('click', function() {
+    // Show the addToQueue button
+    $('#sendEmailBtn').hide();
+    $('#addToQueue').show();
+});
+</script>
 
 @endsection

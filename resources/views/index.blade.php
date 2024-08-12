@@ -56,22 +56,21 @@
     <script src="../../assets/js/config.js"></script>
   </head>
 
+  <style>
+
+  </style>
+
   <body>
     <!-- Content -->
 
     <div class="authentication-wrapper authentication-cover">
       <div class="authentication-inner row m-0">
         <!-- /Left Text -->
-        <div class="d-none d-lg-flex col-lg-7 col-xl-8 align-items-center p-5">
-          <div class="w-100 d-flex justify-content-center">
-            <img
-              src="../../assets/img/illustrations/boy-with-rocket-light.png"
-              class="img-fluid"
-              alt="Login image"
-              width="700"
-              data-app-dark-img="illustrations/boy-with-rocket-dark.png"
-              data-app-light-img="illustrations/boy-with-rocket-light.png" />
-          </div>
+        <div class="d-none d-lg-flex col-lg-7 col-xl-8 d-flex"  style="background: rgb(105,108,255); background: linear-gradient(140deg, rgba(105,108,255,1) 27%, rgba(0,212,255,1) 100%);">
+            <div class="w-100 d-flex justify-content-center">
+                <img src="{{ asset('assets/myimg/login-animated.gif') }}" width="700" class="img-fluid"/>
+                <div class="d-none">Illustration by <a href="https://icons8.com/illustrations/author/JTmm71Rqvb2T">Dani Grapevine</a> from <a href="https://icons8.com/illustrations">Ouch!</a></div>
+            </div>
         </div>
         <!-- /Left Text -->
 
@@ -89,11 +88,12 @@
             <h4 class="mb-2">Welcome to BUGS Honorarium Monitoring System</h4>
             <p class="mb-4">Please sign-in to your account to track your honorarium</p>
 
-            <form id="formAuthentication" method="POST" action="{{ route('login.user') }}" class="mb-3">
+            <form id="loginForm" class="mb-3">
                 @csrf
               <div class="mb-3">
                 <label for="email" class="form-label">BU Email</label>
                 <input type="text" class="form-control" id="email" name="email" placeholder="@bicol-u.edu.ph" autofocus />
+                <div class="invalid-feedback" id="emailError"></div>
               </div>
               <div class="mb-3 form-password-toggle">
                 <div class="d-flex justify-content-between">
@@ -111,6 +111,7 @@
                     placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;"
                     aria-describedby="password" />
                   <span class="input-group-text cursor-pointer"><i class="bx bx-hide"></i></span>
+                  <div class="invalid-feedback" id="passwordError"></div>
                 </div>
               </div>
               <div class="mb-3">
@@ -168,6 +169,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 
+
     <!-- endbuild -->
 
     <!-- Vendors JS -->
@@ -180,5 +182,61 @@
 
     <!-- Page JS -->
     <script src="../../assets/js/pages-auth.js"></script>
+
+    <script>
+        $('#loginForm').on('submit', function(event) {
+          event.preventDefault();
+          $.ajax({
+            url: '{{ route('login.user') }}',
+            method: 'POST',
+            data: {
+              email: $('#email').val(),
+              password: $('#password').val(),
+              _token: '{{ csrf_token() }}'
+            },
+            success: function(response) {
+              if (response.success) {
+                window.location.href = response.redirect;
+              } else {
+                if(response.message){
+                    Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: response.message,
+                    showConfirmButton: true,
+                });
+
+                }else{
+
+                    var errors = response.errors;
+                    Object.keys(errors).forEach(function(key) {
+                        var inputField = $('#loginForm [name=' + key + ']');
+                        inputField.addClass('is-invalid');
+                        $('#loginForm #' + key + 'Error').text(errors[key][0]);
+                    });
+
+                }
+
+
+
+              }
+            },
+            error: function() {
+              Swal.fire({
+                icon: 'error',
+                title: 'Failed!',
+                text: 'Something went wrong.',
+                showConfirmButton: true,
+              });
+            }
+          });
+        });
+
+        $('#loginForm').find('input, select').on('keyup change', function() {
+            $(this).removeClass('is-invalid');
+            var errorId = $(this).attr('name') + 'Error';
+            $('#' + errorId).text('');
+        });
+    </script>
   </body>
 </html>

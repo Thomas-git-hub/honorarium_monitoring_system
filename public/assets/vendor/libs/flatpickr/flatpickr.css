@@ -590,7 +590,7 @@ html:not([dir=rtl]) .flatpickr-weekwrapper .flatpickr-weeks .flatpickr-weeks {
   width: calc(18.2rem + var(--bs-border-width) * 3) !important;
 }
 .light-style .flatpickr-calendar.open {
-  z-index: 1091;
+  z-index: 2000;
 }
 .light-style .flatpickr-input[readonly],
 .light-style .flatpickr-input ~ .form-control[readonly] {

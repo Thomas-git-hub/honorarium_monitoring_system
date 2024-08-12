@@ -62,15 +62,16 @@
     <div class="authentication-wrapper authentication-cover">
       <div class="authentication-inner row m-0">
         <!-- /Left Text -->
-        <div class="d-none d-lg-flex col-lg-7 col-xl-8 align-items-center p-5">
+        <div class="d-none d-lg-flex col-lg-7 col-xl-8 align-items-center" style="background: rgb(105,108,255); background: linear-gradient(140deg, rgba(105,108,255,1) 27%, rgba(0,212,255,1) 100%);">
           <div class="w-100 d-flex justify-content-center">
-            <img
+            <img src="{{ asset('assets/myimg/registration-animated.gif') }}" width="700" class="img-fluid"/>
+            {{-- <img
               src="../../assets/img/illustrations/boy-with-rocket-light.png"
               class="img-fluid"
               alt="Login image"
               width="700"
               data-app-dark-img="illustrations/boy-with-rocket-dark.png"
-              data-app-light-img="illustrations/boy-with-rocket-light.png" />
+              data-app-light-img="illustrations/boy-with-rocket-light.png" /> --}}
           </div>
         </div>
         <!-- /Left Text -->
@@ -94,10 +95,11 @@
             <h4 class="mb-2">BUGS Honorarium Monitoring System!</h4>
             <p class="mb-4">Please enter your BU Email to register your account</p>
 
-            <form id="" class="mb-3" action="index.html" method="GET">
+            <form id="registerForm" class="mb-3">
               <div class="mb-3">
                 <label for="email" class="form-label">BU Email</label>
-                <input type="text" class="form-control" id="email" name="email-username" placeholder="@bicol-u.edu.com" autofocus />
+                <input type="text" class="form-control" id="email" name="email" placeholder="@bicol-u.edu.com" autofocus />
+                <div class="invalid-feedback" id="emailError"></div>
               </div>
               <button type="submit" class="btn btn-primary d-grid w-100">Register</button>
             </form>
@@ -145,6 +147,8 @@
     <script src="../../assets/vendor/libs/i18n/i18n.js"></script>
     <script src="../../assets/vendor/libs/typeahead-js/typeahead.js"></script>
     <script src="../../assets/vendor/js/menu.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 
     <!-- endbuild -->
 
@@ -158,5 +162,71 @@
 
     <!-- Page JS -->
     <script src="../../assets/js/pages-auth.js"></script>
+
+    <script>
+        $('#registerForm').on('submit', function(event) {
+          event.preventDefault();
+          $.ajax({
+            url: '{{ route('form.register') }}',
+            method: 'POST',
+            data: {
+              email: $('#email').val(),
+              _token: '{{ csrf_token() }}'
+            },
+            success: function(response) {
+              if (response.success) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: response.message,
+                    showConfirmButton: true,
+                    confirmButtonText: 'Redirect to Gmail'
+                    }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.open('https://mail.google.com', '_blank');
+                    }
+                });
+              } else {
+                if(response.message){
+                    Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: response.message,
+                    showConfirmButton: true,
+                });
+
+                }else{
+
+                    var errors = response.errors;
+                    Object.keys(errors).forEach(function(key) {
+                        var inputField = $('#registerForm [name=' + key + ']');
+                        inputField.addClass('is-invalid');
+                        $('#registerForm #' + key + 'Error').text(errors[key][0]);
+                    });
+
+                }
+
+
+
+              }
+            },
+            error: function() {
+              Swal.fire({
+                icon: 'error',
+                title: 'Failed!',
+                text: 'Something went wrong.',
+                showConfirmButton: true,
+              });
+            }
+          });
+        });
+
+        $('#registerForm').find('input, select').on('keyup change', function() {
+            $(this).removeClass('is-invalid');
+            var errorId = $(this).attr('name') + 'Error';
+            $('#' + errorId).text('');
+        });
+    </script>
+
   </body>
 </html>

@@ -30,20 +30,20 @@
             <span class="badge bg-danger badge-notifications p-1 fs-8">14</span>
           </a>
         </li>
-        <li class="menu-item {{ request()->is('admin_faculty') ? 'active' : '' }}">
-          <a href="/admin_faculty" class="menu-link">
-            <i class='menu-icon tf-icons bx bx-group'></i>
-            <div class="text-truncate" data-i18n="Page 2">Faculties</div>
-          </a>
+        <li class="menu-item {{ request()->is('sent_items') ? 'active' : '' }}">
+            <a href="/sent_items" class="menu-link">
+              <i class='menu-icon tf-icons bx bx-send'></i>
+              <div class="text-truncate" data-i18n="Page 2">Sent Items</div>
+            </a>
         </li>
         <li class="menu-item">
           <div style="margin-left: 5%; margin-top: 5%; color: #b4b0c4;">Transaction</div>
         </li>
         <li class="menu-item {{ request()->is('admin_honorarium') ? 'active' : '' }}">
-          <a href="/admin_honorarium" class="menu-link">
-            <i class='menu-icon tf-icons bx bx-list-plus'></i>
-            <div class="text-truncate" data-i18n="Page 2">Honorarium</div>
-          </a>
+            <a href="/admin_honorarium" class="menu-link">
+              <i class='menu-icon tf-icons bx bx-list-plus'></i>
+              <div class="text-truncate" data-i18n="Page 2">Honorarium</div>
+            </a>
         </li>
         <li class="menu-item {{ request()->is('admin_new_entries') ? 'active' : '' }}">
           <a href="/admin_new_entries" class="menu-link">
@@ -57,16 +57,32 @@
             <div class="text-truncate" data-i18n="Page 2">In Queue</div>
           </a>
         </li>
+        <li class="menu-item {{ request()->is('for_acknowledgement') ? 'active' : '' }}">
+          <a href="/for_acknowledgement" class="menu-link">
+            <i class='menu-icon tf-icons bx bx-archive-in'></i>
+            <div class="text-truncate" data-i18n="Page 2">For Acknowledgement</div>
+            <span class="badge bg-danger badge-notifications p-1 fs-8">14</span>
+          </a>
+        </li>
         <li class="menu-item {{ request()->is('admin_on_hold') ? 'active' : '' }}">
           <a href="/admin_on_hold" class="menu-link">
             <i class='menu-icon tf-icons bx bx-error-alt'></i>
             <div class="text-truncate" data-i18n="Page 2">On Hold</div>
           </a>
         </li>
-        <li class="menu-item">
-          <a href="page-2.html" class="menu-link">
+        <li class="menu-item {{ request()->is('history') ? 'active' : '' }}">
+          <a href="/history" class="menu-link">
             <i class='menu-icon tf-icons bx bx-history' ></i>
             <div class="text-truncate" data-i18n="Page 2">History</div>
+          </a>
+        </li>
+        <li class="menu-item">
+            <div style="margin-left: 5%; margin-top: 5%; color: #b4b0c4;">Users</div>
+          </li>
+        <li class="menu-item {{ request()->is('admin_faculty') ? 'active' : '' }}">
+          <a href="/admin_faculty" class="menu-link">
+            <i class='menu-icon tf-icons bx bx-group'></i>
+            <div class="text-truncate" data-i18n="Page 2">Faculties</div>
           </a>
         </li>
       </ul>

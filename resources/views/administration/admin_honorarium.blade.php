@@ -13,13 +13,14 @@
                     <div class="row">
                         <div class="col">
                             <div id="defaultFormControlHelp" class="form-text">
-                                To add an honorarium, please enter the type or title of the honorarium here.
+                                To add an honorarium, kindly provide the type or title of the honorarium in the field provided below.
                             </div>
                         </div>
                     </div>
                     <div class="row mt-2">
                         <div class="col">
-                            <form action="/submit-honorarium" method="POST">
+                            <form id="honorariumForm">
+                                @csrf
                                 <div id="honorariumFieldsContainer">
                                     <!-- Form fields will be added here -->
                                 </div>
@@ -110,7 +111,57 @@
 
         // Initialize numbering for existing fields on page load
         updateNumbering();
+
+        $('#honorariumForm').on('submit', function(e) {
+            e.preventDefault();
+
+            $.ajax({
+                url: '{{ route('admin_honorarium.store') }}',
+                type: 'POST',
+                data: $(this).serialize(),
+                success: function(response) {
+                    if(response.success){
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success!',
+                            text: response.message,
+                            showConfirmButton: true,
+                        });
+                        $('#honorariumFieldsContainer').empty();
+                        $('#saveHonorarium').hide();
+                        updateNumbering();
+                        // Optionally, reload the DataTable or append the new data
+                        $('#honorariumTable').DataTable().ajax.reload();
+                    }
+                },
+                error: function(xhr) {
+                    if (xhr.status === 422) { // Laravel validation error
+                        var errors = xhr.responseJSON.errors;
+                        var errorMessages = '';
+
+                        $.each(errors, function(key, value) {
+                            errorMessages += value[0] + '<br>';
+                        });
+
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Validation Error',
+                            html: errorMessages,
+                            showConfirmButton: true,
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'An error occurred while saving the honorarium.',
+                            showConfirmButton: true,
+                        });
+                    }
+                }
+            });
+        });
     });
+
 </script>
 
 
@@ -137,15 +188,21 @@
             }
         ];
 
-        var table = $('#honorariumTable').DataTable({
-            data: data,
+        var table
+
+        table = $('#honorariumTable').DataTable({
+            processing: true,
+            serverSide: true,
+            ajax: '{{ route('admin_honorarium.list') }}',
             columns: [
-                { data: 'honorarium', title: 'Honorarium' },
-                { data: 'date_added', title: 'Date Added' },
+                { data: 'name', title: 'Honorarium' },
+                { data: 'status', title: 'Status' },
+                { data: 'created_at', title: 'Date Added' },
                 { data: 'updated_at', title: 'Updated At' },
                 { data: 'action', title: 'Action' }
             ]
         });
+
 
         // Event delegation for edit buttons
         $('#honorariumTable').on('click', '.edit-btn', function() {
@@ -155,7 +212,8 @@
             // Show input fields for editing
             var editForm = `<div class="d-flex flex-row align-items-center gap-2">
                                 <div class="form-group">
-                                    <input type="text" class="form-control" value="${rowData.honorarium.replace(/<.?strong>/g, '')}" id="editHonorarium" />
+                                    <input type="text" class="form-control" value="${rowData.name}" id="editHonorarium" />
+                                     <div class="invalid-feedback" id="nameError"></div>
                                 </div>
                                 <div class="form-group">
                                     <button type="button" class="btn btn-icon me-2 btn-label-success btn-sm" id="saveBtn"><i class='bx bxs-check-circle'></i></button>
@@ -168,13 +226,51 @@
 
             // Handle Save button
             $('#saveBtn').click(function() {
-                var newHonorarium = $('#editHonorarium').val();
-                var now = new Date();
-                var updatedDate = now.toLocaleDateString(); // Get the current date in locale format
+            var newHonorarium = $('#editHonorarium').val();
+            var now = new Date();
+            var updatedDate = now.toLocaleDateString(); // Get the current date in locale format
 
-                rowData.honorarium = '<strong>' + newHonorarium + '</strong>';
-                rowData.updated_at = updatedDate; // Update the updated_at field
-                table.row(row).data(rowData).draw();
+            $.ajax({
+                    url: '{{ route('admin_honorarium.update', '') }}/' + rowData.id,
+                    type: 'POST',
+                    data: {
+                        _token: '{{ csrf_token() }}',
+                        name: newHonorarium
+                    },
+                    success: function(response) {
+                        if(response.success){
+                                Swal.fire({
+                                icon: 'success',
+                                title: 'Success!',
+                                text: response.message,
+                                showConfirmButton: true,
+                            });
+                            rowData.name = newHonorarium;
+                            rowData.updated_at = updatedDate; // Update the updated_at field
+                            table.row(row).data(rowData).draw();
+                        }
+
+
+                    },
+                    error: function(xhr) {
+                        var errors = xhr.responseJSON.errors;
+                        if (errors && errors.name) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Validation Error',
+                                text: errors.name[0],
+                                showConfirmButton: true,
+                            });
+                        }else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: 'An error occurred while updating the honorarium.',
+                                showConfirmButton: true,
+                            });
+                        }
+                    }
+                });
             });
 
             // Handle Cancel button
@@ -182,6 +278,9 @@
                 table.row(row).data(rowData).draw(); // Reset the row to its original state
             });
         });
+
+
+
     });
 </script>
 

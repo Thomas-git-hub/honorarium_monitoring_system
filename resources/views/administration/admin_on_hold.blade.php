@@ -8,7 +8,7 @@
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h6 class="text-warning">Read</h6>
+          <h6 class="text-secondary">Read</h6>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
@@ -17,60 +17,13 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-label-danger" data-bs-dismiss="modal"><i class='bx bxs-x-circle'></i></button>
-          <button type="button" class="btn btn-warning gap-1">Proceed to Budget Office<i class='bx bx-chevrons-right'></i></button>
+          <button type="button" class="btn btn-primary gap-1">Proceed to Budget Office<i class='bx bx-chevrons-right'></i></button>
         </div>
       </div>
     </div>
-  </div>
-{{-- EDIT MODAL END --}}
+</div>
+{{-- MODAL END --}}
 
-{{-- MESSAGE MODAL START --}}
-<!-- Modal -->
-<div class="modal fade" id="onHoldMessage" data-bs-backdrop="static" tabindex="-1">
-    <div class="modal-dialog modal-xl" id="onHoldModalDialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title gap-1 d-flex align-items-center" id="backDropModalTitle"><i class='bx bxs-hand'></i>Hold Transaction</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-            <form id="emailReply">
-                <div class="d-flex justify-content-end gap-2">
-                    <!-- Spinner -->
-                    <div class="spinner-border text-primary" role="status" id="spinner" style="display: none;">
-                        <span class="visually-hidden">Loading...</span>
-                    </div>
-                    <!-- Success Message -->
-                    <div class="text-success d-flex flex-row gap-2" id="emailSuccess" style="display: none !important;">
-                        <b>Sent</b><i class='bx bx-check-circle fs-3'></i>
-                    </div>
-                    <!-- Failed Message -->
-                    <div class="text-danger d-flex flex-row gap-2" id="emailFailed" style="display: none !important;">
-                        <b>Failed</b><i class='bx bx-x-circle fs-3'></i>
-                    </div>
-                </div>
-                <div>
-                    <p><b><small>To:</small></b> John Doe Duridut&nbsp;<small style="font-style: italic;">johndoe@bicol-u.edu.ph</small></p>
-                </div>
-                <div class="mb-4">
-                    <label for="defaultInput" class="form-label">Subject</label>
-                    <input id="defaultInput" class="form-control" type="text" placeholder="Subject"/>
-                </div>
-                <div>
-                    <textarea class="form-control" id="exampleFormControlTextarea1" rows="3" placeholder="Message" style="border: none;"></textarea>
-                </div>
-                <div class="border-top mt-3">
-                    <div class=" d-flex flex-row justify-content-end mt-3 gap-2">
-                        <button type="button" class="btn btn-label-danger border-none" data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-custom-class="tooltip-danger" title="Discard email" id="removeEmailReply"><i class='bx bxs-trash-alt'></i></button>
-                        <button type="button" class="btn btn-primary me-1 mb-1" id="sendButton"><i class='bx bxs-send'>&nbsp;</i>Send</button>
-                    </div>
-                </div>
-            </form>
-        </div>
-      </div>
-    </div>
-  </div>
-{{-- MESSAGE MODAL END --}}
 
 <div class="row mt-4">
     <h4 class="card-title text-secondary">On Hold</h4>
@@ -122,7 +75,7 @@
                 semester: '<p class="text-success">First Semester</p>',
                 semester_year: '<p>2024</p>',
                 month_of: '<p>July</p>',
-                action: '<div class="d-flex flex-row"> <button type="button" class="btn me-2 btn-label-warning edit-btn gap-1" data-bs-toggle="modal" data-bs-target="#proceed">Proceed<i class="bx bx-chevrons-right"></i></button></div>',
+                action: '<button type="button" class="btn me-2 btn-primary btn-sm edit-btn gap-1" data-bs-toggle="modal" data-bs-target="#proceed">Proceed<i class="bx bx-chevrons-right"></i></button>',
             },
             // More data...
         ];

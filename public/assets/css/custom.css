@@ -177,6 +177,96 @@ div.dt-container div.dt-info {
 /* honorarium DATATABLES END----------------------------------------------------------------------- */
 
 
+/* TRANSACTION STATUS DATATABLES----------------------------------------------------------------------- */
+ /* Hide the table header */
+ #transactionStatusTable thead {
+    /* display: none; */
+    color: #8c88a2;
+    font-size: 12px;
+}
+
+#transactionStatusTable td{
+    font-size: 12px !important;
+}
+
+#transactionStatusTable th,
+#transactionStatusTable td {
+    text-align: left !important; /* Align text to the right */
+}
+
+/* Remove borders from the table and its elements */
+#transactionStatusTable {
+    border: none;
+}
+#transactionStatusTable,
+#transactionStatusTable th,
+#transactionStatusTable td {
+    border: none !important;
+}
+
+#transactionStatusTable tbody tr {
+    border-bottom: 1px solid #ddd; /* Adjust color and thickness as needed */
+}
+
+#transactionStatusTable tbody tr:hover {
+    border-bottom: 1px solid #5D42F4;
+    box-shadow: -1px 5px 5px -3px rgba(0,0,0,0.35);
+    -webkit-box-shadow: -1px 5px 5px -3px rgba(0,0,0,0.35);
+    -moz-box-shadow: -1px 5px 5px -3px rgba(0,0,0,0.35);
+}
+/* TRANSACTION STATUS DATATABLES END----------------------------------------------------------------------- */
+
+
+/* ACKNOWLEDGEMENTS DATATABLES----------------------------------------------------------------------- */
+ /* Hide the table header */
+ #acknowledgementTable thead {
+    /* display: none; */
+    color: #8c88a2;
+    font-size: 12px;
+}
+
+#acknowledgementTable td{
+    font-size: 12px !important;
+}
+
+#acknowledgementTable th,
+#acknowledgementTable td {
+    text-align: left !important; /* Align text to the right */
+}
+
+/* Remove borders from the table and its elements */
+#acknowledgementTable {
+    border: none;
+}
+#acknowledgementTable,
+#acknowledgementTable th,
+#acknowledgementTable td {
+    border: none !important;
+}
+
+#acknowledgementTable tbody tr {
+    border-bottom: 1px solid #ddd; /* Adjust color and thickness as needed */
+}
+
+#acknowledgementTable tbody tr:hover {
+    border-bottom: 1px solid #5D42F4;
+    box-shadow: -1px 5px 5px -3px rgba(0,0,0,0.35);
+    -webkit-box-shadow: -1px 5px 5px -3px rgba(0,0,0,0.35);
+    -moz-box-shadow: -1px 5px 5px -3px rgba(0,0,0,0.35);
+}
+
+#acknowledgementTable td:nth-child(4),
+#acknowledgementTable th:nth-child(4) {
+    text-align: right !important; /* Align text to the right */
+    font-size: 10px !important;
+    color: #8c88a2;
+}
+
+#acknowledgementTable th:nth-child(4) {
+    display: none; /* Hide the header */
+}
+/* ACKNOWLEDGEMENTS DATATABLES END----------------------------------------------------------------------- */
+
 
 .bx-left-arrow-alt{
     transition: ease-in-out 200ms;
@@ -186,3 +276,17 @@ div.dt-container div.dt-info {
     background-color: #f1efff;
     border-radius: 100px;
 }
+
+
+/* CUSTOM BUTTON START----------------------------------------------------------------------- */
+/* .bxs-trash-alt:hover{
+    color: #ff3f3f !important;
+} */
+/* CUSTOM BUTTON START----------------------------------------------------------------------- */
+
+.select2-container{
+    z-index: 1095;
+}
+.swal2-container{
+    z-index: 1099 !important;
+  }

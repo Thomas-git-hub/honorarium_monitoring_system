@@ -11,7 +11,7 @@
                 <div class="card shadow-none bg-label-success">
                 <div class="card-body text-success">
                     <h5 class="card-title text-success">New Activated Accounts Today</h5>
-                    <h1 class="text-success">5</h1>
+                    <h1 class="text-success">{{ $newAccountsToday }}</h1>
                 </div>
                 </div>
             </div>
@@ -60,9 +60,9 @@
         ];
 
         var table = $('#facultyTable').DataTable({
-            data: data,
-            processing: false,
-            serverSide: false,
+            processing: true,
+            serverSide: true,
+            ajax: '{{ route('admin_faculty.list') }}',
             pageLength: 10,
             paging: true, // Disable pagination
 
@@ -72,12 +72,13 @@
                 searchPlaceholder: "Search..." // Set the placeholder text
             },
             columns: [
+                { data: 'id', name: 'id', title: 'ID', visible: false},
                 { data: 'faculty', name: 'faculty', title: 'Faculty' },
-                { data: 'id_number', name: 'id_number', title: 'ID Number' },
-                { data: 'academic_rank', name: 'academic_rank', title: 'academic_rank' },
+                { data: 'ee_number', name: 'ee_number', title: 'ID Number' },
+                { data: 'position', name: 'position', title: 'academic_rank' },
                 { data: 'college', name: 'college', title: 'College' },
-                { data: 'account_status', name: 'account_status', title: 'Account Status' },
-                // { data: 'action', name: 'action', title: 'Action' }
+                { data: 'status', name: 'status', title: 'Account Status' },
+                { data: 'created_at', name: 'created_at', title: 'Created At' },
             ],
             createdRow: function(row, data) {
                 // Add class to unopened rows
@@ -95,7 +96,7 @@
             }
 
             // Redirect to another page with full details (example)
-            window.location.href = `/admin_view_faculty?id=${rowData.id_number}`;
+            window.location.href = `/admin_view_faculty?id=${rowData.id}`;
         });
     });
 </script>

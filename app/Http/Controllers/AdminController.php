@@ -2,8 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Transaction;
+use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Yajra\DataTables\Facades\DataTables;
 
 class AdminController extends Controller
 {
@@ -20,49 +25,161 @@ class AdminController extends Controller
     }
 
     public function admin_faculty(){
-        return view('administration.admin_faculty');
+
+        $today = Carbon::today();
+        $newAccountsToday = DB::connection('mysql')->table('users')
+            ->whereDate('created_at', $today)
+            ->count();
+            return view('administration.admin_faculty', compact('newAccountsToday'));
     }
 
-    public function admin_view_faculty(){
-        return view('administration.admin_view_faculty');
+    public function admin_view_faculty(Request $request){
+        $id = $request->query('id');
+        $user = User::findOrFail($id);
+
+
+        $collegeDetails = DB::connection('ors_pgsql')->table('college')
+                ->where('id', $user->college_id)
+                ->first();
+        $college = $collegeDetails->college_name;
+
+        return view('administration.admin_view_faculty', compact('user', 'college'));
     }
 
     public function admin_honorarium(){
         return view('administration.admin_honorarium');
     }
 
+    /* ---------------------------------------NEW ENTRIES FUNCTIONS-------------------------------------------- */
     public function admin_new_entries(){
-        return view('administration.admin_new_entries');
+        $onQueue = Transaction::where('status', 'Processing')
+            ->count();
+        return view('administration.admin_new_entries', compact('onQueue'));
     }
+
 
     public function submitForm(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'faculty' => 'required|string',
-            'honorarium' => 'required|integer',
-            'date_received' => 'required|date',
-            'month' => 'required|integer',
-            'semester' => 'required|integer',
-            'year' => 'required|digits:4|integer',
-            'requirements' => 'required|string|in:complete,incomplete',
+            'date_of_trans' => 'required|date',
+            'employee_id' => 'required',
+            'honorarium_id' => 'required|exists:honorarium,id',
+            'sem' => 'required|string',
+            'year' => 'required|integer',
+            'month' => 'required|string',
+            'is_complete' => 'required',
         ]);
 
         if ($validator->fails()) {
-            return redirect()->back()->withErrors($validator)->withInput();
+            return response()->json(['success' => false,'errors' => $validator->errors()], 200);
         }
 
         // Process form data
-        // ...
 
-        return redirect()->back()->with('success', 'Form submitted successfully!');
+        $transaction = new Transaction();
+        $transaction->date_of_trans = $request->date_of_trans;
+        $transaction->employee_id = $request->employee_id;
+        $transaction->office = 'administration';
+        $transaction->honorarium_id = $request->honorarium_id;
+        $transaction->sem = $request->sem;
+        $transaction->year = $request->year;
+        $transaction->month = $request->month;
+        $transaction->is_complete = $request->is_complete;
+        $transaction->status = 'Processing';
+        $transaction->created_by = auth()->user()->id;
+        $transaction->save();
+
+        return response()->json(['success' => true, 'message' => 'Form submitted successfully.']);
     }
 
     public function admin_on_queue(){
-        return view('administration.admin_on_queue');
+        $onQueue = Transaction::where('status', 'Processing')
+            ->count();
+        return view('administration.admin_on_queue', compact('onQueue'));
     }
 
     public function admin_on_hold(){
         return view('administration.admin_on_hold');
+    }
+
+    public function list(Request $request)
+    {
+        $query = Transaction::with(['honorarium', 'createdBy'])->where('status', 'Processing');
+        $transactions = $query->get();
+        $ibu_dbcon = DB::connection('ors_pgsql');
+
+        $months = [
+            1 => 'January',
+            2 => 'February',
+            3 => 'March',
+            4 => 'April',
+            5 => 'May',
+            6 => 'June',
+            7 => 'July',
+            8 => 'August',
+            9 => 'September',
+            10 => 'October',
+            11 => 'November',
+            12 => 'December',
+        ];
+
+        return DataTables::of($transactions)
+            ->addColumn('id', function($data) {
+                return $data->id;
+            })
+            ->addColumn('faculty', function($data) use($ibu_dbcon) {
+                $employeeDetails = $ibu_dbcon->table('employee')
+                ->where('id', $data->employee_id)
+                ->first();
+                return ucfirst($employeeDetails->employee_fname) . ' ' . ucfirst($employeeDetails->employee_lname);
+            })
+            ->addColumn('id_number', function($data) use($ibu_dbcon) {
+                $employeeDetails = $ibu_dbcon->table('employee')
+                ->where('id', $data->employee_id)
+                ->first();
+                return ucfirst($employeeDetails->employee_no);
+            })
+            ->addColumn('academic_rank', function($data) use($ibu_dbcon) {
+                $employeeDetails = $ibu_dbcon->table('employee')
+                ->where('id', $data->employee_id)
+                ->first();
+                return ucfirst($employeeDetails->employee_academic_rank);
+            })
+
+            ->addColumn('college', function($data) use($ibu_dbcon) {
+                $employeeDetails = $ibu_dbcon->table('employee')
+                ->where('id', $data->employee_id)
+                ->first();
+
+                $collegeDetails = $ibu_dbcon->table('college')
+                ->where('id', $employeeDetails->college_id)
+                ->first();
+                return $collegeDetails->college_shortname ? $collegeDetails->college_shortname : '';
+            })
+
+            ->addColumn('honorarium', function($data) {
+                return $data->honorarium_id ? $data->honorarium->name : 'N/A';
+            })
+
+            ->addColumn('month', function($data) use ($months) {
+                // return $months[$data->month] ?? 'Unknown';
+                return [
+                    'month_number' => $data->month,
+                    'month_name' => $months[$data->month] ?? 'Unknown'
+                ];
+            })
+
+            ->addColumn('created_by', function($data) {
+                return $data->createdBy ? $data->createdBy->first_name  . ' ' . $data->createdBy->last_name: 'Unknown';
+            })
+            ->addColumn('action', function($data) {
+                $editButton = '<button type="button" class="btn btn-icon me-2 btn-label-success edit-btn"><span class="tf-icons bx bx-pencil bx-18px"></span></button>';
+                $on_holdButton = '<button type="button" class="btn btn-icon me-2 btn-label-danger on-hold-btn"><span class="tf-icons bx bxs-hand bx-18px"></span></button>';
+
+                return '<div class="d-flex flex-row" data-id="' . $data->id . '">' . $editButton . $on_holdButton . '</div>';
+            })
+
+            ->make(true);
     }
 
 }

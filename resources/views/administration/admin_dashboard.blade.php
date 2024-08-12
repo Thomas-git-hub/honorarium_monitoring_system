@@ -1,58 +1,57 @@
 @extends('components.app')
 
 @section('content')
-
-        {{-- <h1>Welcome to the BUGS Honorarium Monitoring System</h1>
+    {{-- <h1>Welcome to the BUGS Honorarium Monitoring System</h1>
         <p>This is the content of the admin dashboard.</p> --}}
-       <div class="row">
+    <div class="row">
         <div class="col">
             <div class="card" style="">
                 <div class="card-body">
-                  <h2 class="card-title">Honorarium Transaction</h2>
-                  <p class="card-text">Summary of Transaction</p>
-                  <div class="row gy-4">
-                    <div class="col-md">
-                        <a href="/">
-                            <div class="card shadow-none bg-label-primary">
-                                <div class="card-body text-primary">
-                                <h5 class="card-title text-primary">New Emails</h5>
-                                <p class="card-text fs-3 d-flex align-items-center">
-                                    <i class='bx bxs-envelope fs-3'>&nbsp;</i>128
-                                </p>
-                            </div>
-                        </a>
-                      </div>
+                    <h2 class="card-title">Honorarium Transaction</h2>
+                    <p class="card-text">Summary of Transaction</p>
+                    <div class="row gy-4">
+                        <div class="col-md">
+                            <a href="/">
+                                <div class="card shadow-none bg-label-primary">
+                                    <div class="card-body text-primary">
+                                        <h5 class="card-title text-primary">New Emails</h5>
+                                        <p class="card-text fs-3 d-flex align-items-center">
+                                            <i class='bx bxs-envelope fs-3'>&nbsp;</i>128
+                                        </p>
+                                    </div>
+                            </a>
+                        </div>
                     </div>
                     <div class="col-md">
                         <a href="">
                             <div class="card shadow-none bg-label-warning">
                                 <div class="card-body text-warning">
-                                <h5 class="card-title text-warning">On Queue Transactions</h5>
-                                <p class="card-text fs-3 d-flex align-items-center">
-                                    <i class='bx bx-list-ol fs-4'>&nbsp;</i>10
-                                </p>
-                            </div>
+                                    <h5 class="card-title text-warning">On Queue Transactions</h5>
+                                    <p class="card-text fs-3 d-flex align-items-center">
+                                        <i class='bx bx-list-ol fs-4'>&nbsp;</i>10
+                                    </p>
+                                </div>
                         </a>
-                      </div>
                     </div>
-                    <div class="col-md">
-                      <a href="">
+                </div>
+                <div class="col-md">
+                    <a href="">
                         <div class="card shadow-none bg-label-secondary">
                             <div class="card-body text-secondary">
-                            <h5 class="card-title text-secondary">On Hold Transactions</h5>
-                            <p class="card-text fs-3 d-flex align-items-center">
-                                <i class='bx bxs-error-alt fs-3'>&nbsp;</i>23
-                            </p>
+                                <h5 class="card-title text-secondary">On Hold Transactions</h5>
+                                <p class="card-text fs-3 d-flex align-items-center">
+                                    <i class='bx bxs-error-alt fs-3'>&nbsp;</i>23
+                                </p>
                             </div>
                         </div>
-                      </a>
-                    </div>
-                    </div>
-
+                    </a>
                 </div>
-              </div>
+            </div>
+
         </div>
-       </div>
+    </div>
+    </div>
+    </div>
 
     <div class="row mt-4">
         <div class="col">
@@ -87,10 +86,10 @@
                             <a href="">
                                 <div class="card shadow-none bg-label-primary">
                                     <div class="card-body text-secondary">
-                                    <h5 class="card-title text-secondary">On Hold Transactions</h5>
-                                    <p class="card-text fs-3 d-flex align-items-center">
-                                        <i class='bx bxs-error-alt fs-3'>&nbsp;</i>23
-                                    </p>
+                                        <h5 class="card-title text-secondary">On Hold Transactions</h5>
+                                        <p class="card-text fs-3 d-flex align-items-center">
+                                            <i class='bx bxs-error-alt fs-3'>&nbsp;</i>23
+                                        </p>
                                     </div>
                                 </div>
                             </a>
@@ -99,10 +98,10 @@
                             <a href="">
                                 <div class="card shadow-none bg-label-danger">
                                     <div class="card-body text-danger">
-                                    <h5 class="card-title text-danger">You haven't move your transaction for</h5>
-                                    <p class="card-text fs-3 d-flex align-items-center">
-                                        <i class='bx bxs-error-alt fs-3'>&nbsp;</i>3 Days
-                                    </p>
+                                        <h5 class="card-title text-danger">You haven't move your transaction for</h5>
+                                        <p class="card-text fs-3 d-flex align-items-center">
+                                            <i class='bx bxs-error-alt fs-3'>&nbsp;</i>3 Days
+                                        </p>
                                     </div>
                                 </div>
                             </a>
@@ -112,8 +111,4 @@
             </div>
         </div>
     </div>
-
 @endsection
-
-
-
