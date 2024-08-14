@@ -14,6 +14,7 @@
         <div class="modal-body">
           <h1 class="text-center text-danger">!</h1>
           <p class="text-center">"Proceeding with this transaction indicates that the individual has submitted all necessary requirements for their honorarium."</p>
+          <h5 class="text-center text-danger">Transaction ID No. = <b>002-08122024</b></h5>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-label-danger" data-bs-dismiss="modal"><i class='bx bxs-x-circle'></i></button>
@@ -61,7 +62,7 @@
 @section('components.specific_page_scripts')
 
 {{--FACULTY DATATABLES START --}}
-<script>
+{{-- <script>
     $(function () {
         var data = [
             {
@@ -106,9 +107,47 @@
             ],
         });
     });
+</script> --}}
+
+<script>
+    var table = $('#facultyTable').DataTable({
+            processing: true,
+            serverSide: true,
+            ajax: '{{ route('on_hold_status') }}',
+            pageLength: 10,
+            paging: true,
+            dom: '<"top"lf>rt<"bottom"ip>',
+            language: {
+                search: "",
+                searchPlaceholder: "Search..."
+            },
+            columns: [
+                { data: 'id', name: 'id', title: 'ID', visible: false},
+                { data: 'date_of_trans', name: 'date_of_trans', title: 'Date Received' },
+                { data: 'faculty', name: 'faculty', title: 'Faculty' },
+                { data: 'id_number', name: 'id_number', title: 'ID Number' },
+                { data: 'academic_rank', name: 'academic_rank', title: 'Academic Rank' },
+                { data: 'college', name: 'college', title: 'College' },
+                { data: 'honorarium', name: 'honorarium', title: 'Honorarium' },
+                { data: 'sem', name: 'sem', title: 'Semester' },
+                { data: 'year', name: 'year', title: 'Semester Year' },
+                { data: 'month.month_name', name: 'month', title: 'Month Of' },
+                { data: 'created_by', name: 'created_by', title: 'Created By' },
+                { data: 'action', name: 'action', title: 'Action' }
+            ],
+            order: [[0, 'desc']], // Sort by date_received column by default
+            columnDefs: [
+                {
+                    type: 'date',
+                    targets: [0, 1] // Apply date sorting to date_received and date_on_hold columns
+                }
+            ],
+            createdRow: function(row, data) {
+                $(row).addClass('unopened');
+            }
+        });
+
 </script>
-
-
 
 
 @endsection

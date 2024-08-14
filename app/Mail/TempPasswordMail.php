@@ -14,13 +14,15 @@ class TempPasswordMail extends Mailable
     use Queueable, SerializesModels;
 
     public $password;
+    public $email;
 
     /**
      * Create a new message instance.
      */
-    public function __construct($password)
+    public function __construct($password, $email)
     {
         $this->password = $password;
+        $this->email = $email;
     }
 
     /**

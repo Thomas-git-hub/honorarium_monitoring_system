@@ -198,7 +198,7 @@
                 { data: 'name', title: 'Honorarium' },
                 { data: 'status', title: 'Status' },
                 { data: 'created_at', title: 'Date Added' },
-                { data: 'updated_at', title: 'Updated At' },
+                { data: 'updated_at', title: 'Updated Last' },
                 { data: 'action', title: 'Action' }
             ]
         });

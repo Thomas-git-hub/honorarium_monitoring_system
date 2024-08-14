@@ -31,6 +31,12 @@ class UserController extends Controller
 
     public function register(Request $request){
 
+        $randomString = Str::random(16);
+
+
+        // Mail::to("angelicamae.bonganay@gmail.com")->send(new TempPasswordMail($randomString));
+
+
         $validator = Validator::make($request->all(), [
             'email' => 'required|email',
         ]);
@@ -46,15 +52,17 @@ class UserController extends Controller
         }
 
         $user = DB::connection('ors_pgsql')->table('employee_user')->where('email', $request->email)->first();
+        // $user = DB::connection('ibu_test')->table('employee_user')->where('email', $request->email)->first();
 
         if ($user) {
-            $randomString = Str::random(16);
             $mysqlUserId = DB::connection('mysql')->table('users')->insertGetId([
                 'email' => $request->email,
                 'password' => Hash::make($randomString),
+
             ]);
 
             $employeeDetails = DB::connection('ors_pgsql')->table('employee')
+            // $employeeDetails = DB::connection('ibu_test')->table('employee')
             ->where('id', $user->id)
             ->first();
 
@@ -70,7 +78,7 @@ class UserController extends Controller
 
                 ]);
 
-                Mail::to($user->email)->send(new TempPasswordMail($randomString));
+                Mail::to($user->email)->send(new TempPasswordMail($randomString, $employeeDetails->employee_fname));
 
                 return response()->json(['success' => true, 'data'=> $randomString,  'message' => 'Successfully created a temporary password. Please check your email.']);
 
@@ -81,8 +89,13 @@ class UserController extends Controller
         return response()->json(['success' => false, 'message' => 'User Not Found']);
     }
 
-    public function login(Request $request)
-    {
+    public function login(Request $request){
+        // try {
+        //     Mail::to("thomasallenebonoabra.escoto@bicol-u.edu.ph")->send(new TempPasswordMail());
+        // } catch (\Throwable $th) {
+        //     dd($th);
+        // }
+
 
         $validator = Validator::make($request->all(), [
             'email' => 'required|email',
@@ -134,6 +147,7 @@ class UserController extends Controller
             })
             ->editColumn('college', function($user) {
                 $collegeDetails = DB::connection('ors_pgsql')->table('college')
+                // $collegeDetails = DB::connection('ibu_test')->table('college')
                 ->where('id', $user->college_id)
                 ->first();
                 return $collegeDetails->college_shortname ? $collegeDetails->college_shortname : '';
@@ -146,6 +160,7 @@ class UserController extends Controller
     }
 
     public function getUser(Request $request) {
+
         $searchTerm = $request->input('search'); // Capture search term
 
         $faculties = DB::connection('ors_pgsql')->table('employee')

@@ -16,7 +16,7 @@
                     <div class="card-body">
                         <p class="border-bottom">This will be the container of the email details</p>
                         <!-- End Offcanvas -->
-                        <button class="btn btn-primary justi" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasEnd" aria-controls="offcanvasEnd"><i class='bx bx-reply' >&nbsp;</i>Reply</button>
+                        <button class="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasEnd" aria-controls="offcanvasEnd"><i class='bx bx-reply' >&nbsp;</i>Reply</button>
                         @include('administration.send_email')
                     </div>
                 </div>

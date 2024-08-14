@@ -13,8 +13,8 @@ class QueueController extends Controller
 {
     public function proceedToBudgetOffice(Request $request){
 
-        // $ibu_dbcon = DB::connection('ibu_test');
-        $ibu_dbcon = DB::connection('ors_pgsql');
+        $ibu_dbcon = DB::connection('ibu_test');
+        // $ibu_dbcon = DB::connection('ors_pgsql');
 
         // Fetch all transactions with status 'Processing'
         $transactions = Transaction::where('status', 'Processing')->get();

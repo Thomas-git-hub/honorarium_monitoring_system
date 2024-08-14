@@ -11,17 +11,12 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <h1 class="text-center text-warning"><i class='bx bxs-envelope fs-3'></i></h1>
-          <p class="text-center text-warning fw-bold fs-4">You are about to send {{$onQueue}} Honorarium Transactions to Budget Office.</p>
-          <p class="text-center">"Proceeding with this transaction indicates that every individual has submitted all necessary requirements for their honorarium."</p>
-
-          {{-- Note: The ID No. consists of id-number month, day and year --}}
-          <h5 class="text-center text-danger">Transaction Batch ID No. = <b>002-08122024</b></h5>
-
-        </div>
+            <h1 class="text-center text-success"><i class='bx bxs-badge-check fs-3' ></i></h1>
+            <p class="text-center text-success fw-bold fs-4">Transaction Acknowledged!</p>
+          </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-label-danger" data-bs-dismiss="modal"><i class='bx bxs-x-circle'></i></button>
-          <button type="button" id="proceed_transaction" class="btn btn-primary gap-1">Proceed to Budget Office<i class='bx bx-chevrons-right'></i></button>
+          <a href="/admin_on_queue" class="btn btn-primary gap-1">Open In Queue Table<i class='bx bx-chevrons-right'></i></a>
         </div>
       </div>
     </div>
@@ -36,80 +31,78 @@
                 <h5 class="modal-title" id="editEntryModalLabel">Edit Entry</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-        <form id="editForm">
-            @csrf
             <div class="modal-body">
-                <input type="hidden" class="form-control" id="editid" name="id">
-                <div class="mb-3">
-                    <label for="editDateReceived" class="form-label">Date Received</label>
-                    <input type="text" class="form-control" id="editDateReceived" disabled>
-                </div>
-                <div class="mb-3">
-                    <label for="editFaculty" class="form-label">Faculty</label>
-                    <input type="text" class="form-control" id="editFaculty" disabled>
-                </div>
-                <div class="mb-3">
-                    <label for="editIdNumber" class="form-label">ID Number</label>
-                    <input type="text" class="form-control" id="editIdNumber" disabled>
-                </div>
-                <div class="mb-3">
-                    <label for="editAcademicRank" class="form-label">Academic Rank</label>
-                    <input type="text" class="form-control" id="editAcademicRank" disabled>
-                </div>
-                <div class="mb-3">
-                    <label for="editCollege" class="form-label">College</label>
-                    <input type="text" class="form-control" id="editCollege" disabled>
-                </div>
-                <div class="mb-3">
-                    <label for="editHonorarium" class="form-label">Honorarium</label>
-                    <select type="text" class="form-control" id="editHonorarium" name="honorarium_id"></select>
-                </div>
-                <div class="mb-3">
-                    <label for="editSemester" class="form-label">Select Semester</label>
-                    <select class="form-select" id="editSemester" name="sem">
-                        <option value="First Semester">First Semester</option>
-                        <option value="Second Semester">Second Semester</option>
-                        <option value="Summer Term">Summer Term</option>
-                    </select>
-                </div>
-                <div class="mb-3">
+                <form id="editForm">
                     <div class="mb-3">
-                        <label for="flatpickr-date" class="form-label">Semester Year</label>
-                        {{-- <input type="text" class="form-control flatpickr-date" placeholder="YYYY" id="yearPicker" name="year" /> --}}
-                        <select id="editSemesterYear" class="form-select" placeholder="YYYY" id="yearPicker" name="year">
-                            {{-- <option selected disabled>YYYY</option> --}}
-                            @for ($i = date('Y'); $i >= 2012; $i--)
-                                <option value="{{ $i }}">{{ $i }}</option>
-                            @endfor
+                        <label for="editDateReceived" class="form-label">Date Received</label>
+                        <input type="text" class="form-control" id="editDateReceived" disabled>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editFaculty" class="form-label">Faculty</label>
+                        <input type="text" class="form-control" id="editFaculty" disabled>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editIdNumber" class="form-label">ID Number</label>
+                        <input type="text" class="form-control" id="editIdNumber" disabled>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editAcademicRank" class="form-label">Academic Rank</label>
+                        <input type="text" class="form-control" id="editAcademicRank" disabled>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editCollege" class="form-label">College</label>
+                        <input type="text" class="form-control" id="editCollege" disabled>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editHonorarium" class="form-label">Honorarium</label>
+                        <select type="text" class="form-control" id="editHonorarium" name="honorarium_id"></select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editSemester" class="form-label">Select Semester</label>
+                        <select class="form-select" id="editSemester">
+                            <option value="First Semester">First Semester</option>
+                            <option value="Second Semester">Second Semester</option>
+                            <option value="Summer Term">Summer Term</option>
                         </select>
                     </div>
-                    {{-- <label for="editSemesterYear" class="form-label">Semester Year</label>
-                    <select type="text" class="form-control" id="editSemesterYear" placeholder="YYYY"></select> --}}
-                </div>
-                <div class="mb-5">
-                    <label for="editMonthOf" class="form-label">For the Month of</label>
-                    <select class="form-select" id="editMonthOf" name="month">
-                        <option value="1">January</option>
-                        <option value="2">February</option>
-                        <option value="3">March</option>
-                        <option value="4">April</option>
-                        <option value="5">May</option>
-                        <option value="6">June</option>
-                        <option value="7">July</option>
-                        <option value="8">August</option>
-                        <option value="9">September</option>
-                        <option value="10">October</option>
-                        <option value="11">November</option>
-                        <option value="12">December</option>
-                    </select>
-                </div>
-                <input type="hidden" id="editRowIndex">
+                    <div class="mb-3">
+                        <div class="mb-3">
+                            <label for="flatpickr-date" class="form-label">Semester Year</label>
+                            {{-- <input type="text" class="form-control flatpickr-date" placeholder="YYYY" id="yearPicker" name="year" /> --}}
+                            <select id="editSemesterYear" class="form-select" placeholder="YYYY" id="yearPicker" name="year">
+                                {{-- <option selected disabled>YYYY</option> --}}
+                                @for ($i = date('Y'); $i >= 2012; $i--)
+                                    <option value="{{ $i }}">{{ $i }}</option>
+                                @endfor
+                            </select>
+                        </div>
+                        {{-- <label for="editSemesterYear" class="form-label">Semester Year</label>
+                        <select type="text" class="form-control" id="editSemesterYear" placeholder="YYYY"></select> --}}
+                    </div>
+                    <div class="mb-5">
+                        <label for="editMonthOf" class="form-label">For the Month of</label>
+                        <select class="form-select" id="editMonthOf">
+                            <option value="1">January</option>
+                            <option value="2">February</option>
+                            <option value="3">March</option>
+                            <option value="4">April</option>
+                            <option value="5">May</option>
+                            <option value="6">June</option>
+                            <option value="7">July</option>
+                            <option value="8">August</option>
+                            <option value="9">September</option>
+                            <option value="10">October</option>
+                            <option value="11">November</option>
+                            <option value="12">December</option>
+                        </select>
+                    </div>
+                    <input type="hidden" id="editRowIndex">
+                </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-label-danger" data-bs-dismiss="modal"><i class='bx bxs-x-circle'></i></button>
-                <button type="submit" class="btn btn-primary" id="saveChanges">Save changes</button>
+                <button type="button" class="btn btn-primary" id="saveChanges">Save changes</button>
             </div>
-        </form>
         </div>
     </div>
 </div>
@@ -163,26 +156,49 @@
   </div>
 {{-- MESSAGE MODAL END --}}
 
-<div class="row mt-4">
-    <h4 class="card-title text-secondary">In Queue</h4>
-</div>
-
-<div class="row mt-4 gap-3">
+<div class="row">
     <div class="col-md">
-        <div class="card shadow-none bg-label-primary">
-            <div class="card-body text-primary">
-                <h5 class="card-title text-primary">For Honorarium Transactions</h5>
-                <h1 class="text-primary">{{$onQueue}}</h1>
+        <div class="card shadow-none">
+            <div class="card-body">
+                <div class="row mb-3"><a class=""><i class='bx bx-left-arrow-alt text-primary' id="navigatePrevious" style="font-size: 2em; cursor: pointer;"></i></a></div>
+
+                <h4 class="d-flex align-items-center"><i class='bx bx-list-ul'  style="font-size: 32px;"></i>Batch Transaction Details</h4>
+                <div class="row">
+                    <div class="col-md">
+                        <div class="alert alert-danger">
+                            Batch ID Number: <b>001-08072024</b>
+                        </div>
+                    </div>
+                    <div class="col-md">
+                        <div class="alert alert-success">
+                            From: <b>Budget Office</b>
+                        </div>
+                    </div>
+                    <div class="col-md">
+                        <div class="alert alert-warning">
+                            Recieved Date: <b>August 07, 2024 </b>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="card shadow-none bg-label-secondary">
+                    <div class="card-body">
+                        <h5 class="card-title text-secondary">For Honorarium Transactions</h5>
+                        {{-- <h1 class="text-primary">{{$onQueue}}</h1> --}}
+                        <h1 class="text-secondary">07</h1>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-<div class="row mt-4">
+<div class="row mt-3">
     <div class="col">
-        <div class="row mb-2">
+        <div class="row mb-3">
             <div class="col-md mx-auto d-flex justify-content-end">
-                <button type="button" class="btn btn-primary gap-1" data-bs-toggle="modal" data-bs-target="#proceed">Proceed to Budget Office<i class='bx bx-chevrons-right'></i></button>
+                <button type="button" class="btn btn-primary gap-1" data-bs-toggle="modal" data-bs-target="#proceed">Acknowledge Transaction<i class='bx bx-chevrons-right'></i></button>
             </div>
         </div>
 
@@ -207,6 +223,21 @@
 {{--FACULTY DATATABLES START --}}
 <script>
     $(function () {
+        // var data = [
+        //     {
+        //         date_received: '<p>07/26/2024</p>',
+        //         faculty: '<p class="text-primary">John Doe</p>',
+        //         id_number: '<p class="text-primary">1-id-no-2024</p>',
+        //         academic_rank: '<span class="badge bg-label-primary">Associate Professor II</span>',
+        //         college: '<p>College of Arts</p>',
+        //         honorarium: '<p>honorarium here</p>',
+        //         semester: '<p class="text-success">First Semester</p>',
+        //         semester_year: '<p>2024</p>',
+        //         month_of: '<p>July</p>',
+        //         action: '<div class="d-flex flex-row"> <button type="button" class="btn btn-icon me-2 btn-label-success edit-btn"><span class="tf-icons bx bx-pencil bx-18px"></span></button><button type="button" class="btn btn-icon me-2 btn-label-danger on-hold-btn" data-bs-toggle="modal" data-bs-target="#onHoldMessage"><span class="tf-icons bx bxs-hand bx-18px"></span></button> </div>',
+        //     },
+        //     // More data...
+        // ];
 
         var table = $('#facultyTable').DataTable({
             processing: true,
@@ -251,7 +282,6 @@
             var rowData = table.row(row).data();
 
             // Populate modal fields
-            $('#editid').val(rowData.id);
             $('#editDateReceived').val(rowData.date_of_trans);
             $('#editFaculty').val(rowData.faculty.replace(/<[^>]+>/g, ''));
             $('#editIdNumber').val(rowData.id_number.replace(/<[^>]+>/g, ''));
@@ -310,62 +340,38 @@
             $('#editEntryModal').modal('show');
         });
 
-        // Handle On-Hold button click
-        $('#facultyTable').on('click', '.on-hold-btn', function(e) {
-            e.preventDefault();
-            var row = $(this).closest('tr');
-            var rowData = table.row(row).data();
+        // Handle Save Changes button click
+        $('#saveChanges').on('click', function() {
+            var rowIndex = $('#editRowIndex').val();
+            var row = table.row(rowIndex);
 
-            // var transactionId = rowData.id; // Adjust if necessary
+            // Update row data
+            var updatedData = {
+                date_received: $('#editDateReceived').val(),
+                faculty: '<strong class="text-primary">' + $('#editFaculty').val() + '</strong>',
+                id_number: '<p class="text-primary">' + $('#editIdNumber').val() + '</p>',
+                academic_rank: '<span class="badge bg-label-primary">' + $('#editAcademicRank').val() + '</span>',
+                college: $('#editCollege').val(),
+                honorarium: $('#editHonorarium').val(),
+                semester: '<p class="text-success">' +
+                    ($('#editSemester').val() == '1' ? 'First Semester' :
+                    ($('#editSemester').val() == '2' ? 'Second Semester' : 'Summer Term')) +
+                    '</p>',
+                semester_year: $('#editSemesterYear').val(),
+                month_of: Object.keys({
+                    '0': 'January', '1': 'February', '2': 'March', '3': 'April',
+                    '4': 'May', '5': 'June', '6': 'July', '7': 'August',
+                    '8': 'September', '9': 'October', '10': 'November', '11': 'December'
+                })[$('#editMonthOf').val()],
+                action: '<div class="d-flex flex-row"> <button type="button" class="btn btn-icon me-2 btn-label-success edit-btn"><span class="tf-icons bx bx-pencil bx-18px"></span></button><button type="button" class="btn btn-icon me-2 btn-label-danger on-hold-btn"><span class="tf-icons bx bxs-hand bx-18px"></span></button> </div>'
+            };
 
-            Swal.fire({
-                title: 'Are you sure?',
-                text: "The transaction will be put on hold.",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Continue',
-                cancelButtonText: 'Cancel'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    $.ajax({
-                        url: '{{ route('admin_on_queue.change_to_onhold') }}',
-                        type: 'POST',
-                        data: {
-                            id: rowData.id,
-                            _token: $('meta[name="csrf-token"]').attr('content') // Include CSRF token
-                        },
-                        success: function(response) {
-                            if (response.success) {
-                                Swal.fire(
-                                    'On-hold!',
-                                    response.message,
-                                    'success'
-                                );
-                                // Refresh the DataTable to reflect changes
-                                table.ajax.reload(null, false);
-                            } else {
-                                Swal.fire(
-                                    'Error!',
-                                    response.message,
-                                    'error'
-                                );
-                            }
-                        },
-                        error: function(xhr, status, error) {
-                            Swal.fire(
-                                'Error!',
-                                'An error occurred while updating the transaction.',
-                                'error'
-                            );
-                        }
-                    });
-                }
-            });
+            // Update DataTable
+            row.data(updatedData).draw();
+
+            // Hide modal
+            $('#editEntryModal').modal('hide');
         });
-
-
     });
 </script>
 
@@ -421,80 +427,41 @@
 <script>
     $(document).ready(function() {
 
-        // Handle Proceed button click
         $('#proceed_transaction').on('click', function() {
-            $.ajax({
-                url: '{{ route('admin_on_queue.proceedToBudgetOffice') }}',
-                method: 'POST',
-                data: {
-                    _token: $('meta[name="csrf-token"]').attr('content'),
-                },
-                success: function(response) {
-                    if(response.success){
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Success',
-                            text: response.message,
-                        });
-                    }else{
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Oh no!',
-                            text: response.message,
-                        });
-
-                    }
-                    $('#facultyTable').DataTable().ajax.reload();
-                },
-                error: function(xhr) {
-                    // Handle error
+        $.ajax({
+            url: '{{ route('admin_on_queue.proceedToBudgetOffice') }}',
+            method: 'POST',
+            data: {
+                _token: $('meta[name="csrf-token"]').attr('content'),  // Ensure CSRF token is included
+            },
+            success: function(response) {
+                // Handle success (e.g., show a success message using SweetAlert)
+                if(response.success){
                     Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: 'There was a problem updating the transactions.',
-                    });
-                }
-            });
-        });
-
-        // Handle Save Changes button click
-        $('#editForm').on('submit', function(e) {
-            e.preventDefault();
-            var formData = $(this).serialize();
-
-            $.ajax({
-                url: '{{ route('admin_on_queue.update') }}',
-                type: 'POST',
-                data: formData,
-                success: function(response) {
-                if (response.success) {
-                    Swal.fire({
-                        title: 'Success!',
-                        text: response.message,
                         icon: 'success',
-                        confirmButtonText: 'OK'
+                        title: 'Success',
+                        text: response.message,
                     });
-
-                    $('#editEntryModal').modal('hide');
-                    $('#facultyTable').DataTable().ajax.reload();
-                } else {
-                    var errors = response.errors;
-                    $.each(errors, function(key, value) {
-                        $('#' + key + 'Error').text(value[0]);
-                    });
-                }
-                },
-                error: function(xhr, status, error) {
+                }else{
                     Swal.fire({
-                        title: 'Error!',
-                        text: 'An error occurred while updating the transaction.',
                         icon: 'error',
-                        confirmButtonText: 'OK'
+                        title: 'Oh no!',
+                        text: response.message,
                     });
-                }
-            });
 
+                }
+                $('#facultyTable').DataTable().ajax.reload();
+            },
+            error: function(xhr) {
+                // Handle error
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'There was a problem updating the transactions.',
+                });
+            }
         });
+    });
 
     });
 </script>

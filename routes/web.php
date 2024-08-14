@@ -11,6 +11,7 @@ use App\Http\Controllers\HistoryController;
 use App\Http\Controllers\QueueController;
 use App\Http\Controllers\SendEmailController;
 use App\Models\Honorarium;
+use App\Http\Controllers\OnHoldController;
 
 
 Route::middleware(['guest'])->group(function () {
@@ -25,6 +26,7 @@ Route::middleware(['guest'])->group(function () {
 Route::middleware(['auth_check'])->group(function () {
     Route::post('/logout', [UserController::class, 'logout'])->name('logout');
     Route::get('/getUser', [UserController::class, 'getUser'])->name('getUser');
+    Route::post('/test', [UserController::class, 'test'])->name('test');
 
     Route::get('/admin_dashboard', [AdminController::class, 'admin_dashboard'])->name("admin_dashboard");
     Route::get('/admin_email', [AdminController::class, 'admin_email'])->name("admin_email");
@@ -51,14 +53,17 @@ Route::middleware(['auth_check'])->group(function () {
 
     Route::get('/admin_on_queue', [AdminController::class, 'admin_on_queue'])->name('admin_on_queue');
     Route::get('/admin_on_hold', [AdminController::class, 'admin_on_hold'])->name('admin_on_hold');
+    Route::get('/transactions/on-hold', [OnHoldController::class, 'getOnHoldTransactions'])->name('on_hold_status');
     Route::post('/admin_on_queue/proceed_to_budget-office', [QueueController::class, 'proceedToBudgetOffice'])->name('admin_on_queue.proceedToBudgetOffice');
 
     Route::get('/for_acknowledgement', [ForAcknowledgementController::class, 'for_acknowledgement'])->name('for_acknowledgement');
     Route::get('/open_acknowledgement', [OpenAcknowledgementController::class, 'open_acknowledgement'])->name('open_acknowledgement');
 
-    Route::get('/history', [HistoryController::class, 'history'])->name('history')->name('history');
+    Route::get('/history', [HistoryController::class, 'history'])->name('history');
+    Route::get('/open_history', [HistoryController::class, 'open_history'])->name('open_history');
 
     Route::match(['post', 'put'], 'admin_on_queue/update', [QueueController::class, 'update'])->name('admin_on_queue.update');
     Route::match(['post', 'put'], 'admin_on_queue/change_to_onhold', [QueueController::class, 'change_to_onhold'])->name('admin_on_queue.change_to_onhold');
+
 });
 
