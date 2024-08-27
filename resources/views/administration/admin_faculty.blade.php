@@ -16,6 +16,7 @@
                 </div>
             </div>
         </div>
+        <h1>hello</h1>
         <div class="row mt-4">
             <div class="col">
                 <div class="card custom-card">
@@ -23,6 +24,7 @@
                         <div class="table-responsive">
                             <table id="facultyTable" class="table table-borderless table-hover" style="width:100%">
                                 <tbody>
+
                                 </tbody>
                             </table>
                         </div>
