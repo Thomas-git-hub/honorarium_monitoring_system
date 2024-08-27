@@ -12,8 +12,9 @@ use App\Http\Controllers\QueueController;
 use App\Http\Controllers\SendEmailController;
 use App\Models\Honorarium;
 use App\Http\Controllers\OnHoldController;
+use App\Http\Controllers\ProfileController;
 
-
+//START NO AUTHENTICATED ACCESS
 Route::middleware(['guest'])->group(function () {
 
     Route::get('/', [UserController::class, 'index'])->name("login")->name("login");
@@ -21,12 +22,17 @@ Route::middleware(['guest'])->group(function () {
     Route::get('/registration', [UserController::class, 'registration'])->name("registration");
     Route::post('/register', [UserController::class, 'register'])->name('form.register');
 });
+//END NO AUTHENTICATED ACCESS
 
+
+//START AUTHENTICATED ACCESS
 
 Route::middleware(['auth_check'])->group(function () {
-    Route::post('/logout', [UserController::class, 'logout'])->name('logout');
-    Route::get('/getUser', [UserController::class, 'getUser'])->name('getUser');
+
     Route::post('/test', [UserController::class, 'test'])->name('test');
+
+    Route::get('/profile', [ProfileController::class, 'profile'])->name('profile');
+    Route::post('/logout', [UserController::class, 'logout'])->name('logout');
 
     Route::get('/admin_dashboard', [AdminController::class, 'admin_dashboard'])->name("admin_dashboard");
     Route::get('/admin_email', [AdminController::class, 'admin_email'])->name("admin_email");
@@ -34,36 +40,51 @@ Route::middleware(['auth_check'])->group(function () {
     Route::post('/send_email', [SendEmailController::class, 'send_email'])->name("send_email");
 
     Route::get('/sent_items', [AdminController::class, 'admin_open_email'])->name("admin_open_email");
-
-    Route::get('/admin_faculty', [AdminController::class, 'admin_faculty'])->name("admin_faculty");
-    Route::get('/admin_view_faculty', [AdminController::class, 'admin_view_faculty'])->name("admin_view_faculty");
-    Route::get('/admin_faculty/list', [UserController::class, 'list'])->name("admin_faculty.list");
-
     Route::get('/sent_items', [SentItemsController::class, 'sent_items'])->name("sent_items");
 
-    Route::get('/admin_honorarium', [AdminController::class, 'admin_honorarium'])->name("admin_honorarium");
-    Route::get('/admin_honorarium/list', [HonorariumController::class, 'list'])->name("admin_honorarium.list");
-    Route::post('/admin_honorarium/store', [HonorariumController::class, 'store'])->name("admin_honorarium.store");
-    Route::post('/admin/honorarium/update/{id}', [HonorariumController::class, 'update'])->name('admin_honorarium.update');
-    Route::get('/admin/honorarium/getHonorarium', [HonorariumController::class, 'getHonorarium'])->name('getHonorarium');
+    //START SUPERADMIN ACCESS
 
-    Route::get('/admin_new_entries', [AdminController::class, 'admin_new_entries'])->name("admin_new_entries");
-    Route::get('/admin_new_entries/list', [AdminController::class, 'list'])->name("admin_new_entries.list");
-    Route::post('/form/submit', [AdminController::class, 'submitForm'])->name('form.submit');
+    Route::middleware(['Superadmin'])->group(function () {
 
-    Route::get('/admin_on_queue', [AdminController::class, 'admin_on_queue'])->name('admin_on_queue');
-    Route::get('/admin_on_hold', [AdminController::class, 'admin_on_hold'])->name('admin_on_hold');
-    Route::get('/transactions/on-hold', [OnHoldController::class, 'getOnHoldTransactions'])->name('on_hold_status');
-    Route::post('/admin_on_queue/proceed_to_budget-office', [QueueController::class, 'proceedToBudgetOffice'])->name('admin_on_queue.proceedToBudgetOffice');
+        Route::get('/getUser', [UserController::class, 'getUser'])->name('getUser');
 
-    Route::get('/for_acknowledgement', [ForAcknowledgementController::class, 'for_acknowledgement'])->name('for_acknowledgement');
-    Route::get('/open_acknowledgement', [OpenAcknowledgementController::class, 'open_acknowledgement'])->name('open_acknowledgement');
+        Route::get('/admin_faculty', [AdminController::class, 'admin_faculty'])->name("admin_faculty");
+        Route::get('/admin_view_faculty', [AdminController::class, 'admin_view_faculty'])->name("admin_view_faculty");
+        Route::get('/admin_faculty/list', [UserController::class, 'list'])->name("admin_faculty.list");
 
-    Route::get('/history', [HistoryController::class, 'history'])->name('history');
-    Route::get('/open_history', [HistoryController::class, 'open_history'])->name('open_history');
+        Route::get('/admin_honorarium', [AdminController::class, 'admin_honorarium'])->name("admin_honorarium");
+        Route::get('/admin_honorarium/list', [HonorariumController::class, 'list'])->name("admin_honorarium.list");
+        Route::post('/admin_honorarium/store', [HonorariumController::class, 'store'])->name("admin_honorarium.store");
+        Route::post('/admin/honorarium/update/{id}', [HonorariumController::class, 'update'])->name('admin_honorarium.update');
+        Route::get('/admin/honorarium/getHonorarium', [HonorariumController::class, 'getHonorarium'])->name('getHonorarium');
 
-    Route::match(['post', 'put'], 'admin_on_queue/update', [QueueController::class, 'update'])->name('admin_on_queue.update');
-    Route::match(['post', 'put'], 'admin_on_queue/change_to_onhold', [QueueController::class, 'change_to_onhold'])->name('admin_on_queue.change_to_onhold');
+        Route::get('/admin_new_entries', [AdminController::class, 'admin_new_entries'])->name("admin_new_entries");
+        Route::get('/admin_new_entries/list', [AdminController::class, 'list'])->name("admin_new_entries.list");
+        Route::post('/form/submit', [AdminController::class, 'submitForm'])->name('form.submit');
+        Route::post('/submit/onHold', [AdminController::class, 'submitOnHold'])->name('submit.onHold');
+        Route::post('insertFormData', [SendEmailController::class, 'reply_send'])->name('insertFormData');
+
+        Route::get('/admin_on_queue', [AdminController::class, 'admin_on_queue'])->name('admin_on_queue');
+        Route::get('/admin_on_hold', [AdminController::class, 'admin_on_hold'])->name('admin_on_hold');
+        Route::post('/admin_on_queue/proceed_to_budget-office', [QueueController::class, 'proceedToBudgetOffice'])->name('admin_on_queue.proceedToBudgetOffice');
+        Route::match(['post', 'put'], 'admin_on_queue/update', [QueueController::class, 'update'])->name('admin_on_queue.update');
+        Route::match(['post', 'put'], 'admin_on_queue/change_to_onhold', [QueueController::class, 'change_to_onhold'])->name('admin_on_queue.change_to_onhold');
+
+        Route::get('/for_acknowledgement', [ForAcknowledgementController::class, 'for_acknowledgement'])->name('for_acknowledgement');
+        Route::get('/open_acknowledgement', [OpenAcknowledgementController::class, 'open_acknowledgement'])->name('open_acknowledgement');
+        Route::get('/for_acknowledgement/list', [ForAcknowledgementController::class, 'list'])->name("for_acknowledgement.list");
+
+        Route::get('/transactions/on-hold', [OnHoldController::class, 'getOnHoldTransactions'])->name('on_hold_status');
+        Route::post('/save/onHold', [OnHoldController::class, 'saveOnHold'])->name('saveOnHold');
+
+        Route::get('/history', [HistoryController::class, 'history'])->name('history');
+        Route::get('/open_history', [HistoryController::class, 'open_history'])->name('open_history');
+
+    });
+
+    //END SUPERADMIN ACCESS
 
 });
+
+//END AUTHENTICATED ACCESS
 

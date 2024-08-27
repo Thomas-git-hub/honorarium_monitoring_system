@@ -10,7 +10,7 @@
             <div class="card custom-card">
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table id="historyTable" class="table table-borderless" style="width:100%">
+                        <table id="historyTable" class="table table-borderless table-hover" style="width:100%">
                             <tbody>
                             </tbody>
                         </table>

@@ -36,27 +36,36 @@
               <div class="text-truncate" data-i18n="Page 2">Sent Items</div>
             </a>
         </li>
+        @if(Auth::user()->usertype->name !== 'Faculties')
         <li class="menu-item">
           <div style="margin-left: 5%; margin-top: 5%; color: #b4b0c4;">Transaction</div>
         </li>
+        @endif
+        @if(Auth::user()->usertype->name === 'Admin' || Auth::user()->usertype->name === 'Superadmin')
         <li class="menu-item {{ request()->is('admin_honorarium') ? 'active' : '' }}">
             <a href="/admin_honorarium" class="menu-link">
               <i class='menu-icon tf-icons bx bx-list-plus'></i>
               <div class="text-truncate" data-i18n="Page 2">Honorarium</div>
             </a>
         </li>
+        @endif
+        @if(Auth::user()->usertype->name === 'Admin' || Auth::user()->usertype->name === 'Superadmin')
         <li class="menu-item {{ request()->is('admin_new_entries') ? 'active' : '' }}">
           <a href="/admin_new_entries" class="menu-link">
             <i class='menu-icon tf-icons bx bx-plus-circle'></i>
             <div class="text-truncate" data-i18n="Page 2">New Entries</div>
           </a>
         </li>
+        @endif
+        @if(Auth::user()->usertype->name !== 'Faculties')
         <li class="menu-item {{ request()->is('admin_on_queue') ? 'active' : '' }}">
           <a href="/admin_on_queue" class="menu-link">
             <i class='menu-icon tf-icons bx bx-list-ol'></i>
             <div class="text-truncate" data-i18n="Page 2">In Queue</div>
           </a>
         </li>
+        @endif
+        @if(Auth::user()->usertype->name !== 'Admin' && Auth::user()->usertype->name !== 'Faculties')
         <li class="menu-item {{ request()->is('for_acknowledgement') ? 'active' : '' }}">
           <a href="/for_acknowledgement" class="menu-link">
             <i class='menu-icon tf-icons bx bx-archive-in'></i>
@@ -64,26 +73,33 @@
             <span class="badge bg-danger badge-notifications p-1 fs-8">14</span>
           </a>
         </li>
+        @endif
+        @if(Auth::user()->usertype->name !== 'Faculties')
         <li class="menu-item {{ request()->is('admin_on_hold') ? 'active' : '' }}">
           <a href="/admin_on_hold" class="menu-link">
             <i class='menu-icon tf-icons bx bx-error-alt'></i>
             <div class="text-truncate" data-i18n="Page 2">On Hold</div>
           </a>
         </li>
+        @endif
+        @if(Auth::user()->usertype->name !== 'Faculties')
         <li class="menu-item {{ request()->is('history') ? 'active' : '' }}">
           <a href="/history" class="menu-link">
             <i class='menu-icon tf-icons bx bx-history' ></i>
             <div class="text-truncate" data-i18n="Page 2">History</div>
           </a>
         </li>
+        @endif
         <li class="menu-item">
             <div style="margin-left: 5%; margin-top: 5%; color: #b4b0c4;">Users</div>
-          </li>
-        <li class="menu-item {{ request()->is('admin_faculty') ? 'active' : '' }}">
+        </li>
+        @if(Auth::user()->usertype->name === 'Admin' || Auth::user()->usertype->name === 'Superadmin')
+        <li class="menu-item {{ request()->is('admin_faculty') || request()->is('admin_view_faculty') ? 'active' : '' }}">
           <a href="/admin_faculty" class="menu-link">
             <i class='menu-icon tf-icons bx bx-group'></i>
             <div class="text-truncate" data-i18n="Page 2">Faculties</div>
           </a>
         </li>
+        @endif
       </ul>
   </aside>

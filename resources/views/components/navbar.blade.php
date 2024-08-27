@@ -42,7 +42,7 @@
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end">
                     <li>
-                        <a class="dropdown-item" href="#">
+                        <a class="dropdown-item" href="/profile">
                             <div class="d-flex">
                                 <div class="flex-shrink-0 me-3">
                                     <div class="avatar avatar-online">
@@ -51,14 +51,14 @@
                                 </div>
                                 <div class="flex-grow-1">
                                     <span class="fw-medium d-block">{{ Auth::user()->first_name . ' ' . Auth::user()->last_name }}</span>
-                                    <small class="text-muted">Admin</small>
+                                    <small class="text-muted"> {{Auth::user()->usertype->name ?  Auth::user()->usertype->name  : 'No Assigned Access'}}</small>
                                 </div>
                             </div>
                         </a>
                     </li>
                     <li>
-                        <div class="dropdown-divider"></div>
-                    </li>
+                        {{-- <div class="dropdown-divider"></div> --}}
+                    {{-- </li>
                     <li>
                         <a class="dropdown-item" href="#">
                             <i class="bx bx-user me-2"></i>
@@ -80,7 +80,7 @@
                                     class="flex-shrink-0 badge badge-center rounded-pill bg-danger w-px-20 h-px-20">4</span>
                             </span>
                         </a>
-                    </li>
+                    </li> --}}
                     <li>
                         <div class="dropdown-divider"></div>
                     </li>

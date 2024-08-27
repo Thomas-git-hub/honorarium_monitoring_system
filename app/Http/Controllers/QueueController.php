@@ -2,19 +2,25 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\TransactionStatusChanged;
+use App\Models\Acknowledgement;
+use App\Models\Activity_logs;
+use App\Models\Office;
 use App\Models\Transaction;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 
 class QueueController extends Controller
 {
-    public function proceedToBudgetOffice(Request $request){
 
-        $ibu_dbcon = DB::connection('ibu_test');
-        // $ibu_dbcon = DB::connection('ors_pgsql');
+    public function proceedToBudgetOffice(Request $request)
+    {
+        $ibu_dbcon = DB::connection('ors_pgsql');
 
         // Fetch all transactions with status 'Processing'
         $transactions = Transaction::where('status', 'Processing')->get();
@@ -23,27 +29,66 @@ class QueueController extends Controller
             return response()->json(['success' => false, 'message' => 'No transactions found with status Processing']);
         }
 
-        // Update the status to 'On Queue'
-        Transaction::where('status', 'Processing')->update(['status' => 'On Queue']);
-
-
         // Get the emails of the employees associated with the transactions
-        $employeeIds = $transactions->pluck('employee_id')->toArray();
-        $emails = $ibu_dbcon->table('employee_user')
-            ->whereIn('id', $employeeIds)
-            ->pluck('email')
-            ->toArray(); // Get an array of emails
+        // $employees = collect($ibu_dbcon->table('employee_user')
+        //     ->whereIn('id', $transactions->pluck('employee_id')->toArray())
+        //     ->get(['id', 'email'])); // Convert to collection
+
+        // $employeeDetails = collect($ibu_dbcon->table('employee')
+        //     ->whereIn('id', $transactions->pluck('employee_id')->toArray())
+        //     ->get(['id', 'employee_fname'])); // Convert to collection
 
         // Send an email to each employee
-        foreach ($emails as $email) {
-            Mail::send('emails.transaction_processing', [], function ($message) use ($email) {
-                $message->to($email)
-                    ->subject('Transaction Update: On Queue');
-            });
+        foreach ($transactions as $transaction) {
+            // $employee = $employees->firstWhere('id', $transaction->employee_id);
+            // $employeeDetail = $employeeDetails->firstWhere('id', $transaction->employee_id);
+
+            // if ($employee && $employeeDetail && !empty($employee->email)) {
+            //     // Prepare the email data
+            //     $emailData = [
+            //         'transaction_id' => $transaction->id,
+            //         'employee_fname' => $employeeDetail->employee_fname,
+            //         'status' => 'On Queue',
+            //     ];
+
+            //     // Send the email using the TransactionStatusChanged mailable
+            //     Mail::to($employee->email)->send(new TransactionStatusChanged($emailData));
+            // }
+
+            $office_admin = Office::where('name', 'Bugs Administration')->first();
+
+            $logs = new Activity_logs();
+            $logs->trans_id = $transaction->id;
+            $logs->office_id = $office_admin->id;
+            $logs->user_id = Auth::user()->id;
+            $logs->save();
+
+
         }
 
-        return response()->json(['success' => true, 'message' => 'Emails sent and transactions updated.']);
 
+        $office = Office::where('name', 'Budget Office')->first();
+
+        $ack = new Acknowledgement();
+        $ack->trans_id = $transaction->id;
+        $ack->office_id = $office_admin->id;
+        $ack->user_id = Auth::user()->id;
+        $ack->save();
+
+        // Update the batch_id after saving
+        $ack->batch_id = '00'. $ack->id . '-' . $ack->created_at->format('mdY');
+        $ack->save();
+
+
+        // Update the status to 'On Queue'
+        Transaction::where('status', 'Processing')->update([
+            'status' => 'On Queue',
+            'batch_id' => $ack->batch_id,
+            'office' => $office->id
+        ]);
+
+
+        return response()->json(['success' => true, 'message' => 'Emails sent and transactions updated.']);
     }
 
     public function update(Request $request){
@@ -83,12 +128,31 @@ class QueueController extends Controller
 
         // Find the transaction by ID
         $transaction = Transaction::find($request->id);
+        $ibu_dbcon = DB::connection('ibu_test');
+        // dd($transaction->employee_id);
 
         if (!$transaction) {
             return response()->json(['success' => false, 'message' => 'Transaction not found.'], 404);
         }
 
-        // Update the transaction with new data
+        $employee = $ibu_dbcon->table('employee_user')
+                ->where('id', $transaction->employee_id)
+                ->first();
+        $employeedetails = $ibu_dbcon->table('employee')
+                ->where('id', $transaction->employee_id)
+                ->first();
+        // dd($employee->email);
+
+        if (!empty($employee->email)) {
+            $emailData = [
+                'transaction_id' => $transaction->id,
+                'employee_fname' => $employeedetails->employee_fname,
+                'status' => $transaction->status,
+            ];
+
+            Mail::to($employee->email)->send(new TransactionStatusChanged($emailData));
+        }
+
         $transaction->status = 'On-hold';
         $transaction->created_by = auth()->user()->id;
         $transaction->save();

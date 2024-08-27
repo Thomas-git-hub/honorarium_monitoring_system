@@ -12,16 +12,17 @@
         </div>
         <div class="modal-body">
           <h1 class="text-center text-warning"><i class='bx bxs-envelope fs-3'></i></h1>
-          <p class="text-center text-warning fw-bold fs-4">You are about to send {{$onQueue}} Honorarium Transactions to Budget Office.</p>
+          <p class="text-center text-warning fw-bold fs-4">You are about to send {{$onQueue}} Honorarium Transactions to next Office.</p>
           <p class="text-center">"Proceeding with this transaction indicates that every individual has submitted all necessary requirements for their honorarium."</p>
 
           {{-- Note: The ID No. consists of id-number month, day and year --}}
-          <h5 class="text-center text-danger">Transaction Batch ID No. = <b>002-08122024</b></h5>
+          {{-- <h5 class="text-center text-danger">Transaction Batch ID No. = <b>002-08122024</b></h5> --}}
 
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-label-danger" data-bs-dismiss="modal"><i class='bx bxs-x-circle'></i></button>
-          <button type="button" id="proceed_transaction" class="btn btn-primary gap-1">Proceed to Budget Office<i class='bx bx-chevrons-right'></i></button>
+          <button type="button" id="proceed_transaction" class="btn btn-primary gap-1">Proceed to next Office
+            <i class='bx bx-chevrons-right'></i></button>
         </div>
       </div>
     </div>
@@ -62,7 +63,7 @@
                 </div>
                 <div class="mb-3">
                     <label for="editHonorarium" class="form-label">Honorarium</label>
-                    <select type="text" class="form-control" id="editHonorarium" name="honorarium_id"></select>
+                    <select type="text" class="form-select"  id="editHonorarium" name="honorarium_id"></select>
                 </div>
                 <div class="mb-3">
                     <label for="editSemester" class="form-label">Select Semester</label>
@@ -167,18 +168,29 @@
     <h4 class="card-title text-secondary">In Queue</h4>
 </div>
 
-<div class="row mt-4 gap-3">
-    <div class="col-md">
-        <div class="card shadow-none bg-label-primary">
-            <div class="card-body text-primary">
-                <h5 class="card-title text-primary">For Honorarium Transactions</h5>
-                <h1 class="text-primary">{{$onQueue}}</h1>
+<div class="row mt-2 gap-3">
+    <div class="col">
+        <div class="card">
+            <div class="card-body">
+                <div class="card shadow-none bg-label-success">
+                    <div class="card-header d-flex justify-content-end">
+                        <small class="card-title text-success d-flex align-items-center gap-1"><i class='bx bxs-calendar'></i>August 2, 2024</small>
+                    </div>
+                    <div class="card-body text-success">
+                        <div class="row d-flex align-items-center">
+                            <div class="col-md d-flex align-items-center gap-3">
+                                <h1 class="text-success text-center d-flex align-items-center" style="font-size: 48px;">{{$onQueue}}<i class='bx bx-file' style="font-size: 48px;"></i></h1>
+                                <h5 class="card-title text-success">Honorarium to Transact</h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-<div class="row mt-4">
+<div class="row mt-2">
     <div class="col">
         <div class="row mb-2">
             <div class="col-md mx-auto d-flex justify-content-end">
@@ -189,7 +201,7 @@
         <div class="card custom-card">
             <div class="card-body">
                 <div class="table-responsive">
-                    <table id="facultyTable" class="table table-borderless" style="width:100%">
+                    <table id="facultyTable" class="table table-borderless table-hover" style="width:100%">
                         <tbody class="text-center">
                             <!-- Data will be inserted here -->
                         </tbody>
@@ -254,7 +266,7 @@
             $('#editid').val(rowData.id);
             $('#editDateReceived').val(rowData.date_of_trans);
             $('#editFaculty').val(rowData.faculty.replace(/<[^>]+>/g, ''));
-            $('#editIdNumber').val(rowData.id_number.replace(/<[^>]+>/g, ''));
+            $('#editIdNumber').val(rowData.id_number);
             $('#editAcademicRank').val(rowData.academic_rank.replace(/<[^>]+>/g, ''));
             $('#editCollege').val(rowData.college);
             $('#editSemester').val(rowData.sem);
@@ -264,24 +276,41 @@
             $('#editMonthOf').val(rowData.month.month_number).change(); // Set the month
 
             //Get Honorarium
-            $('#editHonorarium').select2({
-                placeholder: 'Select Honorarium',
-                allowClear: true
-            });
+            // $('#editHonorarium').select2({
+            //     placeholder: 'Select Honorarium',
+            //     allowClear: true
+            // });
+            // $.ajax({
+            //     url: '{{ route('getHonorarium') }}',
+            //     type: 'GET',
+            //     success: function(data) {
+            //         var options = [];
+            //         data.forEach(function(hono) {
+            //             options.push({
+            //                 id: hono.id,
+            //                 text: hono.name,
+            //             });
+            //         });
+
+            //         $('#editHonorarium').select2({
+            //             data: options
+            //         });
+            //     },
+            //     error: function(xhr, status, error) {
+            //         console.error('Error fetching Honorarium:', error);
+            //     }
+            // });
+
             $.ajax({
                 url: '{{ route('getHonorarium') }}',
                 type: 'GET',
                 success: function(data) {
-                    var options = [];
+                    var select = $('#editHonorarium');
                     data.forEach(function(hono) {
-                        options.push({
-                            id: hono.id,
-                            text: hono.name,
-                        });
-                    });
-
-                    $('#editHonorarium').select2({
-                        data: options
+                        var option = $('<option></option>')
+                            .val(hono.id)
+                            .text(hono.name);
+                        select.append(option);
                     });
                 },
                 error: function(xhr, status, error) {
@@ -431,12 +460,14 @@
                 },
                 success: function(response) {
                     if(response.success){
+                        $('#proceed').modal('hide');
                         Swal.fire({
                             icon: 'success',
                             title: 'Success',
                             text: response.message,
                         });
                     }else{
+                        $('#proceed').modal('hide');
                         Swal.fire({
                             icon: 'error',
                             title: 'Oh no!',
@@ -448,6 +479,7 @@
                 },
                 error: function(xhr) {
                     // Handle error
+                    $('#proceed').modal('hide');
                     Swal.fire({
                         icon: 'error',
                         title: 'Error',

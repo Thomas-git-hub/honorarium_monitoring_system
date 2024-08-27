@@ -2,13 +2,35 @@
 
 @section('content')
 
-{{-- @include('administration.send_email') --}}
+<div class="row mt-4 gap-3">
+    <div class="col">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <h4 class="card-title text-secondary">Adding Entries</h4>
+                </div>
 
-<div class="row mt-4">
-    <h4 class="card-title text-secondary">Adding Entries</h4>
+                <div class="row">
+                    <div class="card shadow-none bg-label-success">
+                        <div class="card-header d-flex justify-content-end">
+                            <small class="card-title text-success d-flex align-items-center gap-1"><i class='bx bxs-calendar'></i>August 2, 2024</small>
+                        </div>
+                        <div class="card-body text-success">
+                            <div class="row d-flex align-items-center">
+                                <div class="col-md d-flex align-items-center gap-3">
+                                    <h1 class="text-success text-center d-flex align-items-center" style="font-size: 48px;">{{$onQueue}}<i class='bx bx-group' style="font-size: 48px;"></i></h1>
+                                    <h5 class="card-title text-success">Faculty Honorarium has been added to the Queue</h5>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
-<div class="row mt-4 gap-3">
+{{-- <div class="row mt-4 gap-3">
     <div class="col-md">
         <div class="card shadow-none bg-label-success">
         <div class="card-body text-success">
@@ -17,7 +39,7 @@
         </div>
         </div>
     </div>
-</div>
+</div> --}}
 
 <div class="row mt-4">
     <div class="col-md-6">
@@ -83,7 +105,7 @@
 
                     <div class="mb-5">
                         <label for="defaultSelect" class="form-label">For the Month of</label>
-                        <select id="defaultSelect" class="form-select" name="month">
+                        <select id="month" class="form-select" name="month">
                           <option selected disabled>Select Month</option>
                           <option value="1">January</option>
                           <option value="2">February</option>
@@ -123,8 +145,6 @@
                     <div class="row mt-6">
                         <div class="col-md-12 d-grid mx-auto" >
                             <button class="btn btn-success gap-1" type="submit" id="addToQueue" style="display:none;"><i class='bx bxs-add-to-queue' ></i>Add to Queue</button>
-
-                            {{-- added Aug 12, 2024 w/ BUG NOW SHOWING SEND EMAIL TOAST --}}
                             <button class="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasEnd" aria-controls="offcanvasEnd" id="sendEmailBtn" style="display: none;"><i class='bx bx-reply' >&nbsp;</i>Send Email</button>
                         </div>
                     </div>
@@ -132,50 +152,6 @@
 
             </div>
         </div>
-
-        {{-- <div class="d-flex justify-content-between">
-            <small class="text-danger" id="label" style="display: none;">Please specify the reason for holding this transaction.</small>
-            <div class="gap-2">
-                <!-- Spinner -->
-                <div class="spinner-border text-primary" role="status" id="spinner" style="display: none;">
-                    <span class="visually-hidden">Loading...</span>
-                </div>
-                <!-- Success Message -->
-                <div class="text-success d-flex flex-row gap-2" id="emailSuccess" style="display: none !important;">
-                    <b>Sent</b><i class='bx bx-check-circle fs-3'></i>
-                </div>
-                <!-- Failed Message -->
-                <div class="text-danger d-flex flex-row gap-2" id="emailFailed" style="display: none !important;">
-                    <b>Failed</b><i class='bx bx-x-circle fs-3'></i>
-                </div>
-            </div>
-        </div>
-
-        <div class="card">
-            <form action="" id="">
-                <div class="card-body" style="display: none;" id="sendEmail">
-
-                    <div class="d-flex justify-content-end mb-3">
-                        <i class='bx bxs-envelope'></i>
-                    </div>
-                    <p><b><small>To:</small></b> John Doe Duridut&nbsp;<small style="font-style: italic;">johndoe@bicol-u.edu.ph</small></p>
-                    <div class="mb-4">
-                        <label for="defaultInput" class="form-label">Subject</label>
-                        <input id="defaultInput" class="form-control" type="text" placeholder="Subject"/>
-                    </div>
-                    <div>
-                        <textarea class="form-control" id="emailTextArea" rows="3" placeholder="Message" style="border: none;"></textarea>
-                    </div>
-                    <div class="border-top mt-3">
-                        <div class="d-flex flex-row justify-content-end mt-3 gap-2">
-                            <button type="button" class="btn btn-label-danger border-none" data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-custom-class="tooltip-danger" title="Discard email" id="removeEmailReply"><i class='bx bxs-trash-alt'></i></button>
-                            <button type="button" class="btn btn-primary" id="sendButton"><i class='bx bxs-send'>&nbsp;</i>Send</button>
-                        </div>
-                    </div>
-
-                </div>
-            </form>
-        </div> --}}
 
     </div>
     <div class="col-md-6">
@@ -185,7 +161,7 @@
             </div>
             <div class="card-body">
                 <div class="table-responsive">
-                    <table id="facultyTable" class="table table-borderless" style="width:100%">
+                    <table id="facultyTable" class="table table-borderless table-hover" style="width:100%">
                         <tbody class="text-center">
                             <!-- Data will be inserted here -->
                         </tbody>
@@ -195,6 +171,9 @@
         </div>
     </div>
 </div>
+
+
+@include('administration.email_toast')
 
 @endsection
 
@@ -214,6 +193,8 @@
             }
         });
 
+
+        //Save New Entries
         $('#newEntriesForm').on('submit', function(e) {
             e.preventDefault();
             let isValid = true;
@@ -290,21 +271,6 @@
 
 <script>
     $(function () {
-        var data = [
-            {
-                date_received: '<p>07/26/2024</p>',
-                faculty: '<p class="text-primary">John Doe</p>',
-                id_number: '<p class="text-primary">1-id-no-2024</p>',
-                academic_rank: '<span class="badge bg-label-primary">Associate Professor II</span>',
-                college: '<p>College of Arts</p>',
-                honorarium: '<p>honorarium here</p>',
-                semester: '<p class="text-success">First Semester</p>',
-                semester_year: '<p>2024</p>',
-                month_of: '<p>July</p>',
-                action: '<div class="d-flex flex-row"> <button type="button" class="btn btn-icon me-2 btn-label-success edit-btn"><span class="tf-icons bx bx-pencil bx-18px"></span></button><button type="button" class="btn btn-icon me-2 btn-label-danger on-hold-btn" data-bs-toggle="modal" data-bs-target="#onHoldMessage"><span class="tf-icons bx bxs-hand bx-18px"></span></button> </div>',
-            },
-            // More data...
-        ];
 
         var table = $('#facultyTable').DataTable({
             processing: true,
@@ -327,7 +293,7 @@
                 { data: 'honorarium', name: 'honorarium', title: 'Honorarium' },
                 { data: 'sem', name: 'sem', title: 'Semester' },
                 { data: 'year', name: 'year', title: 'Semester Year' },
-                { data: 'month', name: 'month', title: 'Month Of' },
+                { data: 'month.month_name', name: 'month', title: 'Month Of' },
                 { data: 'created_by', name: 'created_by', title: 'Created By' },
                 // { data: 'action', name: 'action', title: 'Action' }
             ],
@@ -377,40 +343,17 @@
             $('#editEntryModal').modal('show');
         });
 
-        // Handle Save Changes button click
-        $('#saveChanges').on('click', function() {
-            var rowIndex = $('#editRowIndex').val();
-            var row = table.row(rowIndex);
+        $('#facultySelect').on('select2:select', function(e) {
+            var selectedOption = $(this).select2('data')[0]; // Get the selected option data
+            var facultyName = `${selectedOption.employee_fname} ${selectedOption.employee_lname}`;
+            var facultyEmail = selectedOption.email; // Get the email from the selected data
+            var facultyId = selectedOption.id; // The ID of the selected faculty
 
-            // Update row data
-            var updatedData = {
-                date_received: $('#editDateReceived').val(),
-                faculty: '<strong class="text-primary">' + $('#editFaculty').val() + '</strong>',
-                id_number: '<p class="text-primary">' + $('#editIdNumber').val() + '</p>',
-                academic_rank: '<span class="badge bg-label-primary">' + $('#editAcademicRank').val() + '</span>',
-                college: $('#editCollege').val(),
-                honorarium: $('#editHonorarium').val(),
-                semester: '<p class="text-success">' +
-                    ($('#editSemester').val() == '1' ? 'First Semester' :
-                    ($('#editSemester').val() == '2' ? 'Second Semester' : 'Summer Term')) +
-                    '</p>',
-                semester_year: $('#editSemesterYear').val(),
-                month_of: Object.keys({
-                    '0': 'January', '1': 'February', '2': 'March', '3': 'April',
-                    '4': 'May', '5': 'June', '6': 'July', '7': 'August',
-                    '8': 'September', '9': 'October', '10': 'November', '11': 'December'
-                })[$('#editMonthOf').val()],
-                action: '<div class="d-flex flex-row"> <button type="button" class="btn btn-icon me-2 btn-label-success edit-btn"><span class="tf-icons bx bx-pencil bx-18px"></span></button><button type="button" class="btn btn-icon me-2 btn-label-danger on-hold-btn"><span class="tf-icons bx bxs-hand bx-18px"></span></button> </div>'
-            };
-
-            // Update DataTable
-            row.data(updatedData).draw();
-
-            // Hide modal
-            $('#editEntryModal').modal('hide');
+            // Update the hidden input and the To: container
+            $('#user_id').val(facultyId);
+            $('.card-body .text-dark').html(`<b>To:&nbsp;</b> ${facultyName}&nbsp;<small class="text-secondary" style="font-style: italic;">${facultyEmail}</small>`);
         });
 
-        //Get Users
         $('#facultySelect').select2({
             placeholder: 'Search by Name/ID Number...',
             allowClear: true,
@@ -428,20 +371,14 @@
                     var searchTerm = $('#facultySelect').data('select2').dropdown.$search.val();
 
                     data.forEach(function(user) {
-                        // Check if search term contains only numbers
-                        if (/^\d+$/.test(searchTerm)) {
-                            // If numbers, match with user ID
-                            options.push({
-                                id: user.id,
-                                text: user.employee_no,
-                            });
-                        } else {
-                            // Otherwise, match with name
-                            options.push({
-                                id: user.id,
-                                text: user.employee_fname + ' ' + user.employee_lname,
-                            });
-                        }
+                        options.push({
+                            id: user.id,
+                            employee_fname: user.employee_fname,
+                            employee_lname: user.employee_lname,
+                            employee_no: user.employee_no,
+                            email: user.email,
+                            text: `${user.employee_fname} ${user.employee_lname}`,
+                        });
                     });
 
                     return {
@@ -453,60 +390,24 @@
         });
 
         //Get Honorarium
-        $('#HonoSelect').select2({
-            placeholder: 'Select Honorarium',
-            allowClear: true
-        });
         $.ajax({
-            url: '{{ route('getHonorarium') }}',
-            type: 'GET',
-            success: function(data) {
-                var options = [];
-                data.forEach(function(hono) {
-                    options.push({
-                        id: hono.id,
-                        text: hono.name,
+                url: '{{ route('getHonorarium') }}',
+                type: 'GET',
+                success: function(data) {
+                    var select = $('#HonoSelect');
+                    data.forEach(function(hono) {
+                        var option = $('<option></option>')
+                            .val(hono.id)
+                            .text(hono.name);
+                        select.append(option);
                     });
-                });
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error fetching Honorarium:', error);
+                }
+            });
 
-                $('#HonoSelect').select2({
-                    data: options
-                });
-            },
-            error: function(xhr, status, error) {
-                console.error('Error fetching Honorarium:', error);
-            }
-        });
 
-        //Save Transaction
-
-        // $('#newEntriesForm').on('submit', function(e) {
-        //     e.preventDefault();
-
-        //     var formData = $(this).serialize();
-
-        //     $.ajax({
-        //         url: $(this).attr('action'),
-        //         type: 'POST',
-        //         data: formData,
-        //         success: function(response) {
-        //             Swal.fire({
-        //                 title: 'Success!',
-        //                 text: 'Form submitted successfully.',
-        //                 icon: 'success',
-        //                 confirmButtonText: 'OK'
-        //             });
-        //         },
-        //         error: function(xhr, status, error) {
-        //             Swal.fire({
-        //                 title: 'Error!',
-        //                 text: 'There was an error submitting the form.',
-        //                 icon: 'error',
-        //                 confirmButtonText: 'OK'
-        //             });
-        //         }
-        //     });
-        // });
 
     });
 </script>
@@ -515,60 +416,103 @@
 {{-- SENDING EMAIL FOR SPINNER AND STATUS START --}}
 <script>
     $(document).ready(function() {
-
         // Ensure success and failed messages are hidden on page load
-        $('#emailSuccess').hide();
-        $('#emailFailed').hide();
+        // $('#emailSuccess').hide();
+        // $('#emailFailed').hide();
+
+        $('#toastSuccess').show();
+        $('#sendingFailed').show();
+
 
         $('#sendButton').on('click', function(event) {
-            event.preventDefault(); // Prevent the form from submitting
-
-            // Show the spinner and hide success and failed messages
+            event.preventDefault();
             $('#spinner').show();
-            $('#emailSuccess').hide();
-            $('#emailFailed').hide();
 
-            // Simulate an asynchronous operation (e.g., an AJAX request)
-            setTimeout(function() {
-                // Hide the spinner
-                $('#spinner').hide();
+            var formData = {
+                user_id: $('#user_id').val(),
+                subject: $('#floatingInput').val(),
+                message: $('#emailTextArea').val(),
+                date_of_trans: $('#dateReceived').val(),
+                employee_id: $('#facultySelect').val(),
+                honorarium_id: $('#HonoSelect').val(),
+                sem: $('#defaultSelect').val(),
+                year: $('#year').val(),
+                month: $('#month').val(),
+                is_complete: $('#radioIncomplete').val(),
+            };
 
-                // Logic to determine success or failure
-                const isSuccess = Math.random() > 0.5; // Replace with actual success/failure logic
-                if (isSuccess) {
-                    $('#emailSuccess').show();
-                } else {
-                    $('#emailFailed').show();
+
+            $.ajax({
+                type: 'POST',
+                url: '{{ route('insertFormData') }}',
+                data: formData,
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function(response) {
+
+                    if(response.success){
+                        $('#spinner').hide();
+                        $('#toastSuccess').toast('show');
+
+                        Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: response.message,
+                    });
+
+                    }else{
+                        $('#spinner').hide();
+                        $('#sendingFailed').toast('show');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    $('#spinner').hide();
+                    $('#sendingFailed').toast('show');
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'An error occurred while submitting the form. Please try again.',
+                    });
+                    console.error('AJAX Error:', status, error);
                 }
-            }, 2000); // Simulate a 2-second delay for the operation
+
+            });
+
+
+
         });
     });
-    </script>
+</script>
 {{-- SENDING EMAIL FOR SPINNER AND STATUS END--}}
 
 
 
 {{-- CLEARING AND HIDING OF REPLY EMAIL CARD START--}}
-{{-- <script>
+<script>
     $(document).ready(function() {
         // Show the send email card, hide add to queue button, and scroll to send email when radioIncomplete is clicked
         $('#radioIncomplete').on('click', function() {
             $('#sendEmail').show();
+
+
             $('#label').show();
             $('#addToQueue').hide();
-            $('html, body').animate({
-                scrollTop: $("#sendEmail").offset().top
-            }, 10); // Adjust the duration as needed
+
+            // $('html, body').animate({
+            //     // scrollTop: $("#sendEmail").offset().top
+            // }, 10); // Adjust the duration as needed
         });
 
-        // Hide the send email card and show add to queue button when radioComplete is clicked
+
+        // // Hide the send email card and show add to queue button when radioComplete is clicked
         $('#radioComplete').on('click', function() {
             $('#sendEmail').hide();
             $('#label').hide();
             $('#addToQueue').show();
         });
 
-        // Clear fields, hide email card, and reset the toggle when discard button is clicked
+        // // Clear fields, hide email card, and reset the toggle when discard button is clicked
         $('#removeEmailReply').on('click', function() {
             $('#sendEmail').hide();
             $('#sendEmail').find('input[type="text"], textarea').val('');
@@ -580,25 +524,25 @@
             $('input[name="is_complete"]').prop('checked', false);
         });
 
-        // Hide the send email card when send button is clicked
-        $('#sendButton').on('click', function() {
-            $('#sendEmail').hide();
-        });
+        // // Hide the send email card when send button is clicked
+        // $('#sendButton').on('click', function() {
+        //     $('#sendEmail').hide();
+        // });
     });
-</script> --}}
+</script>
 {{-- CLEARING AND HIDING OF REPLY EMAIL CARD END--}}
 
 <script>
     $('#radioIncomplete').on('click', function() {
-    // Show the addToQueue button
-    $('#sendEmailBtn').show();
-});
+        // Show the addToQueue button
+        $('#sendEmailBtn').show();
+    });
 
-$('#radioComplete').on('click', function() {
-    // Show the addToQueue button
-    $('#sendEmailBtn').hide();
-    $('#addToQueue').show();
-});
+    $('#radioComplete').on('click', function() {
+        // Show the addToQueue button
+        $('#sendEmailBtn').hide();
+        $('#addToQueue').show();
+    });
 </script>
 
 @endsection

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Activity_logs;
+use App\Models\Office;
 use App\Models\Transaction;
 use App\Models\User;
 use Carbon\Carbon;
@@ -38,10 +40,17 @@ class AdminController extends Controller
         $user = User::findOrFail($id);
 
 
-        $collegeDetails = DB::connection('ors_pgsql')->table('college')
+        $collegeDetails = DB::connection('ibu_test')->table('college')
                 ->where('id', $user->college_id)
                 ->first();
-        $college = $collegeDetails->college_name;
+
+        if(!empty($collegeDetails)){
+            $college = $collegeDetails->college_name;
+        }
+        else{
+            $college = 'No Assigned College';
+        }
+
 
         return view('administration.admin_view_faculty', compact('user', 'college'));
     }
@@ -76,10 +85,12 @@ class AdminController extends Controller
 
         // Process form data
 
+        $office = Office::where('name', 'Bugs Administration')->first();
+
         $transaction = new Transaction();
         $transaction->date_of_trans = $request->date_of_trans;
         $transaction->employee_id = $request->employee_id;
-        $transaction->office = 'administration';
+        $transaction->office = $office->id;
         $transaction->honorarium_id = $request->honorarium_id;
         $transaction->sem = $request->sem;
         $transaction->year = $request->year;
@@ -88,6 +99,57 @@ class AdminController extends Controller
         $transaction->status = 'Processing';
         $transaction->created_by = auth()->user()->id;
         $transaction->save();
+
+
+        $logs = new Activity_logs();
+        $logs->trans_id = $transaction->id;
+        $logs->office_id = $office->id;
+        $logs->user_id = $transaction->created_by;
+        $logs->save();
+
+
+        return response()->json(['success' => true, 'message' => 'Form submitted successfully.']);
+    }
+    public function submitOnHold(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'date_of_trans' => 'required|date',
+            'employee_id' => 'required',
+            'honorarium_id' => 'required|exists:honorarium,id',
+            'sem' => 'required|string',
+            'year' => 'required|integer',
+            'month' => 'required|string',
+            'is_complete' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['success' => false,'errors' => $validator->errors()], 200);
+        }
+
+        // Process form data
+
+        $office = Office::where('name', 'Bugs Administration')->first();
+
+        $transaction = new Transaction();
+        $transaction->date_of_trans = $request->date_of_trans;
+        $transaction->employee_id = $request->employee_id;
+        $transaction->office = $office->id;
+        $transaction->honorarium_id = $request->honorarium_id;
+        $transaction->sem = $request->sem;
+        $transaction->year = $request->year;
+        $transaction->month = $request->month;
+        $transaction->is_complete = $request->is_complete;
+        $transaction->status = 'On-hold';
+        $transaction->created_by = auth()->user()->id;
+        $transaction->save();
+
+
+        $logs = new Activity_logs();
+        $logs->trans_id = $transaction->id;
+        $logs->office_id = $office->id;
+        $logs->user_id = $transaction->created_by;
+        $logs->save();
+
 
         return response()->json(['success' => true, 'message' => 'Form submitted successfully.']);
     }
@@ -106,7 +168,7 @@ class AdminController extends Controller
     {
         $query = Transaction::with(['honorarium', 'createdBy'])->where('status', 'Processing');
         $transactions = $query->get();
-        $ibu_dbcon = DB::connection('ors_pgsql');
+        $ibu_dbcon = DB::connection('ibu_test');
 
         $months = [
             1 => 'January',
@@ -134,10 +196,10 @@ class AdminController extends Controller
                 return ucfirst($employeeDetails->employee_fname) . ' ' . ucfirst($employeeDetails->employee_lname);
             })
             ->addColumn('id_number', function($data) use($ibu_dbcon) {
-                $employeeDetails = $ibu_dbcon->table('employee')
-                ->where('id', $data->employee_id)
-                ->first();
-                return ucfirst($employeeDetails->employee_no);
+                // $employeeDetails = $ibu_dbcon->table('employee')
+                // ->where('id', $data->employee_id)
+                // ->first();
+                return $data->ee_number ? $data->ee_number : 0;
             })
             ->addColumn('academic_rank', function($data) use($ibu_dbcon) {
                 $employeeDetails = $ibu_dbcon->table('employee')
@@ -154,7 +216,7 @@ class AdminController extends Controller
                 $collegeDetails = $ibu_dbcon->table('college')
                 ->where('id', $employeeDetails->college_id)
                 ->first();
-                return $collegeDetails->college_shortname ? $collegeDetails->college_shortname : '';
+                return $collegeDetails->college_shortname ? $collegeDetails->college_shortname : 'No College Found';
             })
 
             ->addColumn('honorarium', function($data) {

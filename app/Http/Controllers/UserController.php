@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Mail\TempPasswordMail;
 use App\Models\User;
+use App\Models\UserType;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -51,20 +52,23 @@ class UserController extends Controller
             return response()->json(['success' => false, 'message' => 'User already has an account'], 200);
         }
 
-        $user = DB::connection('ors_pgsql')->table('employee_user')->where('email', $request->email)->first();
-        // $user = DB::connection('ibu_test')->table('employee_user')->where('email', $request->email)->first();
+        // $user = DB::connection('ors_pgsql')->table('employee_user')->where('email', $request->email)->first();
+        $user = DB::connection('ibu_test')->table('employee_user')->where('email', $request->email)->first();
 
         if ($user) {
             $mysqlUserId = DB::connection('mysql')->table('users')->insertGetId([
+                'employee_id' => $user->id,
                 'email' => $request->email,
                 'password' => Hash::make($randomString),
 
             ]);
 
-            $employeeDetails = DB::connection('ors_pgsql')->table('employee')
-            // $employeeDetails = DB::connection('ibu_test')->table('employee')
+            // $employeeDetails = DB::connection('ors_pgsql')->table('employee')
+            $employeeDetails = DB::connection('ibu_test')->table('employee')
             ->where('id', $user->id)
             ->first();
+
+            $usertype = UserType::where('name', 'Faculties')->first();
 
             if ($employeeDetails) {
                 DB::connection('mysql')->table('users')->where('id', $mysqlUserId)->update([
@@ -74,6 +78,7 @@ class UserController extends Controller
                     'ee_number' => $employeeDetails->employee_no,
                     'position' => $employeeDetails->employee_academic_rank,
                     'college_id' => $employeeDetails->college_id,
+                    'usertype_id' => $usertype->id,
                     'created_at' => now(),
 
                 ]);
@@ -146,11 +151,16 @@ class UserController extends Controller
                 return $user->created_at? $user->created_at->format('m/d/Y') : now();
             })
             ->editColumn('college', function($user) {
-                $collegeDetails = DB::connection('ors_pgsql')->table('college')
-                // $collegeDetails = DB::connection('ibu_test')->table('college')
-                ->where('id', $user->college_id)
-                ->first();
-                return $collegeDetails->college_shortname ? $collegeDetails->college_shortname : '';
+                if($user->college_id){
+                    $collegeDetails = DB::connection('ibu_test')->table('college')
+                    ->where('id', $user->college_id)
+                    ->first();
+                    return $collegeDetails->college_shortname;
+                }
+                else{
+                    return 'No College Found';
+                }
+
             })
 
             // ->addColumn('usertype', function($user) {
@@ -160,15 +170,24 @@ class UserController extends Controller
     }
 
     public function getUser(Request $request) {
-
         $searchTerm = $request->input('search'); // Capture search term
 
-        $faculties = DB::connection('ors_pgsql')->table('employee')
-                        ->where('active', 'T')
+        // Join the 'employee' and 'employee_user' tables to get the email
+        $faculties = DB::connection('ibu_test')
+                        ->table('employee')
+                        ->join('employee_user', 'employee.id', '=', 'employee_user.id')
+                        ->select(
+                            'employee.id',
+                            'employee.employee_fname',
+                            'employee.employee_lname',
+                            'employee.employee_no',
+                            'employee_user.email' // Assuming email is in the employee_user table
+                        )
+                        ->where('employee.active', 'T')
                         ->where(function($query) use ($searchTerm) {
-                            $query->where(DB::raw("CONCAT(employee_fname, ' ', employee_lname)"), 'like', "%{$searchTerm}%")
-                                  ->orWhere('employee_fname', 'like', "%{$searchTerm}%")
-                                  ->orWhere('employee_lname', 'like', "%{$searchTerm}%");
+                            $query->where(DB::raw("CONCAT(employee.employee_fname, ' ', employee.employee_lname)"), 'like', "%{$searchTerm}%")
+                                  ->orWhere('employee.employee_fname', 'like', "%{$searchTerm}%")
+                                  ->orWhere('employee.employee_lname', 'like', "%{$searchTerm}%");
                         })
                         ->get();
 

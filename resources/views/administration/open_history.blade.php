@@ -169,22 +169,12 @@
                             Batch ID Number: <b>001-08072024</b>
                         </div>
                     </div>
-                    <div class="col-md">
-                        <div class="alert alert-success">
-                            From: <b>Budget Office</b>
-                        </div>
-                    </div>
-                    <div class="col-md">
-                        <div class="alert alert-warning">
-                            Recieved Date: <b>August 07, 2024 </b>
-                        </div>
-                    </div>
                 </div>
 
 
                 <div class="card shadow-none bg-label-secondary">
                     <div class="card-body">
-                        <h5 class="card-title text-secondary">For Honorarium Transactions</h5>
+                        <h5 class="card-title text-secondary">Total Number of Transactions</h5>
                         {{-- <h1 class="text-primary">{{$onQueue}}</h1> --}}
                         <h1 class="text-secondary">07</h1>
                     </div>
@@ -196,16 +186,10 @@
 
 <div class="row mt-3">
     <div class="col">
-        <div class="row mb-3">
-            <div class="col-md mx-auto d-flex justify-content-end">
-                <button type="button" class="btn btn-primary gap-1" data-bs-toggle="modal" data-bs-target="#proceed">Acknowledge Transaction<i class='bx bx-chevrons-right'></i></button>
-            </div>
-        </div>
-
         <div class="card custom-card">
             <div class="card-body">
                 <div class="table-responsive">
-                    <table id="facultyTable" class="table table-borderless" style="width:100%">
+                    <table id="facultyTable" class="table table-borderless table-hover" style="width:100%">
                         <tbody class="text-center">
                             <!-- Data will be inserted here -->
                         </tbody>

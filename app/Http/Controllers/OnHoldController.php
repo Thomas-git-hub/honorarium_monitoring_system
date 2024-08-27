@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Activity_logs;
+use App\Models\Office;
 use Illuminate\Http\Request;
 use App\Models\Transaction;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class OnHoldController extends Controller
 {
@@ -13,7 +16,7 @@ class OnHoldController extends Controller
     {
         // Query to get transactions with status 'On-hold'
         $transactions = Transaction::where('status', 'On-hold')->get();
-        $ibu_dbcon = DB::connection('ors_pgsql');
+        $ibu_dbcon = DB::connection('ibu_test');
 
         $months = [
             1 => 'January',
@@ -40,21 +43,21 @@ class OnHoldController extends Controller
                 $employeeDetails = $ibu_dbcon->table('employee')
                 ->where('id', $data->employee_id)
                 ->first();
-                return ucfirst($employeeDetails->employee_fname) . ' ' . ucfirst($employeeDetails->employee_lname);
+                return ucfirst($employeeDetails->employee_fname ? $employeeDetails->employee_fname : '') . ' ' . ucfirst($employeeDetails->employee_lname ? $employeeDetails->employee_lname : ' ');
             })
 
             ->addColumn('id_number', function($data) use($ibu_dbcon) {
                 $employeeDetails = $ibu_dbcon->table('employee')
                 ->where('id', $data->employee_id)
                 ->first();
-                return ucfirst($employeeDetails->employee_no);
+                return ucfirst($employeeDetails->employee_no ? $employeeDetails->employee_no : ' ');
             })
 
             ->addColumn('academic_rank', function($data) use($ibu_dbcon) {
                 $employeeDetails = $ibu_dbcon->table('employee')
                 ->where('id', $data->employee_id)
                 ->first();
-                return ucfirst($employeeDetails->employee_academic_rank);
+                return ucfirst($employeeDetails->employee_academic_rank ? $employeeDetails->employee_academic_rank : ' ');
             })
 
             ->addColumn('college', function($data) use($ibu_dbcon) {
@@ -93,5 +96,49 @@ class OnHoldController extends Controller
             })
 
             ->make(true);
+    }
+
+    public function saveOnHold(Request $request){
+        $validator = Validator::make($request->all(), [
+            'date_of_trans' => 'required|date',
+            'employee_id' => 'required',
+            'honorarium_id' => 'required|exists:honorarium,id',
+            'sem' => 'required|string',
+            'year' => 'required|integer',
+            'month' => 'required|string',
+            'is_complete' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['success' => false,'errors' => $validator->errors()], 200);
+        }
+
+        // Process form data
+
+        $office = Office::where('name', 'Bugs Administration')->first();
+
+        $transaction = new Transaction();
+        $transaction->date_of_trans = $request->date_of_trans;
+        $transaction->employee_id = $request->employee_id;
+        $transaction->office = $office->id;
+        $transaction->honorarium_id = $request->honorarium_id;
+        $transaction->sem = $request->sem;
+        $transaction->year = $request->year;
+        $transaction->month = $request->month;
+        $transaction->is_complete = $request->is_complete;
+        $transaction->status = 'On-hold';
+        $transaction->created_by = auth()->user()->id;
+        $transaction->save();
+
+
+        $logs = new Activity_logs();
+        $logs->trans_id = $transaction->id;
+        $logs->office_id = $office->id;
+        $logs->user_id = $transaction->created_by;
+        $logs->save();
+
+        return response()->json(['success' => true, 'message' => 'Form submitted successfully.']);
+
+
     }
 }

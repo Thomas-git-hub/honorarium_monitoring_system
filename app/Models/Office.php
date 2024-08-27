@@ -5,11 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Emailing extends Model
+class Office extends Model
 {
     use HasFactory;
 
-    protected $table = 'emailing';
+    protected $table = 'office';
 
-    // protected $fillable = ['column_name']; // Add other columns as needed
 }

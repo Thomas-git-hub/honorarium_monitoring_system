@@ -90,6 +90,8 @@ div.dt-container div.dt-info {
     /* border: none !important; */
     height: 55px;
 }
+
+
 /* INBOX DATATABLES END----------------------------------------------------------------------- */
 
 
@@ -334,8 +336,9 @@ div.dt-container div.dt-info {
 /* CUSTOM BUTTON START----------------------------------------------------------------------- */
 
 .select2-container{
-    z-index: 1095;
+    /* z-index: 1095; */
 }
 .swal2-container{
     z-index: 1099 !important;
-  }
+}
+

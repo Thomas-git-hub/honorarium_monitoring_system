@@ -83,6 +83,7 @@
     $(function () {
         var data = [
             {
+                trans_batch_id_no: '<p class="text-danger">002-08122024</p>',
                 date_received: '<p>07/26/2024</p>',
                 transaction_date: '<p>07/26/2024</p>',
                 honorarium: '<p>Honorarium</p>',
@@ -92,6 +93,7 @@
                 status: '<p class="text-primary">Processing</p>',
             },
             {
+                trans_batch_id_no: '<p class="text-danger">002-08122024</p>',
                 date_received: '<p>07/26/2024</p>',
                 transaction_date: '<p>07/26/2024</p>',
                 honorarium: '<p>Honorarium</p>',
@@ -115,6 +117,7 @@
                 searchPlaceholder: "Search..."
             },
             columns: [
+                { data: 'trans_batch_id_no', name: 'trans_batch_id_no', title: 'Trans Batch ID No.' },
                 { data: 'date_received', name: 'date_received', title: 'Date Received' },
                 { data: 'transaction_date', name: 'transaction_date', title: 'Transaction Date' },
                 { data: 'honorarium', name: 'honorarium', title: 'Honorarium' },

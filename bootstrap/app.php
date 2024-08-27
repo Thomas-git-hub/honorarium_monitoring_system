@@ -1,7 +1,11 @@
 <?php
 
+use App\Http\Middleware\CheckUserType;
+use App\Http\Middleware\IsAdmin;
 use App\Http\Middleware\IsAuthenticated;
 use App\Http\Middleware\IsGuest;
+use App\Http\Middleware\IsOtherAccess;
+use App\Http\Middleware\IsSuperadmin;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -19,6 +23,15 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->appendToGroup('guest', [
             IsGuest::class,
+        ]);
+
+        $middleware->appendToGroup('Superadmin', [
+            IsSuperadmin::class,
+            IsAdmin::class,
+        ]);
+
+        $middleware->appendToGroup('OtherAccess', [
+            IsOtherAccess::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
