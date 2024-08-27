@@ -14,11 +14,11 @@
         <div class="modal-body">
           <h1 class="text-center text-danger">!</h1>
           <p class="text-center">"Proceeding with this transaction indicates that the individual has submitted all necessary requirements for their honorarium."</p>
-          <h5 class="text-center text-danger">Transaction ID No. = <b>002-08122024</b></h5>
+          {{-- <h5 class="text-center text-danger">Transaction ID No. = <b>002-08122024</b></h5> --}}
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-label-danger" data-bs-dismiss="modal"><i class='bx bxs-x-circle'></i></button>
-          <button type="button" class="btn btn-primary gap-1">Proceed to Budget Office<i class='bx bx-chevrons-right'></i></button>
+          <button type="button" id="proceed_transaction" class="btn btn-primary gap-1">Proceed to Next Office<i class='bx bx-chevrons-right'></i></button>
         </div>
       </div>
     </div>
@@ -145,7 +145,77 @@
             createdRow: function(row, data) {
                 $(row).addClass('unopened');
             }
+    });
+
+    $('#facultyTable').on('click', '.edit-btn', function() {
+        // Get the rowdata.id from the data-id attribute
+
+        var row = $(this).closest('tr');
+        var rowData = table.row(row).data();
+
+        var transactionId = rowData.id;
+        var date = new Date(rowData.created_at);
+
+        var formattedDate = (date.getMonth() + 1).toString().padStart(2, '0') + '' + 
+                    date.getDate().toString().padStart(2, '0') + '' + 
+                    date.getFullYear();
+
+        console.log(transactionId);
+        console.log(formattedDate);
+
+
+         // Handle Proceed button click
+         $('#proceed_transaction').on('click', function() {
+            $.ajax({
+                url: '{{ route('UpdateToProceed') }}',
+                method: 'POST',
+                data: {
+                    _token: $('meta[name="csrf-token"]').attr('content'),
+                    id:transactionId,
+                },
+                success: function(response) {
+                    if(response.success){
+                        $('#proceed').modal('hide');
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success',
+                            text: response.message,
+                        });
+                    }else{
+                        $('#proceed').modal('hide');
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oh no!',
+                            text: response.message,
+                        });
+
+                    }
+                    $('#facultyTable').DataTable().ajax.reload();
+                },
+                error: function(xhr) {
+                    // Handle error
+                    $('#proceed').modal('hide');
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'There was a problem updating the transactions.',
+                    });
+                }
+            });
         });
+
+        // Update the modal content (if needed)
+        // $('#proceed .modal-body').append('<h5 class="text-center text-danger">Transaction ID No. = <b>' + '00' + transactionId + '-' + formattedDate + '</b></h5>');
+
+        // You can also update other parts of the modal, if necessary
+        // For example, if you want to set a hidden input field with the transaction ID:
+        // $('#proceed').find('input[name="transaction_id"]').val(transactionId);
+    });
+
+    // Optionally, you can reset the modal content when it's closed
+    $('#proceed').on('hidden.bs.modal', function() {
+        $(this).find('.modal-body h5').remove();
+    });
 
 </script>
 

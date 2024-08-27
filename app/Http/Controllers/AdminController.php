@@ -3,11 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\Activity_logs;
+use App\Models\Emailing;
 use App\Models\Office;
 use App\Models\Transaction;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\Facades\DataTables;
@@ -15,7 +17,14 @@ use Yajra\DataTables\Facades\DataTables;
 class AdminController extends Controller
 {
     public function admin_dashboard(){
-        return view('administration.admin_dashboard');
+
+        $pendingMails = Emailing::where('status', 'Unread')->where('to_user', Auth::user()->employee_id);
+        $EmailCount = $pendingMails->count();
+
+        $OnQueue = Transaction::where('status', 'On Queue')->count();
+        $OnHold = Transaction::where('status', 'On-hold')->count();
+    
+        return view('administration.admin_dashboard', compact('EmailCount', 'OnQueue', 'OnHold'));
     }
 
     public function admin_email(){
@@ -85,25 +94,23 @@ class AdminController extends Controller
 
         // Process form data
 
-        $office = Office::where('name', 'Bugs Administration')->first();
-
         $transaction = new Transaction();
         $transaction->date_of_trans = $request->date_of_trans;
         $transaction->employee_id = $request->employee_id;
-        $transaction->office = $office->id;
+        $transaction->office = Auth::user()->office_id;
         $transaction->honorarium_id = $request->honorarium_id;
         $transaction->sem = $request->sem;
         $transaction->year = $request->year;
         $transaction->month = $request->month;
         $transaction->is_complete = $request->is_complete;
         $transaction->status = 'Processing';
-        $transaction->created_by = auth()->user()->id;
+        $transaction->created_by = Auth::user()->id;
         $transaction->save();
 
 
         $logs = new Activity_logs();
         $logs->trans_id = $transaction->id;
-        $logs->office_id = $office->id;
+        $logs->office_id = Auth::user()->office_id;
         $logs->user_id = $transaction->created_by;
         $logs->save();
 
@@ -127,26 +134,23 @@ class AdminController extends Controller
         }
 
         // Process form data
-
-        $office = Office::where('name', 'Bugs Administration')->first();
-
         $transaction = new Transaction();
         $transaction->date_of_trans = $request->date_of_trans;
         $transaction->employee_id = $request->employee_id;
-        $transaction->office = $office->id;
+        $transaction->office = Auth::user()->office_id;
         $transaction->honorarium_id = $request->honorarium_id;
         $transaction->sem = $request->sem;
         $transaction->year = $request->year;
         $transaction->month = $request->month;
         $transaction->is_complete = $request->is_complete;
         $transaction->status = 'On-hold';
-        $transaction->created_by = auth()->user()->id;
+        $transaction->created_by = Auth::user()->id;
         $transaction->save();
 
 
         $logs = new Activity_logs();
         $logs->trans_id = $transaction->id;
-        $logs->office_id = $office->id;
+        $logs->office_id = Auth::user()->office_id;
         $logs->user_id = $transaction->created_by;
         $logs->save();
 
@@ -166,7 +170,30 @@ class AdminController extends Controller
 
     public function list(Request $request)
     {
-        $query = Transaction::with(['honorarium', 'createdBy'])->where('status', 'Processing');
+        if(Auth::user()->usertype->name === 'Superadmin'){
+            $query = Transaction::with(['honorarium', 'createdBy'])->where('status', 'Processing');
+
+        }
+        elseif(Auth::user()->usertype->name === 'Budget Office'){
+            $From_office = Office::where('name', 'BUGS Administration')->first();
+            $query = Transaction::with(['honorarium', 'createdBy'])->where('status', 'Processing');
+
+        }elseif(Auth::user()->usertype->name === 'Dean'){
+            $From_office = Office::where('name', 'Budget Office')->first();
+            $query = Transaction::with(['honorarium', 'createdBy'])->where('status', 'Processing');
+
+        }elseif(Auth::user()->usertype->name === 'Accounting' || Auth::user()->usertype->name === 'Cashiers'){
+            $From_office = Office::where('name', 'Dean')->first();
+            $query = Transaction::with(['honorarium', 'createdBy'])->where('status', 'Processing');
+           
+
+        }elseif(Auth::user()->usertype->name === 'Dean'){
+            $From_office_acc = Office::where('name', 'Accounting')->first();
+            $From_office_BO = Office::where('name', 'Budget Office')->first();
+            $query = Transaction::with(['honorarium', 'createdBy'])->where('status', 'Processing');
+           
+        }
+       
         $transactions = $query->get();
         $ibu_dbcon = DB::connection('ibu_test');
 

@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('emailing', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('transaction_id')->nullable();
+            $table->unsignedBigInteger('to_user');
             $table->string('subject');
             $table->string('message');
             $table->string('status');

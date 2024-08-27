@@ -11,5 +11,9 @@ class Emailing extends Model
 
     protected $table = 'emailing';
 
-    // protected $fillable = ['column_name']; // Add other columns as needed
+    public function transaction()
+    {
+        return $this->belongsTo(Transaction::class, 'transaction_id');
+    }
+
 }

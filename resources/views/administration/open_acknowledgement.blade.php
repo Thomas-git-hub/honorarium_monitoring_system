@@ -166,17 +166,17 @@
                 <div class="row">
                     <div class="col-md">
                         <div class="alert alert-danger">
-                            Batch ID Number: <b>001-08072024</b>
+                            Batch ID Number: <b>{{$batch_id ? $batch_id :  'No Data Found'}}</b>
                         </div>
                     </div>
                     <div class="col-md">
                         <div class="alert alert-success">
-                            From: <b>Budget Office</b>
+                            From: <b>{{$office->name}}</b>
                         </div>
                     </div>
                     <div class="col-md">
                         <div class="alert alert-warning">
-                            Recieved Date: <b>August 07, 2024 </b>
+                            Received Date: <b>{{ \Carbon\Carbon::parse($acknowledgements->created_at)->format('F d, Y') }}</b>
                         </div>
                     </div>
                 </div>
@@ -186,7 +186,7 @@
                     <div class="card-body">
                         <h5 class="card-title text-secondary">For Honorarium Transactions</h5>
                         {{-- <h1 class="text-primary">{{$onQueue}}</h1> --}}
-                        <h1 class="text-secondary">07</h1>
+                        <h1 class="text-secondary">{{$TransCount}}</h1>
                     </div>
                 </div>
             </div>
@@ -223,26 +223,18 @@
 {{--FACULTY DATATABLES START --}}
 <script>
     $(function () {
-        // var data = [
-        //     {
-        //         date_received: '<p>07/26/2024</p>',
-        //         faculty: '<p class="text-primary">John Doe</p>',
-        //         id_number: '<p class="text-primary">1-id-no-2024</p>',
-        //         academic_rank: '<span class="badge bg-label-primary">Associate Professor II</span>',
-        //         college: '<p>College of Arts</p>',
-        //         honorarium: '<p>honorarium here</p>',
-        //         semester: '<p class="text-success">First Semester</p>',
-        //         semester_year: '<p>2024</p>',
-        //         month_of: '<p>July</p>',
-        //         action: '<div class="d-flex flex-row"> <button type="button" class="btn btn-icon me-2 btn-label-success edit-btn"><span class="tf-icons bx bx-pencil bx-18px"></span></button><button type="button" class="btn btn-icon me-2 btn-label-danger on-hold-btn" data-bs-toggle="modal" data-bs-target="#onHoldMessage"><span class="tf-icons bx bxs-hand bx-18px"></span></button> </div>',
-        //     },
-        //     // More data...
-        // ];
+
+        var batchId = {!! json_encode($batch_id) !!};
 
         var table = $('#facultyTable').DataTable({
             processing: true,
             serverSide: true,
-            ajax: '{{ route('admin_new_entries.list') }}',
+            ajax: {
+                url: '{{ route('open_acknowledgement.list') }}',
+                data: function(d) {
+                    d.batch_id = batchId; // Passing the batch ID as a parameter
+                }
+            },
             pageLength: 10,
             paging: true,
             dom: '<"top"lf>rt<"bottom"ip>',

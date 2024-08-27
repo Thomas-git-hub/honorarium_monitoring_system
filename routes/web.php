@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HonorariumController;
 use App\Http\Controllers\SentItemsController;
 use App\Http\Controllers\ForAcknowledgementController;
@@ -13,6 +14,7 @@ use App\Http\Controllers\SendEmailController;
 use App\Models\Honorarium;
 use App\Http\Controllers\OnHoldController;
 use App\Http\Controllers\ProfileController;
+use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
 
 //START NO AUTHENTICATED ACCESS
 Route::middleware(['guest'])->group(function () {
@@ -44,7 +46,7 @@ Route::middleware(['auth_check'])->group(function () {
 
     //START SUPERADMIN ACCESS
 
-    Route::middleware(['Superadmin'])->group(function () {
+    // Route::middleware(['Superadmin'])->group(function () {
 
         Route::get('/getUser', [UserController::class, 'getUser'])->name('getUser');
 
@@ -71,16 +73,20 @@ Route::middleware(['auth_check'])->group(function () {
         Route::match(['post', 'put'], 'admin_on_queue/change_to_onhold', [QueueController::class, 'change_to_onhold'])->name('admin_on_queue.change_to_onhold');
 
         Route::get('/for_acknowledgement', [ForAcknowledgementController::class, 'for_acknowledgement'])->name('for_acknowledgement');
-        Route::get('/open_acknowledgement', [OpenAcknowledgementController::class, 'open_acknowledgement'])->name('open_acknowledgement');
         Route::get('/for_acknowledgement/list', [ForAcknowledgementController::class, 'list'])->name("for_acknowledgement.list");
+
+        Route::get('/open_acknowledgement', [OpenAcknowledgementController::class, 'open_acknowledgement'])->name('open_acknowledgement');
+        Route::get('/open_acknowledgement/list', [OpenAcknowledgementController::class, 'list'])->name('open_acknowledgement.list');
+
 
         Route::get('/transactions/on-hold', [OnHoldController::class, 'getOnHoldTransactions'])->name('on_hold_status');
         Route::post('/save/onHold', [OnHoldController::class, 'saveOnHold'])->name('saveOnHold');
+        Route::post('/save/UpdateToProceed', [OnHoldController::class, 'UpdateToProceed'])->name('UpdateToProceed');
 
         Route::get('/history', [HistoryController::class, 'history'])->name('history');
         Route::get('/open_history', [HistoryController::class, 'open_history'])->name('open_history');
 
-    });
+    // });
 
     //END SUPERADMIN ACCESS
 

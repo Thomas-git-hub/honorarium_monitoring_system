@@ -24,6 +24,7 @@ return new class extends Migration
             $table->string('ee_number')->nullable();
             $table->unsignedBigInteger('college_id')->nullable();
             $table->unsignedBigInteger('usertype_id')->nullable();
+            $table->unsignedBigInteger('office_id')->nullable();
             $table->string('password');
             $table->string('status')->default('Active');
             $table->rememberToken()->nullable();
@@ -31,6 +32,7 @@ return new class extends Migration
             $table->softDeletes();
 
             $table->foreign('usertype_id')->references('id')->on('usertype');
+            $table->foreign('office_id')->references('id')->on('office');
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {

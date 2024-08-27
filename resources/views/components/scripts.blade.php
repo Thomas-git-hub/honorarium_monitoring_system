@@ -180,7 +180,7 @@
                 }
 
                 // Redirect to another page with full details (example)
-                window.location.href = `/open_acknowledgement?id=${rowData.id}`;
+                window.location.href = `/open_acknowledgement?id=${rowData.batch_id}`;
             });
     });
 </script>
