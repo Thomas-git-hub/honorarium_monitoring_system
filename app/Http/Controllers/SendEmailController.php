@@ -8,6 +8,7 @@ use App\Models\Emailing;
 use App\Models\Office;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
@@ -48,7 +49,7 @@ class SendEmailController extends Controller
                 'employee_fname' => $employeedetails->employee_fname,
                 'subject' => $request->subject,
                 'message' => $request->message,
-                'sender_email' => auth()->user()->email, // Add sender email
+                'sender_email' => Auth::user()->email, // Add sender email
             ];
 
             Mail::to($employee->email)->send(new SendEmail($emailData));
@@ -57,9 +58,10 @@ class SendEmailController extends Controller
             // Process form data
             $email = new Emailing();
             $email->subject = $request->subject;
+            $email->to_user = $request->user_id;
             $email->message = $request->message;
             $email->status = 'Unread';
-            $email->created_by = auth()->user()->id;
+            $email->created_by = Auth::user()->id;
             $email->save();
         }
 
@@ -90,7 +92,7 @@ class SendEmailController extends Controller
             $transaction->month = $request->month;
             $transaction->is_complete = $request->is_complete;
             $transaction->status = 'On-hold';
-            $transaction->created_by = auth()->user()->id;
+            $transaction->created_by = Auth::user()->id;
             $transaction->save();
 
             // Log the activity

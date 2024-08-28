@@ -16,7 +16,7 @@
                                     <div class="card-body text-primary">
                                         <h5 class="card-title text-primary">New Emails</h5>
                                         <p class="card-text fs-3 d-flex align-items-center">
-                                            <i class='bx bxs-envelope fs-3'>&nbsp;</i>128
+                                            <i class='bx bxs-envelope fs-3'>&nbsp;</i>{{$EmailCount ? $EmailCount : 0}}
                                         </p>
                                     </div>
                             </a>
@@ -28,7 +28,7 @@
                                 <div class="card-body text-warning">
                                     <h5 class="card-title text-warning">On Queue Transactions</h5>
                                     <p class="card-text fs-3 d-flex align-items-center">
-                                        <i class='bx bx-list-ol fs-4'>&nbsp;</i>10
+                                        <i class='bx bx-list-ol fs-4'>&nbsp;</i>{{$OnQueue ? $OnQueue : 0}}
                                     </p>
                                 </div>
                         </a>
@@ -40,7 +40,7 @@
                             <div class="card-body text-secondary">
                                 <h5 class="card-title text-secondary">On Hold Transactions</h5>
                                 <p class="card-text fs-3 d-flex align-items-center">
-                                    <i class='bx bxs-error-alt fs-3'>&nbsp;</i>23
+                                    <i class='bx bxs-error-alt fs-3'>&nbsp;</i>{{$OnHold ? $OnHold : 0}}
                                 </p>
                             </div>
                         </div>

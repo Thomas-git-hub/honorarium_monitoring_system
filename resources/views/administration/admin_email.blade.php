@@ -2,8 +2,6 @@
 
 @section('content')
 
-
-
         <div class="row mt-4 gap-3">
             <div class="col-md">
                 <div class="card">

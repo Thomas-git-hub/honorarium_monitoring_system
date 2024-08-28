@@ -26,6 +26,7 @@ class UserSeeder extends Seeder
             'ee_number' => '2024-7-0700',
             'college_id' => '0',
             'usertype_id' => '7',
+            'office_id' => '1',
             'status' => 'Active',
             'password' => Hash::make('123456'),
         ]);
@@ -41,6 +42,7 @@ class UserSeeder extends Seeder
             'ee_number' => '2024-2-0700',
             'college_id' => '0',
             'usertype_id' => '2',
+            'office_id' => '1',
             'status' => 'Active',
             'password' => Hash::make('123456'),
         ]);
@@ -56,6 +58,7 @@ class UserSeeder extends Seeder
             'ee_number' => '2024-3-0700',
             'college_id' => '0',
             'usertype_id' => '3',
+            'office_id' => '2',
             'status' => 'Active',
             'password' => Hash::make('123456'),
         ]);
@@ -71,6 +74,7 @@ class UserSeeder extends Seeder
             'ee_number' => '2024-4-0700',
             'college_id' => '0',
             'usertype_id' => '4',
+            'office_id' => '4',
             'status' => 'Active',
             'password' => Hash::make('123456'),
         ]);
@@ -86,6 +90,7 @@ class UserSeeder extends Seeder
             'ee_number' => '2024-5-0700',
             'college_id' => '0',
             'usertype_id' => '5',
+            'office_id' => '3',
             'status' => 'Active',
             'password' => Hash::make('123456'),
         ]);
@@ -101,6 +106,7 @@ class UserSeeder extends Seeder
             'ee_number' => '2024-6-0700',
             'college_id' => '0',
             'usertype_id' => '6',
+            'office_id' => '5',
             'status' => 'Active',
             'password' => Hash::make('123456'),
         ]);
@@ -116,6 +122,7 @@ class UserSeeder extends Seeder
             'ee_number' => '2024-1-0700',
             'college_id' => '0',
             'usertype_id' => '1',
+            'office_id' => '6',
             'status' => 'Active',
             'password' => Hash::make('123456'),
         ]);

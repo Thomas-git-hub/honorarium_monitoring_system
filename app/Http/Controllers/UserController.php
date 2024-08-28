@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Mail\TempPasswordMail;
+use App\Models\Office;
 use App\Models\User;
 use App\Models\UserType;
 use Carbon\Carbon;
@@ -69,6 +70,7 @@ class UserController extends Controller
             ->first();
 
             $usertype = UserType::where('name', 'Faculties')->first();
+            $office = Office::where('name', 'Faculty')->first();
 
             if ($employeeDetails) {
                 DB::connection('mysql')->table('users')->where('id', $mysqlUserId)->update([
@@ -79,6 +81,7 @@ class UserController extends Controller
                     'position' => $employeeDetails->employee_academic_rank,
                     'college_id' => $employeeDetails->college_id,
                     'usertype_id' => $usertype->id,
+                    'office_id' => $office->id,
                     'created_at' => now(),
 
                 ]);

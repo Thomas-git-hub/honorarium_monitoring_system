@@ -28,66 +28,60 @@ class QueueController extends Controller
         if ($transactions->isEmpty()) {
             return response()->json(['success' => false, 'message' => 'No transactions found with status Processing']);
         }
-
-        // Get the emails of the employees associated with the transactions
-        // $employees = collect($ibu_dbcon->table('employee_user')
-        //     ->whereIn('id', $transactions->pluck('employee_id')->toArray())
-        //     ->get(['id', 'email'])); // Convert to collection
-
-        // $employeeDetails = collect($ibu_dbcon->table('employee')
-        //     ->whereIn('id', $transactions->pluck('employee_id')->toArray())
-        //     ->get(['id', 'employee_fname'])); // Convert to collection
-
-        // Send an email to each employee
         foreach ($transactions as $transaction) {
-            // $employee = $employees->firstWhere('id', $transaction->employee_id);
-            // $employeeDetail = $employeeDetails->firstWhere('id', $transaction->employee_id);
-
-            // if ($employee && $employeeDetail && !empty($employee->email)) {
-            //     // Prepare the email data
-            //     $emailData = [
-            //         'transaction_id' => $transaction->id,
-            //         'employee_fname' => $employeeDetail->employee_fname,
-            //         'status' => 'On Queue',
-            //     ];
-
-            //     // Send the email using the TransactionStatusChanged mailable
-            //     Mail::to($employee->email)->send(new TransactionStatusChanged($emailData));
-            // }
-
-            $office_admin = Office::where('name', 'Bugs Administration')->first();
-
             $logs = new Activity_logs();
             $logs->trans_id = $transaction->id;
-            $logs->office_id = $office_admin->id;
+            $logs->office_id = Auth::user()->office_id;
             $logs->user_id = Auth::user()->id;
             $logs->save();
 
-
         }
 
+        $usertype = Auth::user()->usertype->name;
 
-        $office = Office::where('name', 'Budget Office')->first();
+        if($usertype === 'Admin' || $usertype === 'Superadmin'){
+            $office = Office::where('name', 'Budget Office')->first();
+        }
+        elseif($usertype === 'Budget Office' || $usertype === 'Accounting ' ){
+            $office = Office::where('name', 'Dean')->first();
+        }else{
+            $office = Office::where('name', 'Faculty')->first();
+        }
+        
 
-        $ack = new Acknowledgement();
-        $ack->trans_id = $transaction->id;
-        $ack->office_id = $office_admin->id;
-        $ack->user_id = Auth::user()->id;
-        $ack->save();
+        if (is_null($transaction->batch_id)) {
+            $ack = new Acknowledgement();
+            $ack->trans_id = $transaction->id;
+            $ack->office_id = Auth::user()->office_id;
+            $ack->user_id = Auth::user()->id;
+            $ack->save();
 
-        // Update the batch_id after saving
-        $ack->batch_id = '00'. $ack->id . '-' . $ack->created_at->format('mdY');
-        $ack->save();
+            // Update the batch_id after saving
+            $ack->batch_id = '00'. $ack->id . '-' . $ack->created_at->format('mdY');
+            $ack->save();
 
+            // Update the status to 'On Queue'
+            Transaction::where('status', 'Processing')
+            ->where('office', Auth::user()->office_id)
+            ->where('created_by', Auth::user()->id)
+            ->update([
+                'status' => 'On Queue',
+                'batch_id' => $ack->batch_id,
+                'office' => $office->id,
+                'created_by' => Auth::user()->id,
+            ]);
+        }else{
+            // Update the status to 'On Queue'
+            Transaction::where('status', 'Processing')
+            ->where('office', Auth::user()->office_id)
+            ->where('created_by', Auth::user()->id)
+            ->update([
+                'status' => 'On Queue',
+                'office' => $office->id,
+                'created_by' => Auth::user()->id,
+            ]);
 
-        // Update the status to 'On Queue'
-        Transaction::where('status', 'Processing')->update([
-            'status' => 'On Queue',
-            'batch_id' => $ack->batch_id,
-            'office' => $office->id
-        ]);
-
-
+        }
         return response()->json(['success' => true, 'message' => 'Emails sent and transactions updated.']);
     }
 
@@ -117,7 +111,7 @@ class QueueController extends Controller
         $transaction->sem = $request->sem;
         $transaction->year = $request->year;
         $transaction->month = $request->month;
-        $transaction->created_by = auth()->user()->id;
+        $transaction->created_by =Auth::user()->id;
         $transaction->save();
 
         return response()->json(['success' => true, 'message' => 'Transaction updated successfully.']);
@@ -154,7 +148,7 @@ class QueueController extends Controller
         }
 
         $transaction->status = 'On-hold';
-        $transaction->created_by = auth()->user()->id;
+        $transaction->created_by = Auth::user()->id;
         $transaction->save();
 
         return response()->json(['success' => true, 'message' => 'Transaction updated successfully.']);

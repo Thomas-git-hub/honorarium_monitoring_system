@@ -20,6 +20,7 @@ class IsSuperadmin
         if (Auth::check() && Auth::user()->usertype->name === 'Superadmin' )  {
             return $next($request);
         }
+        
 
 
         // Redirect to home or any other page
