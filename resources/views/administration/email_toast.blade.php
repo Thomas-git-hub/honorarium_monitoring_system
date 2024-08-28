@@ -33,7 +33,6 @@
                 class='bx bxs-envelope'>&nbsp;</i>Send Email</h5>
         <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
     </div>
-    <small class="text-danger" id="label" style="display: none;">Please specify the reason for holding this transaction.</small>
 
     <div class="offcanvas-body my-3 flex-grow-0">
         <!-- Spinner -->
@@ -62,11 +61,11 @@
                 <textarea class="form-control" id="emailTextArea" name="message" rows="3" placeholder="Message" style="border: none;"></textarea>
             </div>
             <div class="border-top mt-3">
+                <small class="text-danger" id="label" style="display: none;">Please specify the reason for holding this transaction.</small>
                 <div class="d-flex flex-row justify-content-end mt-3 gap-2">
                     <button type="button" class="btn btn-label-danger border-none btn-trash bg-transparent"
                         id="discard"><i class='bx bxs-trash-alt'></i></button>
-                    <button type="submit" class="btn btn-primary" id="sendButton"><i
-                            class='bx bxs-send'>&nbsp;</i>Send</button>
+                    <button type="submit" class="btn btn-primary" id="sendButton"><i class='bx bxs-send'>&nbsp;</i>Send</button>
                 </div>
             </div>
         </form>
