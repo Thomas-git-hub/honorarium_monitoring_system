@@ -13,6 +13,7 @@ use App\Http\Controllers\SendEmailController;
 use App\Models\Honorarium;
 use App\Http\Controllers\OnHoldController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\UserManagementController;
 
 //START NO AUTHENTICATED ACCESS
 Route::middleware(['guest'])->group(function () {
@@ -32,6 +33,8 @@ Route::middleware(['auth_check'])->group(function () {
     Route::post('/test', [UserController::class, 'test'])->name('test');
 
     Route::get('/profile', [ProfileController::class, 'profile'])->name('profile');
+    // Route::put('/profile/update', [ProfileController::class, 'profile_update'])->name('profile.update');
+    Route::match(['post', 'put'], 'profile/update', [ProfileController::class, 'profile_update'])->name('profile.update');
     Route::post('/logout', [UserController::class, 'logout'])->name('logout');
 
     Route::get('/admin_dashboard', [AdminController::class, 'admin_dashboard'])->name("admin_dashboard");
@@ -44,13 +47,15 @@ Route::middleware(['auth_check'])->group(function () {
 
     //START SUPERADMIN ACCESS
 
-    Route::middleware(['Superadmin'])->group(function () {
+    // Route::middleware(['Superadmin'])->group(function () {
 
         Route::get('/getUser', [UserController::class, 'getUser'])->name('getUser');
 
         Route::get('/admin_faculty', [AdminController::class, 'admin_faculty'])->name("admin_faculty");
         Route::get('/admin_view_faculty', [AdminController::class, 'admin_view_faculty'])->name("admin_view_faculty");
         Route::get('/admin_faculty/list', [UserController::class, 'list'])->name("admin_faculty.list");
+
+        Route::get('/user_management', [UserManagementController::class, 'user_management'])->name("user_management");
 
         Route::get('/admin_honorarium', [AdminController::class, 'admin_honorarium'])->name("admin_honorarium");
         Route::get('/admin_honorarium/list', [HonorariumController::class, 'list'])->name("admin_honorarium.list");
@@ -80,7 +85,8 @@ Route::middleware(['auth_check'])->group(function () {
         Route::get('/history', [HistoryController::class, 'history'])->name('history');
         Route::get('/open_history', [HistoryController::class, 'open_history'])->name('open_history');
 
-    });
+
+    // });
 
     //END SUPERADMIN ACCESS
 
