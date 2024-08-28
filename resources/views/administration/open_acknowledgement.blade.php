@@ -112,10 +112,10 @@
 <!-- Modal -->
 <div class="modal fade" id="onHoldMessage" data-bs-backdrop="static" tabindex="-1">
     <div class="modal-dialog modal-xl" id="onHoldModalDialog">
-      <div class="modal-content">
+        <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title gap-1 d-flex align-items-center" id="backDropModalTitle"><i class='bx bxs-hand'></i>Hold Transaction</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <h5 class="modal-title gap-1 d-flex align-items-center" id="backDropModalTitle"><i class='bx bxs-hand'></i>Hold Transaction</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
             <form id="emailReply">
@@ -151,9 +151,9 @@
                 </div>
             </form>
         </div>
-      </div>
+        </div>
     </div>
-  </div>
+</div>
 {{-- MESSAGE MODAL END --}}
 
 <div class="row">
@@ -198,7 +198,7 @@
     <div class="col">
         <div class="row mb-3">
             <div class="col-md mx-auto d-flex justify-content-end">
-                <button type="button" class="btn btn-primary gap-1" data-bs-toggle="modal" data-bs-target="#proceed">Acknowledge Transaction<i class='bx bx-chevrons-right'></i></button>
+                <button type="button" class="btn btn-primary gap-1 ProceedAcknowledge" id="ProceedAcknowledge" data-bs-toggle="modal" data-bs-target="#proceed">Acknowledge Transaction<i class='bx bx-chevrons-right'></i></button>
             </div>
         </div>
 
@@ -224,6 +224,8 @@
 <script>
     $(function () {
 
+        $('#proceed').modal('hide');
+
         var batchId = {!! json_encode($batch_id) !!};
 
         var table = $('#facultyTable').DataTable({
@@ -244,6 +246,7 @@
             },
             columns: [
                 { data: 'id', name: 'id', title: 'ID', visible: false},
+                { data: 'batch_id', name: 'batch_id', title: 'Batch'},
                 { data: 'date_of_trans', name: 'date_of_trans', title: 'Date Received' },
                 { data: 'faculty', name: 'faculty', title: 'Faculty' },
                 { data: 'id_number', name: 'id_number', title: 'ID Number' },
@@ -254,7 +257,7 @@
                 { data: 'year', name: 'year', title: 'Semester Year' },
                 { data: 'month.month_name', name: 'month', title: 'Month Of' },
                 { data: 'created_by', name: 'created_by', title: 'Created By' },
-                { data: 'action', name: 'action', title: 'Action' }
+                // { data: 'action', name: 'action', title: 'Action' }
             ],
             order: [[0, 'desc']], // Sort by date_received column by default
             columnDefs: [
@@ -266,6 +269,50 @@
             createdRow: function(row, data) {
                 $(row).addClass('unopened');
             }
+        });
+
+        $('#ProceedAcknowledge').off('click').on('click', function() {
+
+            $.ajax({
+                url: '{{ route('open_acknowledgement.acknowledge') }}',
+                method: 'POST',
+                data: {
+                    _token: $('meta[name="csrf-token"]').attr('content'),
+                    batchId: batchId,
+                },
+                success: function(response) {
+                    if(response.success){
+
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success',
+                            text: response.message,
+                        });
+                        $('#proceed').modal('show');
+
+                    }else{
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oh no!',
+                            text: response.message,
+                        });
+
+                        $('#proceed').modal('hide');
+
+                    }
+                    $('#facultyTable').DataTable().ajax.reload();
+                    window.location.href = `/for_acknowledgement`;
+                },
+                error: function(xhr) {
+                    // Handle error
+                    $('#proceed').modal('hide');
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'There was a problem updating the transactions.',
+                    });
+                }
+            });            
         });
 
         // Handle Edit button click

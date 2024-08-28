@@ -165,7 +165,8 @@ class AdminController extends Controller
     }
 
     public function admin_on_hold(){
-        return view('administration.admin_on_hold');
+        $OnHold = Transaction::where('status', 'On-hold')->where('office', Auth::user()->office_id)->count();
+        return view('administration.admin_on_hold', compact('OnHold'));
     }
 
     public function list(Request $request)
@@ -174,24 +175,37 @@ class AdminController extends Controller
             $query = Transaction::with(['honorarium', 'createdBy'])->where('status', 'Processing');
 
         }
-        elseif(Auth::user()->usertype->name === 'Budget Office'){
+        elseif(Auth::user()->usertype->name === 'Admin'){
             $From_office = Office::where('name', 'BUGS Administration')->first();
-            $query = Transaction::with(['honorarium', 'createdBy'])->where('status', 'Processing');
+            $query = Transaction::with(['honorarium', 'createdBy'])
+            ->where('status', 'Processing')
+            ->where('created_by', Auth::user()->id);
+
+        }elseif(Auth::user()->usertype->name === 'Budget Office'){
+            $From_office = Office::where('name', 'BUGS Administration')->first();
+            $query = Transaction::with(['honorarium', 'createdBy'])
+            ->where('status', 'Processing')
+            ->where('created_by', Auth::user()->id);
 
         }elseif(Auth::user()->usertype->name === 'Dean'){
             $From_office = Office::where('name', 'Budget Office')->first();
-            $query = Transaction::with(['honorarium', 'createdBy'])->where('status', 'Processing');
+            $query = Transaction::with(['honorarium', 'createdBy'])
+            ->where('status', 'Processing')
+            ->where('created_by', Auth::user()->id);
 
         }elseif(Auth::user()->usertype->name === 'Accounting' || Auth::user()->usertype->name === 'Cashiers'){
             $From_office = Office::where('name', 'Dean')->first();
-            $query = Transaction::with(['honorarium', 'createdBy'])->where('status', 'Processing');
+            $query = Transaction::with(['honorarium', 'createdBy'])
+            ->where('status', 'Processing')
+            ->where('created_by', Auth::user()->id);
            
 
         }elseif(Auth::user()->usertype->name === 'Dean'){
             $From_office_acc = Office::where('name', 'Accounting')->first();
             $From_office_BO = Office::where('name', 'Budget Office')->first();
-            $query = Transaction::with(['honorarium', 'createdBy'])->where('status', 'Processing');
-           
+            $query = Transaction::with(['honorarium', 'createdBy'])
+            ->where('status', 'Processing')
+            ->where('created_by', Auth::user()->id);
         }
        
         $transactions = $query->get();
@@ -215,6 +229,9 @@ class AdminController extends Controller
         return DataTables::of($transactions)
             ->addColumn('id', function($data) {
                 return $data->id;
+            })
+            ->addColumn('batch_id', function($data) {
+                return $data->batch_id ? $data->batch_id: 'No Batch ID Found';
             })
             ->addColumn('faculty', function($data) use($ibu_dbcon) {
                 $employeeDetails = $ibu_dbcon->table('employee')

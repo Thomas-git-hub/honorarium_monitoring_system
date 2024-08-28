@@ -166,7 +166,7 @@
                 <div class="row">
                     <div class="col-md">
                         <div class="alert alert-danger">
-                            Batch ID Number: <b>001-08072024</b>
+                            Batch ID Number: <b>{{$batch_id}}</b>
                         </div>
                     </div>
                 </div>
@@ -176,7 +176,7 @@
                     <div class="card-body">
                         <h5 class="card-title text-secondary">Total Number of Transactions</h5>
                         {{-- <h1 class="text-primary">{{$onQueue}}</h1> --}}
-                        <h1 class="text-secondary">07</h1>
+                        <h1 class="text-secondary">{{$TransCount}}</h1>
                     </div>
                 </div>
             </div>
@@ -207,6 +207,7 @@
 {{--FACULTY DATATABLES START --}}
 <script>
     $(function () {
+        var batchId = {!! json_encode($batch_id) !!};
         // var data = [
         //     {
         //         date_received: '<p>07/26/2024</p>',
@@ -226,7 +227,12 @@
         var table = $('#facultyTable').DataTable({
             processing: true,
             serverSide: true,
-            ajax: '{{ route('admin_new_entries.list') }}',
+            ajax: {
+                url: '{{ route('OpenHistoryList') }}',
+                data: function(d) {
+                    d.batch_id = batchId; // Passing the batch ID as a parameter
+                }
+            },
             pageLength: 10,
             paging: true,
             dom: '<"top"lf>rt<"bottom"ip>',
@@ -246,7 +252,7 @@
                 { data: 'year', name: 'year', title: 'Semester Year' },
                 { data: 'month.month_name', name: 'month', title: 'Month Of' },
                 { data: 'created_by', name: 'created_by', title: 'Created By' },
-                { data: 'action', name: 'action', title: 'Action' }
+                // { data: 'action', name: 'action', title: 'Action' }
             ],
             order: [[0, 'desc']], // Sort by date_received column by default
             columnDefs: [

@@ -144,10 +144,10 @@ class OnHoldController extends Controller
        
         $ibu_dbcon = DB::connection('ibu_test');
 
-        // Fetch all transactions with status 'Processing'
+        // Fetch all transactions with status 'On-hold'
         $transactions = Transaction::where('status', 'On-hold')->where('id', $request->id)->first();
 
-        if ($transactions->isEmpty()) {
+        if (empty($transactions)) {
             return response()->json(['success' => false, 'message' => 'No transactions found with status Processing']);
         }
 
@@ -177,9 +177,7 @@ class OnHoldController extends Controller
         $ack->batch_id = '00'. $ack->id . '-' . $ack->created_at->format('mdY');
         $ack->save();
 
-
-        // Update the status to 'On Queue'
-        Transaction::where('status', 'Processing')->update([
+        Transaction::where('id', $transactions->id)->update([
             'status' => 'On Queue',
             'batch_id' => $ack->batch_id,
             'office' => $office->id

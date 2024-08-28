@@ -35,7 +35,7 @@
         <div class="card shadow-none bg-label-danger">
             <div class="card-body text-danger">
                 <h5 class="card-title text-danger">On Hold Transactions</h5>
-                <h1 class="text-danger">5</h1>
+                <h1 class="text-danger">{{$OnHold? $OnHold : 0}}</h1>
             </div>
         </div>
     </div>
@@ -165,7 +165,7 @@
 
 
          // Handle Proceed button click
-         $('#proceed_transaction').on('click', function() {
+         $('#proceed_transaction').off('click').on('click', function() {
             $.ajax({
                 url: '{{ route('UpdateToProceed') }}',
                 method: 'POST',

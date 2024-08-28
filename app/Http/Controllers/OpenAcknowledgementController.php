@@ -2,12 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\Acknowledge;
 use App\Models\Acknowledgement;
+use App\Models\Activity_logs;
+use App\Models\Emailing;
 use App\Models\Office;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Yajra\DataTables\Facades\DataTables;
 
 class OpenAcknowledgementController extends Controller
@@ -126,6 +130,86 @@ class OpenAcknowledgementController extends Controller
 
             ->make(true);
 
+    }
+
+    public function acknowledge(Request $request){
+
+        $transactions = Transaction::where('batch_id', $request->batchId)
+                                ->where('status', 'On Queue')
+                                ->where('office', Auth::user()->office_id)
+                                ->get();
+        $getCreateBy = Transaction::with(['user', 'createdBy'])
+        ->where('batch_id', $request->batchId)
+        ->where('status', 'On Queue')
+        ->where('office', Auth::user()->office_id)
+        ->first();
+
+        foreach ($transactions as $transaction) {
+            $logs = new Activity_logs();
+            $logs->trans_id = $transaction->id;
+            $logs->office_id = Auth::user()->office_id;
+            $logs->user_id = Auth::user()->id;
+            $logs->save();
+
+        }
+
+        $acknowledgement = Acknowledgement::where('batch_id', $request->batchId)->first();
+
+        $ack = new Acknowledgement();
+        $ack->trans_id = $transaction->id;
+        $ack->office_id = Auth::user()->office_id;
+        $ack->user_id = Auth::user()->id;
+        $ack->batch_id = $acknowledgement->batch_id;
+        $ack->save();
+
+        $usertype = Auth::user()->usertype->name;
+
+        if($usertype === 'Admin' || $usertype === 'Superadmin'){
+            $office = Office::where('name', 'BUGS Administration')->first();
+        }
+        elseif($usertype === 'Budget Office' || $usertype === 'Accounting ' ){
+            $office = Office::where('name', 'Budget Office')->first();
+        }elseif($usertype === 'Accounting'){
+            $office = Office::where('name', 'Dean')->first();
+        }elseif($usertype === 'Cashiers'){
+            $office = Office::where('name', 'faculty')->first();
+        }elseif($usertype === 'Dean'){
+            $office = Office::where('name', 'Accounting')->first();
+        }
+
+        foreach ($transactions as $batch_id) {
+            Transaction::where('status', 'On Queue')->where('batch_id', $transaction->batch_id)->update([
+                'status' => 'Processing',
+                'batch_id' => $ack->batch_id,
+                'office' => $office->id,
+                'created_by' => Auth::user()->id,
+            ]);
+
+        }
+
+        if (!empty($getCreateBy->createdBy->email)) {
+
+            $emailData = [
+                'user_id' => $getCreateBy->createdBy->id,
+                'employee_fname' => $getCreateBy->createdBy->first_name,
+                'subject' => 'Acknowledge Transaction',
+                'message' => 'The entries has been acknowledge',
+                'sender_email' => Auth::user()->email, // Add sender email
+            ];
+
+            Mail::to($getCreateBy->createdBy->email)->send(new Acknowledge($emailData));
+
+
+            // Process form data
+            $email = new Emailing();
+            $email->subject = $emailData['subject'];
+            $email->to_user = $emailData['user_id'];
+            $email->message = $emailData['message'];
+            $email->status = 'Unread';
+            $email->created_by = Auth::user()->id;
+            $email->save();
+        }
+        return response()->json(['success' => true, 'message' => 'Emails sent and transactions updated.']);
     }
 
 }

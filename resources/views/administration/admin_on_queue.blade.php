@@ -194,7 +194,7 @@
     <div class="col">
         <div class="row mb-2">
             <div class="col-md mx-auto d-flex justify-content-end">
-                <button type="button" class="btn btn-primary gap-1" data-bs-toggle="modal" data-bs-target="#proceed">Proceed to Budget Office<i class='bx bx-chevrons-right'></i></button>
+                <button type="button" class="btn btn-primary gap-1" data-bs-toggle="modal" data-bs-target="#proceed">Proceed<i class='bx bx-chevrons-right'></i></button>
             </div>
         </div>
 
@@ -233,6 +233,7 @@
             },
             columns: [
                 { data: 'id', name: 'id', title: 'ID', visible: false},
+                { data: 'batch_id', name: 'batch_id', title: 'batch_id', visible: false},
                 { data: 'date_of_trans', name: 'date_of_trans', title: 'Date Received' },
                 { data: 'faculty', name: 'faculty', title: 'Faculty' },
                 { data: 'id_number', name: 'id_number', title: 'ID Number' },
@@ -456,7 +457,7 @@
                 url: '{{ route('admin_on_queue.proceedToBudgetOffice') }}',
                 method: 'POST',
                 data: {
-                    _token: $('meta[name="csrf-token"]').attr('content'),
+                    _token: $('meta[name="csrf-token"]').attr('content'),  
                 },
                 success: function(response) {
                     if(response.success){

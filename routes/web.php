@@ -77,6 +77,8 @@ Route::middleware(['auth_check'])->group(function () {
 
         Route::get('/open_acknowledgement', [OpenAcknowledgementController::class, 'open_acknowledgement'])->name('open_acknowledgement');
         Route::get('/open_acknowledgement/list', [OpenAcknowledgementController::class, 'list'])->name('open_acknowledgement.list');
+        Route::get('/open_acknowledgement/list', [OpenAcknowledgementController::class, 'list'])->name('open_acknowledgement.list');
+        Route::post('/open_acknowledgement/acknowledge', [OpenAcknowledgementController::class, 'acknowledge'])->name('open_acknowledgement.acknowledge');
 
 
         Route::get('/transactions/on-hold', [OnHoldController::class, 'getOnHoldTransactions'])->name('on_hold_status');
@@ -85,6 +87,8 @@ Route::middleware(['auth_check'])->group(function () {
 
         Route::get('/history', [HistoryController::class, 'history'])->name('history');
         Route::get('/open_history', [HistoryController::class, 'open_history'])->name('open_history');
+        Route::get('/open_history/list', [HistoryController::class, 'OpenHistoryList'])->name('OpenHistoryList');
+        Route::get('/history/list', [HistoryController::class, 'list'])->name('history.list');
 
     // });
 

@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->string('contact')->nullable();
             $table->string('position')->nullable();
+            $table->string('address')->nullable();
             $table->string('ee_number')->nullable();
             $table->unsignedBigInteger('college_id')->nullable();
             $table->unsignedBigInteger('usertype_id')->nullable();
