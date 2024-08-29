@@ -18,56 +18,6 @@
 
     <div class="row mt-4">
 
-        <div class="col-md-4">
-            {{-- <div class="card shadow-none">
-                <div class="card-body">
-                    <div class="card shadow-none" style="width: 100%;">
-                        <img src="{{ asset('assets/myimg/avatar.jpg') }}" class="rounded-circle" alt="">
-                    </div>
-                    <div class="d-flex justify-content-center mt-2">
-                        <div class="">
-                            <h5 class="text-Dark text-center d-flex justify-content-center"><b>{{ Auth::user()->first_name . ' ' . Auth::user()->last_name }}</b></h5>
-                            <p class="text-Dark text-center d-flex justify-content-center"><small>{{ Auth::user()->position}}</small></p>
-                        </div>
-                    </div>
-                    <div class="d-flex justify-content-center ">
-                        <button type="" class="btn btn-label-primary w-100 gap-1"><i class='bx bxs-image-add'></i>Change Profile</button>
-                    </div>
-                </div>
-            </div> --}}
-
-            <div class="card shadow-none">
-                <div class="card-body">
-                    <small class="card-text text-uppercase text-muted small">Status</small>
-                    <ul class="list-unstyled my-3 py-1 border-bottom">
-                        <li class="d-flex align-items-center">
-                            <i class="bx bx-check"></i><span class="fw-medium mx-2">Account Status:</span><b class="text-success">Active</b>
-                        </li>
-                    </ul>
-
-                    {{-- FOR SUPER ADMIN SIDE ONLY --}}
-                    <div style="display: none;">
-                        <small>Disabling this account means there are technical difficulties encountered on this account</small>
-                        <button class="btn btn-label-danger w-100">Disable Account</button>
-                    </div>
-                </div>
-            </div>
-
-
-            <div class="card shadow-none mt-4">
-                <div class="card-body">
-                    <div class="d-flex align-items-center gap-1">
-                        <i class='bx bxs-error-alt text-danger'></i>
-                        <small class="card-text text-uppercase text-danger small">Report a Problem!</small>
-                    </div>
-
-                    <p class="text-secondary mt-2"><small>If you encounter any issues while navigating the system, please send an email to <b class="text-primary">user@gmail.com</b> or click the message button below to contact the system administrator directly.</small></p>
-                    <small class="text-danger">Send email to System Administrator now?</small>
-                    <button class="btn btn-label-danger w-100 gap-1" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasEnd" aria-controls="offcanvasEnd" id="sendEmailBtn"><i class='bx bxs-envelope' ></i>Email</button>
-                </div>
-            </div>
-        </div>
-
         <div class="col-md">
             <div class="card shadow-none" id="profileDetails">
                 <div class="card-body">
@@ -76,7 +26,7 @@
                         <li class="d-flex align-items-center mb-4">
                             <i class="bx bx-user"></i>
                             <span class="fw-medium mx-2">Full Name:</span>
-                            <span class="text-dark"><b>{{ Auth::user()->first_name . ' ' . Auth::user()->middle_name . ' ' . Auth::user()->last_name }}</b></span>
+                            <span class="text-dark"><b>{{ Auth::user()->first_name . ' ' . Auth::user()->middle_name . ' ' . Auth::user()->last_name . ' ' . Auth::user()->suffix }}</b></span>
                         </li>
                         <li class="d-flex align-items-center mb-4">
                             <i class="bx bx-crown"></i>
@@ -109,8 +59,10 @@
 
                     <small class="card-text text-uppercase text-muted small">Location</small>
                     <ul class="list-unstyled my-3 py-1 border-bottom">
-                        <li class="d-flex align-items-center mb-4"><i class="bx bx-map"></i><span
-                                class="fw-medium mx-2">Address:</span> <span>Zone 1 Dimatagpuan</span></li>
+                        <li class="d-flex align-items-center mb-4"><i class="bx bx-map"></i>
+                            <span class="fw-medium mx-2">Address:</span>
+                            <span class="text-dark"><b>{{Auth::user()->address}}</b></span>
+                        </li>
                     </ul>
                     <small class="card-text text-uppercase text-muted small">Contacts</small>
                     <ul class="list-unstyled my-3 py-1">
@@ -129,7 +81,8 @@
                         </li>
                     </ul>
 
-                    <div class="d-flex justify-content-center ">
+                    <div class="">
+                        <small class="text-primary">Kindly Fill up all missing information above.</small>
                         <div class="btn btn-label-primary w-100 gap-1" id="updateDetailsBtn"><i class='bx bxs-cog'></i>Update Details</div>
                     </div>
                 </div>
@@ -151,18 +104,21 @@
                                     <div class="mb-3">
                                         <label for="firstName" class="form-label">First Name</label>
                                         <input type="text" name="first_name" class="form-control" id="firstName" placeholder="Enter Name" aria-describedby="defaultFormControlHelp" value="{{Auth::user()->first_name}}"/>
+                                        <small class="text-danger note" id="noteFirstName">Kindly enter your first name</small>
                                     </div>
                                 </div>
                                 <div class="col-md">
                                     <div class="mb-3">
                                         <label for="middleName" class="form-label">Middle Name</label>
                                         <input type="text" name="middle_name" class="form-control" id="middleName" placeholder="Enter middle name" aria-describedby="defaultFormControlHelp" value="{{Auth::user()->middle_name}}"/>
+                                        <small class="text-danger note" id="noteMiddleName">Kindly enter your middle name</small>
                                     </div>
                                 </div>
                                 <div class="col-md">
                                     <div class="mb-3">
                                         <label for="lastName" class="form-label">Surname</label>
                                         <input type="text" name="last_name" class="form-control" id="lastName" placeholder="Enter last name" aria-describedby="defaultFormControlHelp" value="{{Auth::user()->last_name}}"/>
+                                        <small class="text-danger note" id="noteLastName">Kindly enter your last name</small>
                                     </div>
                                 </div>
                                 <div class="col-md">
@@ -183,6 +139,7 @@
                                     <div class="mb-3">
                                         <label for="ee_number" class="form-label">Employee ID Number<b class="text-danger">*</b></label>
                                         <input type="text" name="ee_number" class="form-control" id="ee_number" placeholder="2024-2-0700" aria-describedby="defaultFormControlHelp" value="{{Auth::user()->ee_number}}"/>
+                                        <small class="text-danger note" id="note">Kindly enter your ID number in this field</small>
                                     </div>
                                 </div>
                             </div>
@@ -198,8 +155,9 @@
                         <ul class="list-unstyled my-3 py-1 border-bottom">
                             <div class="col-md">
                                 <div class="mb-3">
-                                    <label for="address" class="form-label">Address <b class="text-danger">*</b></label>
+                                    <label for="address" class="form-label">Address</label>
                                     <input type="text" name="address" class="form-control" id="address" placeholder="Block-Lot/Street, Baranggay, City/Province, Postal Code" aria-describedby="defaultFormControlHelp" value="{{Auth::user()->address}}"/>
+                                    <small class="text-danger note" id="noteAddress">Kindly enter your address</small>
                                 </div>
                             </div>
                         </ul>
@@ -207,14 +165,16 @@
                             <div class="row">
                                 <div class="col-md">
                                     <div class="">
-                                        <label for="contact" class="form-label">Contact Number<b class="text-danger">*</b></label>
+                                        <label for="contact" class="form-label">Contact Number</label>
                                         <input type="text" name="contact" class="form-control" id="contact" placeholder="+639" aria-describedby="defaultFormControlHelp" value="{{Auth::user()->contact}}"/>
+                                        <small class="text-danger note" id="noteContact">Kindly enter your contact number</small>
                                     </div>
                                 </div>
                                 <div class="col-md">
                                     <div class="">
-                                        <label for="email" class="form-label">Email Address<b class="text-danger">*</b></label>
+                                        <label for="email" class="form-label">Email Address</label>
                                         <input type="text" name="email" class="form-control" id="email" placeholder="johndoe@bicol-u.edu.ph" aria-describedby="defaultFormControlHelp" value="{{Auth::user()->email}}"/>
+                                        <small class="text-danger note" id="noteEmail">Kindly enter your Bicol University email</small>
                                     </div>
                                 </div>
                             </div>
@@ -225,6 +185,43 @@
                         </div>
                     </form>
 
+                </div>
+            </div>
+
+        </div>
+
+        <div class="col-md-4">
+            {{-- <div class="card shadow-none">
+                <div class="card-body">
+                    <div class="card shadow-none" style="width: 100%;">
+                        <img src="{{ asset('assets/myimg/avatar.jpg') }}" class="rounded-circle" alt="">
+                    </div>
+                    <div class="d-flex justify-content-center mt-2">
+                        <div class="">
+                            <h5 class="text-Dark text-center d-flex justify-content-center"><b>{{ Auth::user()->first_name . ' ' . Auth::user()->last_name }}</b></h5>
+                            <p class="text-Dark text-center d-flex justify-content-center"><small>{{ Auth::user()->position}}</small></p>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-center ">
+                        <button type="" class="btn btn-label-primary w-100 gap-1"><i class='bx bxs-image-add'></i>Change Profile</button>
+                    </div>
+                </div>
+            </div> --}}
+
+            <div class="card shadow-none">
+                <div class="card-body">
+                    <small class="card-text text-uppercase text-muted small">Status</small>
+                    <ul class="list-unstyled my-3 py-1 border-bottom">
+                        <li class="d-flex align-items-center">
+                            <i class="bx bx-check"></i><span class="fw-medium mx-2">Account Status:</span><b class="text-success">Active</b>
+                        </li>
+                    </ul>
+
+                    {{-- FOR SUPER ADMIN SIDE ONLY --}}
+                    <div style="display: none;">
+                        <small>Disabling this account means there are technical difficulties encountered on this account</small>
+                        <button class="btn btn-label-danger w-100">Disable Account</button>
+                    </div>
                 </div>
             </div>
 
@@ -276,14 +273,22 @@
                         </div>
                 </div>
             </div>
+
+            <div class="card shadow-none mt-4">
+                <div class="card-body">
+                    <div class="d-flex align-items-center gap-1">
+                        <i class='bx bxs-error-alt text-danger'></i>
+                        <small class="card-text text-uppercase text-danger small">Report a Problem!</small>
+                    </div>
+
+                    <p class="text-secondary mt-2"><small>If you encounter any issues while navigating the system, please send an email to <b class="text-primary">user@gmail.com</b> or click the message button below to contact the system administrator directly.</small></p>
+                    <small class="text-danger">Send email to System Administrator now?</small>
+                    <button class="btn btn-label-danger w-100 gap-1" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasEnd" aria-controls="offcanvasEnd" id="sendEmailBtn"><i class='bx bxs-envelope' ></i>Email</button>
+                </div>
+            </div>
+
         </div>
 
-    </div>
-
-    <div class="row mt-4">
-        <div class="col-md-4">
-
-        </div>
     </div>
 
     @include('administration.email_toast')
@@ -327,9 +332,37 @@ $(document).ready(function() {
 });
 
 
+$(document).ready(function() {
+    // Function to toggle visibility of the small tags
+    function toggleNotes() {
+        // Loop through each input and its corresponding small tag
+        $('#updateProfileForm input').each(function() {
+            let inputField = $(this);
+            let note = inputField.siblings('.note'); // Get the corresponding small tag
+
+            if (inputField.val().trim() !== '') {
+                note.hide();  // Hide the note if the field has a value
+            } else {
+                note.show();  // Show the note if the field is empty
+            }
+        });
+    }
+
+    // Initial call to toggleNotes when the page loads
+    toggleNotes();
+
+    // Call toggleNotes function whenever an input field is changed
+    $('#updateProfileForm input').on('input', function() {
+        toggleNotes();
+    });
+});
+
+
 </script>
 
-<script>
+
+{{-- JS For Updating Profile --}}
+{{-- <script>
     $(document).ready(function() {
         $('#updateProfileForm').on('submit', function(e) {
             e.preventDefault(); // Prevent the default form submission
@@ -340,18 +373,108 @@ $(document).ready(function() {
                 data: $(this).serialize(), // Serialize the form data
                 success: function(response) {
                     if(response.success) {
-                        alert('Profile updated successfully!');
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Update Success',
+                            text: response.message,
+                        }).then(function() {
+                            // Reload the page
+                            location.reload();
+                        });
                     } else {
-                        alert('Failed to update profile.');
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Update Failed',
+                            text: response.message,
+                        });
                     }
                 },
                 error: function(xhr, status, error) {
                     console.error(error);
-                    alert('An error occurred. Please try again.');
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'An Error Occurred!',
+                        text: 'Please try again later.',
+                    });
                 }
             });
         });
     });
+</script> --}}
+
+<script>
+    $(document).ready(function() {
+    // Store the original values of the form fields
+    const originalValues = {
+        firstName: $('#firstName').val(),
+        middleName: $('#middleName').val(),
+        lastName: $('#lastName').val(),
+        suffix: $('#suffix').val(),
+        eeNumber: $('#ee_number').val(),
+        address: $('#address').val(),
+        contact: $('#contact').val(),
+        email: $('#email').val()
+    };
+
+    // Function to check if any field values have changed
+    function hasChanges() {
+        return $('#firstName').val() !== originalValues.firstName ||
+               $('#middleName').val() !== originalValues.middleName ||
+               $('#lastName').val() !== originalValues.lastName ||
+               $('#suffix').val() !== originalValues.suffix ||
+               $('#ee_number').val() !== originalValues.eeNumber ||
+               $('#address').val() !== originalValues.address ||
+               $('#contact').val() !== originalValues.contact ||
+               $('#email').val() !== originalValues.email;
+    }
+
+    $('#updateProfileForm').on('submit', function(e) {
+        e.preventDefault(); // Prevent the default form submission
+
+        if (!hasChanges()) {
+            Swal.fire({
+                icon: 'info',
+                title: 'No Updates',
+                text: 'No changes have been made to your profile.',
+            });
+            return;
+        }
+
+        $.ajax({
+            url: '{{ route("profile.update") }}', // Your route
+            type: 'POST',
+            data: $(this).serialize(), // Serialize the form data
+            success: function(response) {
+                if(response.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Update Success',
+                        text: response.message,
+                    }).then(function() {
+                        // Reload the page
+                        location.reload();
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Update Failed',
+                        text: response.message,
+                    });
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error(error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'An Error Occurred!',
+                    text: 'Please try again later.',
+                });
+            }
+        });
+    });
+});
+
 </script>
+
 
 @endsection

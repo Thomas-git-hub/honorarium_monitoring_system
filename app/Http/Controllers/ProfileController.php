@@ -21,7 +21,7 @@ class ProfileController extends Controller
         'middle_name' => 'nullable|string|max:255',
         'last_name' => 'required|string|max:255',
         'suffix' => 'nullable|string|max:255',
-        'address' => 'required|string|max:255',
+        'address' => 'nullable|string|max:255',
         'contact' => 'required|string|max:255',
         'email' => 'required|email|max:255',
         'ee_number' => 'required|string|max:255',
