@@ -226,12 +226,15 @@
                             $('#facultyTable').DataTable().ajax.reload();
                             $('#newEntriesForm input[type="text"]').val('');
                             $('#newEntriesForm input[type="date"]').val('');
-                            $('#newEntriesForm select').each(function() {
-                                $(this).val($(this).find('option[selected]').val());
-                            });
+                            // $('#defaultSelect select').each(function() {
+                            //     $(this).val($(this).find('option[selected]').val());
+                            // });
+                            $('#month').val('');
+                            $('#defaultSelect').val('');
                             $('#newEntriesForm input[type="radio"]').prop('checked', false);
                             $('#facultySelect, #HonoSelect').val(null).trigger('change');
                             // $('#newEntriesForm').off('submit').submit();
+                            $('#addToQueue').hide();
                         });
                     },
                     error: function(response) {
@@ -460,6 +463,17 @@
                         title: 'Success',
                         text: response.message,
                     });
+
+                             $('#facultyTable').DataTable().ajax.reload();
+                            $('#newEntriesForm input[type="text"]').val('');
+                            $('#newEntriesForm input[type="date"]').val('');
+                            // $('#defaultSelect select').each(function() {
+                            //     $(this).val($(this).find('option[selected]').val());
+                            // });
+                            $('#month').val('');
+                            $('#defaultSelect').val('');
+                            $('#newEntriesForm input[type="radio"]').prop('checked', false);
+                            $('#facultySelect, #HonoSelect').val(null).trigger('change');
 
                     }else{
                         $('#spinner').hide();

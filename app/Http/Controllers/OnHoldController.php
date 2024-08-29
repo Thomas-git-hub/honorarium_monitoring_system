@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Acknowledgement;
 use App\Models\Activity_logs;
 use App\Models\Office;
 use Illuminate\Http\Request;
 use App\Models\Transaction;
+use Illuminate\Support\Facades\Auth;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -114,31 +116,74 @@ class OnHoldController extends Controller
         }
 
         // Process form data
-
-        $office = Office::where('name', 'Bugs Administration')->first();
-
         $transaction = new Transaction();
         $transaction->date_of_trans = $request->date_of_trans;
         $transaction->employee_id = $request->employee_id;
-        $transaction->office = $office->id;
+        $transaction->office = Auth::user()->office_id;
         $transaction->honorarium_id = $request->honorarium_id;
         $transaction->sem = $request->sem;
         $transaction->year = $request->year;
         $transaction->month = $request->month;
         $transaction->is_complete = $request->is_complete;
         $transaction->status = 'On-hold';
-        $transaction->created_by = auth()->user()->id;
+        $transaction->created_by = Auth::user()->id;
         $transaction->save();
 
 
         $logs = new Activity_logs();
         $logs->trans_id = $transaction->id;
-        $logs->office_id = $office->id;
+        $logs->office_id = Auth::user()->office_id;
         $logs->user_id = $transaction->created_by;
         $logs->save();
 
         return response()->json(['success' => true, 'message' => 'Form submitted successfully.']);
+    }
 
 
+    public function UpdateToProceed(Request $request){
+       
+        $ibu_dbcon = DB::connection('ibu_test');
+
+        // Fetch all transactions with status 'On-hold'
+        $transactions = Transaction::where('status', 'On-hold')->where('id', $request->id)->first();
+
+        if (empty($transactions)) {
+            return response()->json(['success' => false, 'message' => 'No transactions found with status Processing']);
+        }
+
+        $logs = new Activity_logs();
+        $logs->trans_id = $transactions->id;
+        $logs->office_id = Auth::user()->office_id;
+        $logs->user_id = Auth::user()->id;
+        $logs->save();
+
+        $usertype = Auth::user()->usertype->name;
+        if($usertype === 'Admin' || $usertype === 'Superadmin'){
+            $office = Office::where('name', 'Budget Office')->first();
+        }
+        elseif($usertype === 'Budget Office' || $usertype === 'Accounting ' ){
+            $office = Office::where('name', 'Dean')->first();
+        }else{
+            $office = Office::where('name', 'Faculty')->first();
+        }
+
+        $ack = new Acknowledgement();
+        $ack->trans_id = $transactions->id;
+        $ack->office_id = Auth::user()->office_id;
+        $ack->user_id = Auth::user()->id;
+        $ack->save();
+
+        // Update the batch_id after saving
+        $ack->batch_id = '00'. $ack->id . '-' . $ack->created_at->format('mdY');
+        $ack->save();
+
+        Transaction::where('id', $transactions->id)->update([
+            'status' => 'On Queue',
+            'batch_id' => $ack->batch_id,
+            'office' => $office->id
+        ]);
+
+
+        return response()->json(['success' => true, 'message' => 'Emails sent and transactions updated.']);
     }
 }
