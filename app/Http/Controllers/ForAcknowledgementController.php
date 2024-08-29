@@ -144,7 +144,10 @@ class ForAcknowledgementController extends Controller
 
         // Filter out acknowledgements with a transaction count of 0
         $filteredAcknowledgements = $acknowledgements->filter(function ($acknowledgement) {
-            $countTran = Transaction::where('batch_id', $acknowledgement->batch_id)->where('status', 'On Queue')->count();
+            $countTran = Transaction::where('batch_id', $acknowledgement->batch_id)
+            ->where('status', 'On Queue')
+            ->where('office', Auth::user()->office_id)
+            ->count();
             return $countTran > 0; // Only keep acknowledgements with a transaction count greater than 0
         });
 

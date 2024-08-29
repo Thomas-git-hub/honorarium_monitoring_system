@@ -158,32 +158,54 @@ class OnHoldController extends Controller
         $logs->save();
 
         $usertype = Auth::user()->usertype->name;
+
         if($usertype === 'Admin' || $usertype === 'Superadmin'){
             $office = Office::where('name', 'Budget Office')->first();
         }
-        elseif($usertype === 'Budget Office' || $usertype === 'Accounting ' ){
+        elseif($usertype === 'Budget Office' || $usertype === 'Accounting'){
             $office = Office::where('name', 'Dean')->first();
-        }else{
+        }
+        elseif($usertype === 'Dean' ){
+            $office = Office::where('name', 'Accounting')->first();
+        }
+        else{
             $office = Office::where('name', 'Faculty')->first();
         }
+        
 
-        $ack = new Acknowledgement();
-        $ack->trans_id = $transactions->id;
-        $ack->office_id = Auth::user()->office_id;
-        $ack->user_id = Auth::user()->id;
-        $ack->save();
+        if (is_null($transactions->batch_id)) {
+            $ack = new Acknowledgement();
+            $ack->trans_id = $transactions->id;
+            $ack->office_id = Auth::user()->office_id;
+            $ack->user_id = Auth::user()->id;
+            $ack->save();
 
-        // Update the batch_id after saving
-        $ack->batch_id = '00'. $ack->id . '-' . $ack->created_at->format('mdY');
-        $ack->save();
+            // Update the batch_id after saving
+            $ack->batch_id = '00'. $ack->id . '-' . $ack->created_at->format('mdY');
+            $ack->save();
 
-        Transaction::where('id', $transactions->id)->update([
-            'status' => 'On Queue',
-            'batch_id' => $ack->batch_id,
-            'office' => $office->id
-        ]);
+            // Update the status to 'On Queue'
+            Transaction::where('status', 'On-hold')
+            ->where('office', Auth::user()->office_id)
+            ->where('created_by', Auth::user()->id)
+            ->update([
+                'status' => 'On Queue',
+                'batch_id' => $ack->batch_id,
+                'office' => $office->id,
+                'created_by' => Auth::user()->id,
+            ]);
+        }else{
+            // Update the status to 'On Queue'
+            Transaction::where('status', 'On-hold')
+            ->where('office', Auth::user()->office_id)
+            ->where('created_by', Auth::user()->id)
+            ->update([
+                'status' => 'On Queue',
+                'office' => $office->id,
+                'created_by' => Auth::user()->id,
+            ]);
 
-
+        }
         return response()->json(['success' => true, 'message' => 'Emails sent and transactions updated.']);
     }
 }

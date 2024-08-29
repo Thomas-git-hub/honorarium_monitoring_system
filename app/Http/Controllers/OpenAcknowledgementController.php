@@ -162,26 +162,11 @@ class OpenAcknowledgementController extends Controller
         $ack->batch_id = $acknowledgement->batch_id;
         $ack->save();
 
-        $usertype = Auth::user()->usertype->name;
-
-        if($usertype === 'Admin' || $usertype === 'Superadmin'){
-            $office = Office::where('name', 'BUGS Administration')->first();
-        }
-        elseif($usertype === 'Budget Office' || $usertype === 'Accounting ' ){
-            $office = Office::where('name', 'Budget Office')->first();
-        }elseif($usertype === 'Accounting'){
-            $office = Office::where('name', 'Dean')->first();
-        }elseif($usertype === 'Cashiers'){
-            $office = Office::where('name', 'faculty')->first();
-        }elseif($usertype === 'Dean'){
-            $office = Office::where('name', 'Accounting')->first();
-        }
-
         foreach ($transactions as $batch_id) {
             Transaction::where('status', 'On Queue')->where('batch_id', $transaction->batch_id)->update([
                 'status' => 'Processing',
                 'batch_id' => $ack->batch_id,
-                'office' => $office->id,
+                'office' => Auth::user()->office_id,
                 'created_by' => Auth::user()->id,
             ]);
 
@@ -198,7 +183,6 @@ class OpenAcknowledgementController extends Controller
             ];
 
             Mail::to($getCreateBy->createdBy->email)->send(new Acknowledge($emailData));
-
 
             // Process form data
             $email = new Emailing();
