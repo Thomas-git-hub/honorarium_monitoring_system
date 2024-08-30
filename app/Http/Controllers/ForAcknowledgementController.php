@@ -33,7 +33,7 @@ class ForAcknowledgementController extends Controller
         $TransCountDaysAgo = Transaction::with(['honorarium', 'createdBy'])
             ->where('status', 'On Queue')
             ->where('office', Auth::user()->office_id)
-            ->whereDate('created_at', '<', now()->subDays(1)) 
+            ->whereDate('created_at', '<', now()->subDays(1))
             ->whereDate('created_at', '>=', now()->subDays(7))
             ->count();
         return view('administration.for_acknowledgement', compact('TransCountToday', 'TransCountYesterday', 'TransCountDaysAgo' ));
@@ -79,7 +79,7 @@ class ForAcknowledgementController extends Controller
     //         ->orWhere('office_id',  $From_office_BO->id)
     //         ->get();
     //     }
-        
+
     //     // Return data as JSON
     //     // return response()->json(['data' => $acknowledgements]);
     //     // return view('administration.for_acknowledgement');

@@ -27,7 +27,7 @@ class OpenAcknowledgementController extends Controller
         $TransCount = Transaction::with(['honorarium', 'createdBy'])->where('status', 'On Queue')->where('batch_id', $batch_id)->count();
 
         $office = Office::where('id', $acknowledgements->office_id)->first();
-    
+
         return view('administration.open_acknowledgement', compact('batch_id', 'acknowledgements', 'office', 'TransCount'));
     }
 
@@ -52,10 +52,10 @@ class OpenAcknowledgementController extends Controller
 
         }
 
-       
+
         $query = Transaction::with(['honorarium', 'createdBy'])->where('status', 'On Queue')->where('batch_id', $request->batch_id);
         $transactions = $query->get();
-        $ibu_dbcon = DB::connection('ibu_test');
+        $ibu_dbcon = DB::connection('ors_pgsql');
 
         $months = [
             1 => 'January',

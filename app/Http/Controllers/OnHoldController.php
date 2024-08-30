@@ -18,7 +18,7 @@ class OnHoldController extends Controller
     {
         // Query to get transactions with status 'On-hold'
         $transactions = Transaction::where('status', 'On-hold')->get();
-        $ibu_dbcon = DB::connection('ibu_test');
+        $ibu_dbcon = DB::connection('ors_pgsql');
 
         $months = [
             1 => 'January',
@@ -141,8 +141,8 @@ class OnHoldController extends Controller
 
 
     public function UpdateToProceed(Request $request){
-       
-        $ibu_dbcon = DB::connection('ibu_test');
+
+        $ibu_dbcon = DB::connection('ors_pgsql');
 
         // Fetch all transactions with status 'On-hold'
         $transactions = Transaction::where('status', 'On-hold')->where('id', $request->id)->first();
@@ -171,7 +171,7 @@ class OnHoldController extends Controller
         else{
             $office = Office::where('name', 'Faculty')->first();
         }
-        
+
 
         if (is_null($transactions->batch_id)) {
             $ack = new Acknowledgement();

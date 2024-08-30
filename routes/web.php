@@ -15,6 +15,7 @@ use App\Models\Honorarium;
 use App\Http\Controllers\OnHoldController;
 use App\Http\Controllers\ProfileController;
 use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
+use App\Http\Controllers\RequestAccountController;
 use App\Http\Controllers\UserManagementController;
 
 //START NO AUTHENTICATED ACCESS
@@ -57,6 +58,7 @@ Route::middleware(['auth_check'])->group(function () {
         Route::get('/admin_view_faculty', [AdminController::class, 'admin_view_faculty'])->name("admin_view_faculty");
         Route::get('/admin_faculty/list', [UserController::class, 'list'])->name("admin_faculty.list");
 
+        Route::get('/request_account', [RequestAccountController::class, 'request_account'])->name("request_account");
         Route::get('/user_management', [UserManagementController::class, 'user_management'])->name("user_management");
 
         Route::get('/admin_honorarium', [AdminController::class, 'admin_honorarium'])->name("admin_honorarium");

@@ -94,6 +94,15 @@
             <div style="margin-left: 5%; margin-top: 5%; color: #b4b0c4;">Users</div>
         </li>
         @if(Auth::user()->usertype->name === 'Admin' || Auth::user()->usertype->name === 'Superadmin')
+        <li class="menu-item {{ request()->is('request_account') ? 'active' : '' }}">
+            <a href="/request_account" class="menu-link">
+              <i class='menu-icon tf-icons bx bx-user-plus'></i>
+              <div class="text-truncate" data-i18n="Page 2">Request Account</div>
+            </a>
+        </li>
+        @endif
+
+        @if(Auth::user()->usertype->name === 'Admin' || Auth::user()->usertype->name === 'Superadmin')
         <li class="menu-item {{ request()->is('user_management') ? 'active' : '' }}">
             <a href="/user_management" class="menu-link">
               <i class='menu-icon tf-icons bx bx-shield-alt-2'></i>

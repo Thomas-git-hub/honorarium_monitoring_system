@@ -55,7 +55,7 @@ class QueueController extends Controller
         }else{
             return response()->json(['success' => false, 'message' => 'No office Found']);
         }
-        
+
 
         if (is_null($transaction->batch_id)) {
             $ack = new Acknowledgement();
@@ -118,7 +118,7 @@ class QueueController extends Controller
         $usertype = Auth::user()->usertype->name;
 
         $office = Office::where('name','like', '%Cashier%')->first();
-       
+
         if (is_null($transaction->batch_id)) {
             $ack = new Acknowledgement();
             $ack->trans_id = $transaction->id;
@@ -193,7 +193,7 @@ class QueueController extends Controller
 
         // Find the transaction by ID
         $transaction = Transaction::find($request->id);
-        $ibu_dbcon = DB::connection('ibu_test');
+        $ibu_dbcon = DB::connection('ors_pgsql');
         // dd($transaction->employee_id);
 
         if (!$transaction) {

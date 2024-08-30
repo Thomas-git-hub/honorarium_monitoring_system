@@ -27,7 +27,7 @@ class AdminController extends Controller
         $OnHold = Transaction::where('status', 'On-hold')
         ->where('office', Auth::user()->office_id)
         ->count();
-    
+
         return view('administration.admin_dashboard', compact('EmailCount', 'OnQueue', 'OnHold'));
     }
 
@@ -53,7 +53,7 @@ class AdminController extends Controller
         $user = User::findOrFail($id);
 
 
-        $collegeDetails = DB::connection('ibu_test')->table('college')
+        $collegeDetails = DB::connection('ors_pgsql')->table('college')
                 ->where('id', $user->college_id)
                 ->first();
 
@@ -205,7 +205,7 @@ class AdminController extends Controller
             $query = Transaction::with(['honorarium', 'createdBy'])
             ->where('status', 'Processing')
             ->where('created_by', Auth::user()->id);
-           
+
 
         }elseif(Auth::user()->usertype->name === 'Dean'){
             $From_office_acc = Office::where('name', 'Accounting')->first();
@@ -214,9 +214,9 @@ class AdminController extends Controller
             ->where('status', 'Processing')
             ->where('created_by', Auth::user()->id);
         }
-       
+
         $transactions = $query->get();
-        $ibu_dbcon = DB::connection('ibu_test');
+        $ibu_dbcon = DB::connection('ors_pgsql');
 
         $months = [
             1 => 'January',
