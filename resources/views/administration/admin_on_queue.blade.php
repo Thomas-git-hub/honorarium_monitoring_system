@@ -21,8 +21,17 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-label-danger" data-bs-dismiss="modal"><i class='bx bxs-x-circle'></i></button>
-          <button type="button" id="proceed_transaction" class="btn btn-primary gap-1">Proceed to next Office
+          <button type="button" id="proceed_transaction" class="btn btn-primary gap-1">Proceed to 
+            @if(Auth::user()->usertype->name === 'Dean')
+            Accounting
+            @else
+            next Office
+            @endif
+            @if(Auth::user()->usertype->name === 'Dean')
             <i class='bx bx-chevrons-right'></i></button>
+            <button type="button" id="proceed_cashier" class="btn btn-warning gap-1">Proceed to Cashier
+                <i class='bx bx-chevrons-right'></i></button>
+            @endif
         </div>
       </div>
     </div>
@@ -174,7 +183,7 @@
             <div class="card-body">
                 <div class="card shadow-none bg-label-success">
                     <div class="card-header d-flex justify-content-end">
-                        <small class="card-title text-success d-flex align-items-center gap-1"><i class='bx bxs-calendar'></i>August 2, 2024</small>
+                        <small class="card-title text-success d-flex align-items-center gap-1"><i class='bx bxs-calendar'></i><?php echo date('F j, Y'); ?></small>
                     </div>
                     <div class="card-body text-success">
                         <div class="row d-flex align-items-center">
@@ -452,9 +461,46 @@
     $(document).ready(function() {
 
         // Handle Proceed button click
-        $('#proceed_transaction').on('click', function() {
+        $('#proceed_transaction').off('click').on('click', function() {
             $.ajax({
                 url: '{{ route('admin_on_queue.proceedToBudgetOffice') }}',
+                method: 'POST',
+                data: {
+                    _token: $('meta[name="csrf-token"]').attr('content'),  
+                },
+                success: function(response) {
+                    if(response.success){
+                        $('#proceed').modal('hide');
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success',
+                            text: response.message,
+                        });
+                    }else{
+                        $('#proceed').modal('hide');
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oh no!',
+                            text: response.message,
+                        });
+
+                    }
+                    $('#facultyTable').DataTable().ajax.reload();
+                },
+                error: function(xhr) {
+                    // Handle error
+                    $('#proceed').modal('hide');
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'There was a problem updating the transactions.',
+                    });
+                }
+            });
+        });
+        $('#proceed_cashier').off('click').on('click', function() {
+            $.ajax({
+                url: '{{ route('admin_on_queue.proceedToCashier') }}',
                 method: 'POST',
                 data: {
                     _token: $('meta[name="csrf-token"]').attr('content'),  

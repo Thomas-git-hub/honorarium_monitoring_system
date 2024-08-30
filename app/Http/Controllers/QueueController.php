@@ -23,7 +23,10 @@ class QueueController extends Controller
         $ibu_dbcon = DB::connection('ors_pgsql');
 
         // Fetch all transactions with status 'Processing'
-        $transactions = Transaction::where('status', 'Processing')->get();
+        $transactions = Transaction::where('status', 'Processing')
+        ->where('office', Auth::user()->office_id)
+        ->where('created_by', Auth::user()->id)
+        ->get();
 
         if ($transactions->isEmpty()) {
             return response()->json(['success' => false, 'message' => 'No transactions found with status Processing']);
@@ -42,10 +45,15 @@ class QueueController extends Controller
         if($usertype === 'Admin' || $usertype === 'Superadmin'){
             $office = Office::where('name', 'Budget Office')->first();
         }
-        elseif($usertype === 'Budget Office' || $usertype === 'Accounting ' ){
+        elseif($usertype === 'Budget Office' || $usertype === 'Accounting' ){
             $office = Office::where('name', 'Dean')->first();
-        }else{
+        }
+        elseif($usertype === 'Dean' ){
+            $office = Office::where('name', 'Accounting')->first();
+        }elseif($usertype === 'Cashiers'){
             $office = Office::where('name', 'Faculty')->first();
+        }else{
+            return response()->json(['success' => false, 'message' => 'No office Found']);
         }
         
 
@@ -84,6 +92,69 @@ class QueueController extends Controller
         }
         return response()->json(['success' => true, 'message' => 'Emails sent and transactions updated.']);
     }
+
+    public function proceedToCashier(Request $request)
+    {
+        $ibu_dbcon = DB::connection('ors_pgsql');
+
+        // Fetch all transactions with status 'Processing'
+        $transactions = Transaction::where('status', 'Processing')
+        ->where('office', Auth::user()->office_id)
+        ->where('created_by', Auth::user()->id)
+        ->get();
+
+        if ($transactions->isEmpty()) {
+            return response()->json(['success' => false, 'message' => 'No transactions found with status Processing']);
+        }
+        foreach ($transactions as $transaction) {
+            $logs = new Activity_logs();
+            $logs->trans_id = $transaction->id;
+            $logs->office_id = Auth::user()->office_id;
+            $logs->user_id = Auth::user()->id;
+            $logs->save();
+
+        }
+
+        $usertype = Auth::user()->usertype->name;
+
+        $office = Office::where('name','like', '%Cashier%')->first();
+       
+        if (is_null($transaction->batch_id)) {
+            $ack = new Acknowledgement();
+            $ack->trans_id = $transaction->id;
+            $ack->office_id = Auth::user()->office_id;
+            $ack->user_id = Auth::user()->id;
+            $ack->save();
+
+            // Update the batch_id after saving
+            $ack->batch_id = '00'. $ack->id . '-' . $ack->created_at->format('mdY');
+            $ack->save();
+
+            // Update the status to 'On Queue'
+            Transaction::where('status', 'Processing')
+            ->where('office', Auth::user()->office_id)
+            ->where('created_by', Auth::user()->id)
+            ->update([
+                'status' => 'On Queue',
+                'batch_id' => $ack->batch_id,
+                'office' => $office->id,
+                'created_by' => Auth::user()->id,
+            ]);
+        }else{
+            // Update the status to 'On Queue'
+            Transaction::where('status', 'Processing')
+            ->where('office', Auth::user()->office_id)
+            ->where('created_by', Auth::user()->id)
+            ->update([
+                'status' => 'On Queue',
+                'office' => $office->id,
+                'created_by' => Auth::user()->id,
+            ]);
+
+        }
+        return response()->json(['success' => true, 'message' => 'Emails sent and transactions updated.']);
+    }
+
 
     public function update(Request $request){
 

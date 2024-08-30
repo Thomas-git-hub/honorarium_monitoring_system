@@ -21,8 +21,12 @@ class AdminController extends Controller
         $pendingMails = Emailing::where('status', 'Unread')->where('to_user', Auth::user()->employee_id);
         $EmailCount = $pendingMails->count();
 
-        $OnQueue = Transaction::where('status', 'On Queue')->count();
-        $OnHold = Transaction::where('status', 'On-hold')->count();
+        $OnQueue = Transaction::where('status', 'Processing')
+        ->where('created_by', Auth::user()->id)
+        ->count();
+        $OnHold = Transaction::where('status', 'On-hold')
+        ->where('office', Auth::user()->office_id)
+        ->count();
     
         return view('administration.admin_dashboard', compact('EmailCount', 'OnQueue', 'OnHold'));
     }
@@ -59,7 +63,6 @@ class AdminController extends Controller
         else{
             $college = 'No Assigned College';
         }
-
 
         return view('administration.admin_view_faculty', compact('user', 'college'));
     }
@@ -160,12 +163,16 @@ class AdminController extends Controller
 
     public function admin_on_queue(){
         $onQueue = Transaction::where('status', 'Processing')
+            ->where('created_by', Auth::user()->id)
             ->count();
         return view('administration.admin_on_queue', compact('onQueue'));
     }
 
     public function admin_on_hold(){
-        $OnHold = Transaction::where('status', 'On-hold')->where('office', Auth::user()->office_id)->count();
+        $OnHold = Transaction::where('status', 'On-hold')
+        // ->where('office', Auth::user()->office_id)
+        ->where('created_by', Auth::user()->id)
+        ->count();
         return view('administration.admin_on_hold', compact('OnHold'));
     }
 

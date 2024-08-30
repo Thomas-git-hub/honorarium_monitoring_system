@@ -16,7 +16,6 @@
                 </div>
             </div>
         </div>
-        <h1>hello</h1>
         <div class="row mt-4">
             <div class="col">
                 <div class="card custom-card">
