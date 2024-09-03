@@ -53,19 +53,16 @@ class SendEmailController extends Controller
             ];
 
             Mail::to($employee->email)->send(new SendEmail($emailData));
-
-
-            // Process form data
-            $email = new Emailing();
-            $email->subject = $request->subject;
-            $email->to_user = $request->user_id;
-            $email->message = $request->message;
-            $email->status = 'Unread';
-            $email->created_by = Auth::user()->id;
-            $email->save();
         }
 
-
+        // Process form data
+        $email = new Emailing();
+        $email->subject = $request->subject;
+        $email->to_user = $request->user_id;
+        $email->message = $request->message;
+        $email->status = 'Unread';
+        $email->created_by = Auth::user()->id;
+        $email->save();
 
         // Check for duplicate transaction
         $office = Office::where('name', 'Bugs Administration')->first();
