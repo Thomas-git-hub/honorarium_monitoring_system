@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Mail\TransactionStatusChanged;
 use App\Models\Acknowledgement;
 use App\Models\Activity_logs;
+use App\Models\Emailing;
 use App\Models\Office;
 use App\Models\Transaction;
 use App\Models\User;
@@ -193,7 +194,7 @@ class QueueController extends Controller
 
         // Find the transaction by ID
         $transaction = Transaction::find($request->id);
-        $ibu_dbcon = DB::connection('ors_pgsql');
+        $ibu_dbcon = DB::connection('ibu_test');
         // dd($transaction->employee_id);
 
         if (!$transaction) {
@@ -221,6 +222,15 @@ class QueueController extends Controller
         $transaction->status = 'On-hold';
         $transaction->created_by = Auth::user()->id;
         $transaction->save();
+
+        $email = new Emailing();
+        $email->transaction_id = $request->id;
+        $email->subject = 'Transaction Status Changed';
+        $email->to_user = $employeedetails->id;
+        $email->message = 'Your transaction has been on hold';
+        $email->status = 'Unread';
+        $email->created_by = Auth::user()->id;
+        $email->save();
 
         return response()->json(['success' => true, 'message' => 'Transaction updated successfully.']);
 

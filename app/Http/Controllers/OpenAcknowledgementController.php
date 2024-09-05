@@ -55,7 +55,7 @@ class OpenAcknowledgementController extends Controller
 
         $query = Transaction::with(['honorarium', 'createdBy'])->where('status', 'On Queue')->where('batch_id', $request->batch_id);
         $transactions = $query->get();
-        $ibu_dbcon = DB::connection('ors_pgsql');
+        $ibu_dbcon = DB::connection('ibu_test');
 
         $months = [
             1 => 'January',
@@ -184,15 +184,17 @@ class OpenAcknowledgementController extends Controller
 
             Mail::to($getCreateBy->createdBy->email)->send(new Acknowledge($emailData));
 
-            // Process form data
-            $email = new Emailing();
-            $email->subject = $emailData['subject'];
-            $email->to_user = $emailData['user_id'];
-            $email->message = $emailData['message'];
-            $email->status = 'Unread';
-            $email->created_by = Auth::user()->id;
-            $email->save();
         }
+        
+        // Process form data
+        $email = new Emailing();
+        $email->subject = $emailData['subject'];
+        $email->to_user = $emailData['user_id'];
+        $email->message = $emailData['message'];
+        $email->status = 'Unread';
+        $email->created_by = Auth::user()->id;
+        $email->save();
+        
         return response()->json(['success' => true, 'message' => 'Emails sent and transactions updated.']);
     }
 

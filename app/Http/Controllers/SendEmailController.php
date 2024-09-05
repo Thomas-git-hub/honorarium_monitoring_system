@@ -32,7 +32,7 @@ class SendEmailController extends Controller
             return response()->json(['success' => false,'errors' => $validator->errors()], 422);
         }
 
-        $ibu_dbcon = DB::connection('ors_pgsql');
+        $ibu_dbcon = DB::connection('ibu_test');
 
         $employee = $ibu_dbcon->table('employee_user')
                 ->where('id', $request->user_id)
@@ -53,19 +53,16 @@ class SendEmailController extends Controller
             ];
 
             Mail::to($employee->email)->send(new SendEmail($emailData));
-
-
-            // Process form data
-            $email = new Emailing();
-            $email->subject = $request->subject;
-            $email->to_user = $request->user_id;
-            $email->message = $request->message;
-            $email->status = 'Unread';
-            $email->created_by = Auth::user()->id;
-            $email->save();
         }
 
-
+        // Process form data
+        $email = new Emailing();
+        $email->subject = $request->subject;
+        $email->to_user = $request->user_id;
+        $email->message = $request->message;
+        $email->status = 'Unread';
+        $email->created_by = Auth::user()->id;
+        $email->save();
 
         // Check for duplicate transaction
         $office = Office::where('name', 'Bugs Administration')->first();
