@@ -194,7 +194,7 @@ class QueueController extends Controller
 
         // Find the transaction by ID
         $transaction = Transaction::find($request->id);
-        $ibu_dbcon = DB::connection('ibu_test');
+        $ibu_dbcon = DB::connection('ors_pgsql');
         // dd($transaction->employee_id);
 
         if (!$transaction) {

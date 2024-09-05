@@ -21,7 +21,7 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-label-danger" data-bs-dismiss="modal"><i class='bx bxs-x-circle'></i></button>
-          <button type="button" id="proceed_transaction" class="btn btn-primary gap-1">Proceed to 
+          <button type="button" id="proceed_transaction" class="btn btn-primary gap-1">Proceed to
             @if(Auth::user()->usertype->name === 'Dean')
             Accounting
             @else
@@ -203,7 +203,7 @@
     <div class="col">
         <div class="row mb-2">
             <div class="col-md mx-auto d-flex justify-content-end">
-                <button type="button" class="btn btn-primary gap-1" data-bs-toggle="modal" data-bs-target="#proceed">Proceed<i class='bx bx-chevrons-right'></i></button>
+                <button type="button" class="btn btn-primary gap-1" id="proceedTransactionButton">Proceed<i class='bx bx-chevrons-right'></i></button>
             </div>
         </div>
 
@@ -461,35 +461,98 @@
     $(document).ready(function() {
 
         // Handle Proceed button click
-        $('#proceed_transaction').off('click').on('click', function() {
+        // $('#proceed_transaction').off('click').on('click', function() {
+        //     $.ajax({
+        //         url: '{{ route('admin_on_queue.proceedToBudgetOffice') }}',
+        //         method: 'POST',
+        //         data: {
+        //             _token: $('meta[name="csrf-token"]').attr('content'),
+        //         },
+        //         success: function(response) {
+        //             if(response.success){
+        //                 $('#proceed').modal('hide');
+        //                 Swal.fire({
+        //                     icon: 'success',
+        //                     title: 'Success',
+        //                     text: response.message,
+        //                 });
+        //             }else{
+        //                 $('#proceed').modal('hide');
+        //                 Swal.fire({
+        //                     icon: 'error',
+        //                     title: 'Oh no!',
+        //                     text: response.message,
+        //                 });
+
+        //             }
+        //             $('#facultyTable').DataTable().ajax.reload();
+        //         },
+        //         error: function(xhr) {
+        //             // Handle error
+        //             $('#proceed').modal('hide');
+        //             Swal.fire({
+        //                 icon: 'error',
+        //                 title: 'Error',
+        //                 text: 'There was a problem updating the transactions.',
+        //             });
+        //         }
+        //     });
+        // });
+
+        // Replace Bootstrap modal with SweetAlert2
+$('#proceedTransactionButton').off('click').on('click', function() {
+    Swal.fire({
+        // title: 'Read',
+        icon: 'question',
+        html: `
+            <p class="text-success fw-bold fs-4">You are about to send {{$onQueue}} Honorarium Transactions to the next Office.</p>
+            <p class="text-muted">"Proceeding with this transaction indicates that every individual has submitted all necessary requirements for their honorarium."</p>
+        `,
+        showCancelButton: true,
+        confirmButtonText: 'Proceed to @if(Auth::user()->usertype->name === "Dean") Accounting @else next Office @endif',
+        cancelButtonText: 'Cancel',
+        customClass: {
+            confirmButton: 'btn btn-primary gap-1',
+            cancelButton: 'btn btn-label-danger'
+        },
+        buttonsStyling: false
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // AJAX Request to proceed with the transaction
             $.ajax({
                 url: '{{ route('admin_on_queue.proceedToBudgetOffice') }}',
                 method: 'POST',
                 data: {
-                    _token: $('meta[name="csrf-token"]').attr('content'),  
+                    _token: $('meta[name="csrf-token"]').attr('content'),
                 },
+                beforeSend: function() {
+                    Swal.fire({
+                        title: 'Processing...',
+                        html: '<div class="spinner-border text-primary" role="status"></div>',
+                        showConfirmButton: false,
+                        allowOutsideClick: false
+                    });
+                },
+
                 success: function(response) {
-                    if(response.success){
-                        $('#proceed').modal('hide');
+                    if(response.success) {
                         Swal.fire({
                             icon: 'success',
-                            title: 'Success',
+                            title: 'Transaction forwarded Succesfully',
+                            html: '<h4 class="text-success"><b>Tracking Number:</b></h4><small class="text-danger">Note: Always attach the tracking number on the documents.</small>',
                             text: response.message,
                         });
-                    }else{
-                        $('#proceed').modal('hide');
+                    } else {
                         Swal.fire({
                             icon: 'error',
-                            title: 'Oh no!',
+                            title: 'Something went wrong',
                             text: response.message,
                         });
-
                     }
+                    // Reload DataTable
                     $('#facultyTable').DataTable().ajax.reload();
                 },
                 error: function(xhr) {
-                    // Handle error
-                    $('#proceed').modal('hide');
                     Swal.fire({
                         icon: 'error',
                         title: 'Error',
@@ -497,13 +560,17 @@
                     });
                 }
             });
-        });
+        }
+    });
+});
+
+
         $('#proceed_cashier').off('click').on('click', function() {
             $.ajax({
                 url: '{{ route('admin_on_queue.proceedToCashier') }}',
                 method: 'POST',
                 data: {
-                    _token: $('meta[name="csrf-token"]').attr('content'),  
+                    _token: $('meta[name="csrf-token"]').attr('content'),
                 },
                 success: function(response) {
                     if(response.success){
