@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Mail\TransactionStatusChanged;
 use App\Models\Acknowledgement;
 use App\Models\Activity_logs;
+use App\Models\Emailing;
 use App\Models\Office;
 use App\Models\Transaction;
 use App\Models\User;
@@ -221,6 +222,14 @@ class QueueController extends Controller
         $transaction->status = 'On-hold';
         $transaction->created_by = Auth::user()->id;
         $transaction->save();
+
+        $email = new Emailing();
+        $email->subject = $request->subject;
+        $email->to_user = $request->user_id;
+        $email->message = $request->message;
+        $email->status = 'Unread';
+        $email->created_by = Auth::user()->id;
+        $email->save();
 
         return response()->json(['success' => true, 'message' => 'Transaction updated successfully.']);
 

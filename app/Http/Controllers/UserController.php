@@ -178,19 +178,11 @@ class UserController extends Controller
         // Join the 'employee' and 'employee_user' tables to get the email
         $faculties = DB::connection('ors_pgsql')
                         ->table('employee')
-                        ->join('employee_user', 'employee.id', '=', 'employee_user.id')
-                        ->select(
-                            'employee.id',
-                            'employee.employee_fname',
-                            'employee.employee_lname',
-                            'employee.employee_no',
-                            'employee_user.email' // Assuming email is in the employee_user table
-                        )
-                        ->where('employee.active', 'T')
+                        ->where('active', 'T')
                         ->where(function($query) use ($searchTerm) {
-                            $query->where(DB::raw("CONCAT(employee.employee_fname, ' ', employee.employee_lname)"), 'like', "%{$searchTerm}%")
-                                  ->orWhere('employee.employee_fname', 'like', "%{$searchTerm}%")
-                                  ->orWhere('employee.employee_lname', 'like', "%{$searchTerm}%");
+                            $query->where(DB::raw("CONCAT(employee_fname, ' ', employee_lname)"), 'like', "%{$searchTerm}%")
+                                  ->orWhere('employee_fname', 'like', "%{$searchTerm}%")
+                                  ->orWhere('employee_lname', 'like', "%{$searchTerm}%");
                         })
                         ->get();
 
