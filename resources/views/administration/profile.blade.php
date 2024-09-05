@@ -139,7 +139,7 @@
                                     <div class="mb-3">
                                         <label for="ee_number" class="form-label">Employee ID Number<b class="text-danger">*</b></label>
                                         <input type="text" name="ee_number" class="form-control" id="ee_number" placeholder="2024-2-0700" aria-describedby="defaultFormControlHelp" value="{{Auth::user()->ee_number}}"/>
-                                        <small class="text-danger note" id="note">Kindly enter your ID number in this field</small>
+                                        <small class="text-danger note" id="note">ID Number is Required</small>
                                     </div>
                                 </div>
                             </div>
@@ -174,7 +174,7 @@
                                     <div class="">
                                         <label for="email" class="form-label">Email Address</label>
                                         <input type="text" name="email" class="form-control" id="email" placeholder="johndoe@bicol-u.edu.ph" aria-describedby="defaultFormControlHelp" value="{{Auth::user()->email}}"/>
-                                        <small class="text-danger note" id="noteEmail">Kindly enter your Bicol University email</small>
+                                        <small class="text-danger note" id="noteEmail">Email address is Required</small>
                                     </div>
                                 </div>
                             </div>
@@ -191,22 +191,6 @@
         </div>
 
         <div class="col-md-4">
-            {{-- <div class="card shadow-none">
-                <div class="card-body">
-                    <div class="card shadow-none" style="width: 100%;">
-                        <img src="{{ asset('assets/myimg/avatar.jpg') }}" class="rounded-circle" alt="">
-                    </div>
-                    <div class="d-flex justify-content-center mt-2">
-                        <div class="">
-                            <h5 class="text-Dark text-center d-flex justify-content-center"><b>{{ Auth::user()->first_name . ' ' . Auth::user()->last_name }}</b></h5>
-                            <p class="text-Dark text-center d-flex justify-content-center"><small>{{ Auth::user()->position}}</small></p>
-                        </div>
-                    </div>
-                    <div class="d-flex justify-content-center ">
-                        <button type="" class="btn btn-label-primary w-100 gap-1"><i class='bx bxs-image-add'></i>Change Profile</button>
-                    </div>
-                </div>
-            </div> --}}
 
             <div class="card shadow-none">
                 <div class="card-body">
@@ -356,54 +340,14 @@ $(document).ready(function() {
         toggleNotes();
     });
 });
-
-
 </script>
 
 
 {{-- JS For Updating Profile --}}
-{{-- <script>
-    $(document).ready(function() {
-        $('#updateProfileForm').on('submit', function(e) {
-            e.preventDefault(); // Prevent the default form submission
 
-            $.ajax({
-                url: '{{ route("profile.update") }}', // Your route
-                type: 'POST',
-                data: $(this).serialize(), // Serialize the form data
-                success: function(response) {
-                    if(response.success) {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Update Success',
-                            text: response.message,
-                        }).then(function() {
-                            // Reload the page
-                            location.reload();
-                        });
-                    } else {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Update Failed',
-                            text: response.message,
-                        });
-                    }
-                },
-                error: function(xhr, status, error) {
-                    console.error(error);
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'An Error Occurred!',
-                        text: 'Please try again later.',
-                    });
-                }
-            });
-        });
-    });
-</script> --}}
 
 <script>
-    $(document).ready(function() {
+$(document).ready(function() {
     // Store the original values of the form fields
     const originalValues = {
         firstName: $('#firstName').val(),
@@ -428,9 +372,34 @@ $(document).ready(function() {
                $('#email').val() !== originalValues.email;
     }
 
+    // Function to validate the contact number
+    function validateContactNumber(contact) {
+        const regex = /^(\+639|09)\d{9}$/;
+        return regex.test(contact);
+    }
+
+    // Restrict contact field to numeric input only and add prefix logic
+    $('#contact').on('input', function() {
+        let inputVal = this.value.replace(/[^0-9+]/g, '');
+
+        // Add "39" if the user types "+6"
+        if (inputVal === '+') {
+            this.value = '+639';
+        }
+        // Add "9" if the user types "0"
+        else if (inputVal === '0') {
+            this.value = '09';
+        }
+        // Allow continued input after setting the prefix
+        else {
+            this.value = inputVal;
+        }
+    });
+
     $('#updateProfileForm').on('submit', function(e) {
         e.preventDefault(); // Prevent the default form submission
 
+        // Check for changes
         if (!hasChanges()) {
             Swal.fire({
                 icon: 'info',
@@ -440,6 +409,18 @@ $(document).ready(function() {
             return;
         }
 
+        // Validate the contact number
+        const contact = $('#contact').val();
+        if (!validateContactNumber(contact)) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Invalid Contact Number',
+                text: 'Please enter a valid Philippine contact number.',
+            });
+            return;
+        }
+
+        // Proceed with form submission
         $.ajax({
             url: '{{ route("profile.update") }}', // Your route
             type: 'POST',
@@ -473,6 +454,8 @@ $(document).ready(function() {
         });
     });
 });
+
+
 
 </script>
 
