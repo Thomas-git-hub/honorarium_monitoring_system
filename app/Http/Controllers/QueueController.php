@@ -194,7 +194,7 @@ class QueueController extends Controller
 
         // Find the transaction by ID
         $transaction = Transaction::find($request->id);
-        $ibu_dbcon = DB::connection('ors_pgsql');
+        $ibu_dbcon = DB::connection('ibu_test');
         // dd($transaction->employee_id);
 
         if (!$transaction) {
@@ -224,9 +224,10 @@ class QueueController extends Controller
         $transaction->save();
 
         $email = new Emailing();
-        $email->subject = $request->subject;
-        $email->to_user = $request->user_id;
-        $email->message = $request->message;
+        $email->transaction_id = $request->id;
+        $email->subject = 'Transaction Status Changed';
+        $email->to_user = $employeedetails->id;
+        $email->message = 'Your transaction has been on hold';
         $email->status = 'Unread';
         $email->created_by = Auth::user()->id;
         $email->save();

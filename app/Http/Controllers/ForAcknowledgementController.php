@@ -27,14 +27,14 @@ class ForAcknowledgementController extends Controller
         $TransCountYesterday = Transaction::with(['honorarium', 'createdBy'])
             ->where('status', 'On Queue')
             ->where('office', Auth::user()->office_id)
-            ->whereDate('created_at', $yesterday)
+            ->whereDate('updated_at', $yesterday)
             ->count();
 
         $TransCountDaysAgo = Transaction::with(['honorarium', 'createdBy'])
             ->where('status', 'On Queue')
             ->where('office', Auth::user()->office_id)
-            ->whereDate('created_at', '<', now()->subDays(1))
-            ->whereDate('created_at', '>=', now()->subDays(7))
+            ->whereDate('updated_at', '<', now()->subDays(1))
+            ->whereDate('updated_at', '>=', now()->subDays(7))
             ->count();
         return view('administration.for_acknowledgement', compact('TransCountToday', 'TransCountYesterday', 'TransCountDaysAgo' ));
     }
@@ -161,7 +161,7 @@ class ForAcknowledgementController extends Controller
                     '(' . $data->office->name . ')';
             })
             ->addColumn('trans_id', function ($data) {
-                return Transaction::where('batch_id', $data->batch_id)->count();
+                return Transaction::where('batch_id', $data->batch_id)->where('status', 'On Queue')->count();
             })
             ->addColumn('created_at', function ($data) {
                 return $data->created_at ? $data->created_at->format('Y-m-d H:i:s') : 'N/A';
