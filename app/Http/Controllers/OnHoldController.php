@@ -92,7 +92,7 @@ class OnHoldController extends Controller
             ->addColumn('action', function($data) {
                 // $editButton = '<button type="button" class="btn btn-icon me-2 btn-label-success edit-btn"><span class="tf-icons bx bx-pencil bx-18px"></span></button>';
                 // $on_holdButton = '<button type="button" class="btn btn-icon me-2 btn-label-danger on-hold-btn"><span class="tf-icons bx bxs-hand bx-18px"></span></button>';
-                $proceedButton = '<button type="button" class="btn me-2 btn-primary btn-sm edit-btn gap-1" data-bs-toggle="modal" data-bs-target="#proceed">Proceed<i class="bx bx-chevrons-right"></i></button>';
+                $proceedButton = '<button type="button" class="btn me-2 btn-primary btn-sm edit-btn gap-1" id="proceedTransactionButton">Proceed<i class="bx bx-chevrons-right"></i></button>';
 
                 return '<div class="d-flex flex-row" data-id="' . $data->id . '">' . $proceedButton . '</div>';
             })

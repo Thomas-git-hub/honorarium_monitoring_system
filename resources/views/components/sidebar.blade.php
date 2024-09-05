@@ -57,20 +57,20 @@
           </a>
         </li>
         @endif
-        @if(Auth::user()->usertype->name !== 'Faculties')
-        <li class="menu-item {{ request()->is('admin_on_queue') ? 'active' : '' }}">
-          <a href="/admin_on_queue" class="menu-link">
-            <i class='menu-icon tf-icons bx bx-list-ol'></i>
-            <div class="text-truncate" data-i18n="Page 2">In Queue</div>
-          </a>
-        </li>
-        @endif
         @if(Auth::user()->usertype->name !== 'Admin' && Auth::user()->usertype->name !== 'Faculties')
         <li class="menu-item {{ request()->is('for_acknowledgement') ? 'active' : '' }}">
           <a href="/for_acknowledgement" class="menu-link">
             <i class='menu-icon tf-icons bx bx-archive-in'></i>
             <div class="text-truncate" data-i18n="Page 2">For Acknowledgement</div>
             <span class="badge bg-danger badge-notifications p-1 fs-8">14</span>
+          </a>
+        </li>
+        @endif
+        @if(Auth::user()->usertype->name !== 'Faculties')
+        <li class="menu-item {{ request()->is('admin_on_queue') ? 'active' : '' }}">
+          <a href="/admin_on_queue" class="menu-link">
+            <i class='menu-icon tf-icons bx bx-list-ol'></i>
+            <div class="text-truncate" data-i18n="Page 2">In Queue</div>
           </a>
         </li>
         @endif

@@ -147,54 +147,145 @@
             }
     });
 
+    // $('#facultyTable').on('click', '.edit-btn', function() {
+    //     // Get the rowdata.id from the data-id attribute
+
+    //     var row = $(this).closest('tr');
+    //     var rowData = table.row(row).data();
+
+    //     var transactionId = rowData.id;
+    //     var date = new Date(rowData.created_at);
+
+    //     var formattedDate = (date.getMonth() + 1).toString().padStart(2, '0') + '' +
+    //                 date.getDate().toString().padStart(2, '0') + '' +
+    //                 date.getFullYear();
+
+    //     console.log(transactionId);
+    //     console.log(formattedDate);
+
+
+    //      // Handle Proceed button click
+    //      $('#proceed_transaction').off('click').on('click', function() {
+    //         $.ajax({
+    //             url: '{{ route('UpdateToProceed') }}',
+    //             method: 'POST',
+    //             data: {
+    //                 _token: $('meta[name="csrf-token"]').attr('content'),
+    //                 id:transactionId,
+    //             },
+    //             success: function(response) {
+    //                 if(response.success){
+    //                     $('#proceed').modal('hide');
+    //                     Swal.fire({
+    //                         icon: 'success',
+    //                         title: 'Success',
+    //                         text: response.message,
+    //                     });
+    //                 }else{
+    //                     $('#proceed').modal('hide');
+    //                     Swal.fire({
+    //                         icon: 'error',
+    //                         title: 'Oh no!',
+    //                         text: response.message,
+    //                     });
+
+    //                 }
+    //                 $('#facultyTable').DataTable().ajax.reload();
+    //             },
+    //             error: function(xhr) {
+    //                 // Handle error
+    //                 $('#proceed').modal('hide');
+    //                 Swal.fire({
+    //                     icon: 'error',
+    //                     title: 'Error',
+    //                     text: 'There was a problem updating the transactions.',
+    //                 });
+    //             }
+    //         });
+    //     });
+
+
+
+    //     // Update the modal content (if needed)
+    //     // $('#proceed .modal-body').append('<h5 class="text-center text-danger">Transaction ID No. = <b>' + '00' + transactionId + '-' + formattedDate + '</b></h5>');
+
+    //     // You can also update other parts of the modal, if necessary
+    //     // For example, if you want to set a hidden input field with the transaction ID:
+    //     // $('#proceed').find('input[name="transaction_id"]').val(transactionId);
+    // });
+
     $('#facultyTable').on('click', '.edit-btn', function() {
-        // Get the rowdata.id from the data-id attribute
+    // Get the row data
+    var row = $(this).closest('tr');
+    var rowData = table.row(row).data();
 
-        var row = $(this).closest('tr');
-        var rowData = table.row(row).data();
+    var transactionId = rowData.id;
+    var date = new Date(rowData.created_at);
 
-        var transactionId = rowData.id;
-        var date = new Date(rowData.created_at);
+    var formattedDate = (date.getMonth() + 1).toString().padStart(2, '0') + '' +
+                date.getDate().toString().padStart(2, '0') + '' +
+                date.getFullYear();
 
-        var formattedDate = (date.getMonth() + 1).toString().padStart(2, '0') + '' + 
-                    date.getDate().toString().padStart(2, '0') + '' + 
-                    date.getFullYear();
+    console.log(transactionId);
+    console.log(formattedDate);
 
-        console.log(transactionId);
-        console.log(formattedDate);
-
-
-         // Handle Proceed button click
-         $('#proceed_transaction').off('click').on('click', function() {
+    // Trigger SweetAlert instead of Bootstrap modal
+    Swal.fire({
+        icon: 'question',
+        html: `
+            <p class="text-center">"Proceeding with this transaction indicates that the individual has submitted all necessary requirements for their honorarium."</p>
+        `,
+        showCancelButton: true,
+        confirmButtonText: 'Proceed to Next Office',
+        cancelButtonText: 'Cancel',
+        customClass: {
+            confirmButton: 'btn btn-primary gap-1',
+            cancelButton: 'btn btn-label-danger'
+        },
+        buttonsStyling: false
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Trigger AJAX call when "Proceed" is confirmed
             $.ajax({
                 url: '{{ route('UpdateToProceed') }}',
                 method: 'POST',
                 data: {
                     _token: $('meta[name="csrf-token"]').attr('content'),
-                    id:transactionId,
+                    id: transactionId, // Transaction ID
+                },
+                beforeSend: function() {
+                    Swal.fire({
+                        title: 'Processing...',
+                        html: '<div class="spinner-border text-primary" role="status"></div>',
+                        showConfirmButton: false,
+                        allowOutsideClick: false
+                    });
                 },
                 success: function(response) {
+                    Swal.close(); // Close the processing alert
                     if(response.success){
-                        $('#proceed').modal('hide');
                         Swal.fire({
                             icon: 'success',
-                            title: 'Success',
+                            title: 'Transaction forwarded successfully.',
+                            html: `<h4 class="text-success">Tracking Number: <b>00${transactionId}-${formattedDate}</b></h4><small class="text-danger">Note: Always attach the tracking number on the documents.</small>`,
                             text: response.message,
+                        }).then(() => {
+                            // Reload the page after the success SweetAlert is closed
+                            window.location.reload();
                         });
-                    }else{
-                        $('#proceed').modal('hide');
+                    } else {
                         Swal.fire({
                             icon: 'error',
                             title: 'Oh no!',
                             text: response.message,
                         });
-
                     }
+                    // Reload DataTable after the transaction
                     $('#facultyTable').DataTable().ajax.reload();
                 },
                 error: function(xhr) {
                     // Handle error
-                    $('#proceed').modal('hide');
+                    Swal.close(); // Close the processing alert
                     Swal.fire({
                         icon: 'error',
                         title: 'Error',
@@ -202,20 +293,16 @@
                     });
                 }
             });
-        });
-
-        // Update the modal content (if needed)
-        // $('#proceed .modal-body').append('<h5 class="text-center text-danger">Transaction ID No. = <b>' + '00' + transactionId + '-' + formattedDate + '</b></h5>');
-
-        // You can also update other parts of the modal, if necessary
-        // For example, if you want to set a hidden input field with the transaction ID:
-        // $('#proceed').find('input[name="transaction_id"]').val(transactionId);
+        }
     });
+});
+
+
 
     // Optionally, you can reset the modal content when it's closed
-    $('#proceed').on('hidden.bs.modal', function() {
-        $(this).find('.modal-body h5').remove();
-    });
+    // $('#proceed').on('hidden.bs.modal', function() {
+    //     $(this).find('.modal-body h5').remove();
+    // });
 
 </script>
 

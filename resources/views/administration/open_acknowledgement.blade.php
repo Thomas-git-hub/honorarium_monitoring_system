@@ -202,7 +202,7 @@
             </div>
         </div>
 
-        <div class="card custom-card">
+        <div class="card custom-card border border-primary">
             <div class="card-body">
                 <div class="table-responsive">
                     <table id="facultyTable" class="table table-borderless" style="width:100%">
@@ -312,7 +312,7 @@
                         text: 'There was a problem updating the transactions.',
                     });
                 }
-            });            
+            });
         });
 
         // Handle Edit button click

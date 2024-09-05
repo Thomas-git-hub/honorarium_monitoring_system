@@ -22,10 +22,10 @@
                                 </div>
                                 <div class="card-body text-success">
                                     <div class="row d-flex align-items-center">
-                                        <div class="col-2">
+                                        <div class="col-4">
                                             <h1 class="text-success text-center" style="font-size: 48px;">{{$TransCountToday ? $TransCountToday : 0}}</h1>
                                         </div>
-                                        <div class="col-10">
+                                        <div class="col-8">
                                             <h5 class="card-title text-success">New Transactions for Acknowledgement as of Today</h5>
                                         </div>
                                     </div>
@@ -40,10 +40,10 @@
                                 </div>
                                 <div class="card-body text-warning">
                                     <div class="row d-flex align-items-center">
-                                        <div class="col-2">
+                                        <div class="col-4">
                                             <h1 class="text-warning text-center" style="font-size: 48px;">{{$TransCountYesterday ? $TransCountYesterday : 0}}</h1>
                                         </div>
-                                        <div class="col-10">
+                                        <div class="col-8">
                                             <h5 class="card-title text-warning">Unacknowledged Transactions Pending as of Yesterday</h5>
                                         </div>
                                     </div>
