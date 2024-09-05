@@ -79,6 +79,9 @@ class QueueController extends Controller
                 'office' => $office->id,
                 'created_by' => Auth::user()->id,
             ]);
+
+            $transaction->batch_id = $ack->batch_id;
+            $batchId = $transaction->batch_id;
         }else{
             // Update the status to 'On Queue'
             Transaction::where('status', 'Processing')
@@ -90,8 +93,10 @@ class QueueController extends Controller
                 'created_by' => Auth::user()->id,
             ]);
 
+            $batchId = $transaction->batch_id;
+
         }
-        return response()->json(['success' => true, 'message' => 'Emails sent and transactions updated.']);
+        return response()->json(['success' => true, 'batch_id'=> $batchId, 'message' => 'Emails sent and transactions updated.']);
     }
 
     public function proceedToCashier(Request $request)

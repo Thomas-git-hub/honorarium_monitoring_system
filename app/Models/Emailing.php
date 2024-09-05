@@ -16,4 +16,9 @@ class Emailing extends Model
         return $this->belongsTo(Transaction::class, 'transaction_id');
     }
 
+    public function employee()
+    {
+        return $this->belongsTo(User::class, 'created_by', 'id');
+    }
+
 }

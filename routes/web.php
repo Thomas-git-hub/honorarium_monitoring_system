@@ -43,7 +43,10 @@ Route::middleware(['auth_check'])->group(function () {
     Route::get('/admin_dashboard', [AdminController::class, 'admin_dashboard'])->name("admin_dashboard");
     Route::get('/admin_email', [AdminController::class, 'admin_email'])->name("admin_email");
     Route::get('/admin_open_email', [AdminController::class, 'admin_open_email'])->name("admin_open_email");
+
     Route::post('/send_email', [SendEmailController::class, 'send_email'])->name("send_email");
+    Route::get('/getEmails', [SendEmailController::class, 'getEmails'])->name("getEmails");
+    Route::post('/updateEmailStatus', [SendEmailController::class, 'updateStatus'])->name('updateEmailStatus');
 
     Route::get('/sent_items', [AdminController::class, 'admin_open_email'])->name("admin_open_email");
     Route::get('/sent_items', [SentItemsController::class, 'sent_items'])->name("sent_items");

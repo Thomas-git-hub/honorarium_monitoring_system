@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
+use Yajra\DataTables\Facades\DataTables;
 
 class SendEmailController extends Controller
 {
@@ -106,6 +107,59 @@ class SendEmailController extends Controller
         }
 
         return response()->json(['success' => true, 'message' => 'The transaction is on hold and the email has been sent.']);
+    }
+
+
+    public function getEmails(Request $request)
+    {
+        // Query to get transactions with status 'On-hold'
+        $emails = Emailing::with('employee')->where('to_user', Auth::user()->employee_id)->get();
+        $ibu_dbcon = DB::connection('ibu_test');
+
+        $months = [
+            1 => 'January',
+            2 => 'February',
+            3 => 'March',
+            4 => 'April',
+            5 => 'May',
+            6 => 'June',
+            7 => 'July',
+            8 => 'August',
+            9 => 'September',
+            10 => 'October',
+            11 => 'November',
+            12 => 'December',
+        ];
+
+        // Return DataTables response
+        return DataTables::of($emails)
+            ->addColumn('id', function ($data) {
+                return $data->id;
+            })
+            ->addColumn('name', function ($data) {
+                return $data->employee->first_name. ' ' .$data->employee->last_name;
+            })
+            ->addColumn('subject', function ($data) {
+                return $data->subject;
+            })
+            ->addColumn('date', function ($data) {
+                return $data->created_at->format('m/d/Y');
+            })
+
+            ->make(true);
+    }
+
+    public function updateStatus(Request $request)
+    {
+        $email = Emailing::find($request->id);
+
+        if ($email) {
+            $email->status = 'Read'; // Assuming you have a 'status' column in the emailing table
+            $email->save();
+            return response()->json(['success' => true, 'message' => 'Email status updated to Read']);
+        }
+
+        return response()->json(['success' => false, 'message' => 'Email not found'], 404);
     }
 
 }

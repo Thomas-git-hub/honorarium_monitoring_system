@@ -35,8 +35,10 @@ class AdminController extends Controller
         return view('administration.admin_email');
     }
 
-    public function admin_open_email(){
-        return view('administration.admin_open_email');
+    public function admin_open_email(Request $request){
+        $id = $request->input('id');
+        $data = Emailing::with('employee')->where('id', $id)->first();
+        return view('administration.admin_open_email', compact('data'));
     }
 
     public function admin_faculty(){

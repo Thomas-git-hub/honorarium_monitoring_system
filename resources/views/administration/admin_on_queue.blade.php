@@ -539,7 +539,7 @@ $('#proceedTransactionButton').off('click').on('click', function() {
                         Swal.fire({
                             icon: 'success',
                             title: 'Transaction forwarded Succesfully',
-                            html: '<h4 class="text-success"><b>Tracking Number:</b></h4><small class="text-danger">Note: Always attach the tracking number on the documents.</small>',
+                            html: `<h4 class="text-success"><b>Tracking Number: ${response.batch_id}</b></h4><small class="text-danger">Note: Always attach the tracking number on the documents.</small>`,
                             text: response.message,
                         });
                     } else {
