@@ -160,7 +160,7 @@
            var table = $('#sentItemsTable').DataTable({
                processing: true,
                serverSide: true,
-               ajax: '{{route('getEmails')}}',
+               ajax: '{{route('getEmailsSent')}}',
                pageLength: 100,
                paging: false, // Disable pagination
                dom: '<"top"f>rt<"bottom"ip>',
@@ -182,11 +182,7 @@
                ],
                createdRow: function(row, data) {
                    // Add class to unopened rows
-                   if (data.status === 'Unread') {
-                       $(row).addClass('unopened').css('font-weight', 'bold');
-                   } else if (data.status === 'Read') {
-                       $(row).addClass('opened').css('font-weight', 'normal');
-                   }
+                 
                }
            });
 
@@ -220,24 +216,6 @@
                    $(this).removeClass('unopened').addClass('opened');
                }
 
-               $.ajax({
-                   url: '{{ route('updateEmailStatus') }}',
-                   type: 'POST',
-                   data: {
-                       _token: '{{ csrf_token() }}',
-                       id: rowData.id
-                   },
-                   success: function(response) {
-                       if (response.success) {
-                           console.log('Status updated to Read');
-                       } else {
-                           console.log('Error updating status');
-                       }
-                   },
-                   error: function(xhr, status, error) {
-                       console.log('AJAX Error:', error);
-                   }
-               });
 
                // Redirect to another page with full details (example)
                window.location.href = `/admin_open_email?id=${rowData.id}`;

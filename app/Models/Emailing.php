@@ -21,4 +21,9 @@ class Emailing extends Model
         return $this->belongsTo(User::class, 'created_by', 'id');
     }
 
+    public function send_to_employee()
+    {
+        return $this->belongsTo(User::class, 'to_user', 'employee_id');
+    }
+
 }

@@ -55,7 +55,7 @@ class OpenAcknowledgementController extends Controller
 
         $query = Transaction::with(['honorarium', 'createdBy'])->where('status', 'On Queue')->where('batch_id', $request->batch_id);
         $transactions = $query->get();
-        $ibu_dbcon = DB::connection('ors_pgsql');
+        $ibu_dbcon = DB::connection('ibu_test');
 
         $months = [
             1 => 'January',
@@ -178,7 +178,7 @@ class OpenAcknowledgementController extends Controller
         if (!empty($getCreateBy->createdBy->email)) {
 
             $emailData = [
-                'user_id' => $getCreateBy->createdBy->id,
+                'user_id' => $getCreateBy->createdBy->employee_id,
                 'employee_fname' => $getCreateBy->createdBy->first_name,
                 'subject' => 'Batch Transaction was Acknowledged by' . Auth::user()->office->name,
                 'message' => 'Transaction was Acknowledge by ' . Auth::user()->office->name. ' w/ Tracking No.' . $ack->batch_id,

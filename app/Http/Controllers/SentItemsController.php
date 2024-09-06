@@ -69,7 +69,7 @@ class SentItemsController extends Controller
     public function getEmails(Request $request)
     {
         // Query to get transactions with status 'On-hold'
-        $emails = Emailing::with('employee')->where('created_by', Auth::user()->employee_id)->get();
+        $emails = Emailing::with(['employee', 'send_to_employee'])->where('created_by', Auth::user()->id)->get();
         $ibu_dbcon = DB::connection('ibu_test');
 
         $months = [
@@ -92,8 +92,17 @@ class SentItemsController extends Controller
             ->addColumn('id', function ($data) {
                 return $data->id;
             })
-            ->addColumn('name', function ($data) {
-                return $data->employee->first_name. ' ' .$data->employee->last_name;
+            ->addColumn('name', function ($data) use($ibu_dbcon) {
+                $employeeDetails = $ibu_dbcon->table('employee')
+                ->where('id', $data->to_user)
+                ->first();
+
+                if (!empty($employeeDetails->employee_fname)) {
+                    return ucfirst($employeeDetails->employee_fname) . ' ' . ucfirst($employeeDetails->employee_lname);
+                }else{
+                    return $data->send_to_employee->first_name . ' ' . $data->send_to_employee->last_name;
+                }
+                
             })
             ->addColumn('subject', function ($data) {
                 return $data->subject;

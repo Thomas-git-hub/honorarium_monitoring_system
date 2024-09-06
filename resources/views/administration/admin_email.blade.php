@@ -14,12 +14,13 @@
                             <div class="col-md">
                                 <div class="card shadow-none bg-label-success">
                                     <div class="card-header d-flex justify-content-end">
-                                        <small class="card-title text-success d-flex align-items-center gap-1"><i class='bx bxs-calendar'></i>August 2, 2024</small>
+                                        <small class="card-title text-success d-flex align-items-center gap-1"><i class='bx bxs-calendar'></i> <?php echo date('F j, Y'); ?></small>
                                     </div>
                                     <div class="card-body text-success">
                                         <div class="row d-flex align-items-center">
                                             <div class="col-md d-flex align-items-center gap-2">
-                                                <h1 class="text-success text-center d-flex align-items-center" style="font-size: 48px;">5<i class='bx bx-envelope' style="font-size: 48px;"></i></h1>
+                                                <h1 class="text-success text-center d-flex align-items-center" style="font-size: 48px;">
+                                                    {{$emailtoday ? $emailtoday : 0}}<i class='bx bx-envelope' style="font-size: 48px;"></i></h1>
                                                 <h5 class="card-title text-success">New Emails Today</h5>
                                             </div>
                                         </div>
@@ -30,12 +31,12 @@
                             <div class="col-md">
                                 <div class="card shadow-none bg-label-danger">
                                     <div class="card-header d-flex justify-content-end">
-                                        <small class="card-title text-danger d-flex align-items-center gap-1"><i class='bx bxs-calendar'></i>August 2, 2024</small>
+                                        <small class="card-title text-danger d-flex align-items-center gap-1"><i class='bx bxs-calendar'></i> <?php echo date('F j, Y'); ?></small>
                                     </div>
                                     <div class="card-body text-danger">
                                         <div class="row d-flex align-items-center">
                                             <div class="col-md d-flex align-items-center gap-2">
-                                                <h1 class="text-danger text-center d-flex align-items-center" style="font-size: 48px;">5<i class='bx bxs-envelope' style="font-size: 48px;"></i></h1>
+                                                <h1 class="text-danger text-center d-flex align-items-center" style="font-size: 48px;">{{$UnreadCount ? $UnreadCount : 0}}<i class='bx bxs-envelope' style="font-size: 48px;"></i></h1>
                                                 <h5 class="card-title text-danger">Unread Emails</h5>
                                             </div>
                                         </div>

@@ -32,12 +32,23 @@ class AdminController extends Controller
     }
 
     public function admin_email(){
-        return view('administration.admin_email');
+        $emailtoday = Emailing:: where('status', 'Unread')
+        ->whereDate('created_at', Carbon::today())
+        ->where('to_user', Auth::user()->employee_id)
+        ->count();
+
+        $UnreadCount = Emailing:: where('status', 'Unread')
+        ->where('to_user', Auth::user()->employee_id)
+        ->count();
+
+        return view('administration.admin_email', compact('emailtoday', 'UnreadCount'));
     }
 
     public function admin_open_email(Request $request){
         $id = $request->input('id');
         $data = Emailing::with('employee')->where('id', $id)->first();
+
+       
         return view('administration.admin_open_email', compact('data'));
     }
 
@@ -55,7 +66,7 @@ class AdminController extends Controller
         $user = User::findOrFail($id);
 
 
-        $collegeDetails = DB::connection('ors_pgsql')->table('college')
+        $collegeDetails = DB::connection('ibu_test')->table('college')
                 ->where('id', $user->college_id)
                 ->first();
 
@@ -218,7 +229,7 @@ class AdminController extends Controller
         }
 
         $transactions = $query->get();
-        $ibu_dbcon = DB::connection('ors_pgsql');
+        $ibu_dbcon = DB::connection('ibu_test');
 
         $months = [
             1 => 'January',

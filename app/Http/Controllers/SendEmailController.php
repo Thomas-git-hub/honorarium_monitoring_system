@@ -33,7 +33,7 @@ class SendEmailController extends Controller
             return response()->json(['success' => false,'errors' => $validator->errors()], 422);
         }
 
-        $ibu_dbcon = DB::connection('ors_pgsql');
+        $ibu_dbcon = DB::connection('ibu_test');
 
         $employee = $ibu_dbcon->table('employee_user')
                 ->where('id', $request->user_id)
