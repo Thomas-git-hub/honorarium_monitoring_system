@@ -36,7 +36,7 @@
                                     <label class="text-danger" id="deleteSelected" style="cursor: pointer;">Move to Trash</label>
                                 </div>
                             </div>
-                            <table id="inboxTable" class="table table-borderless table-hover" style="width:100%">
+                            <table id="sentItemsTable" class="table table-borderless table-hover" style="width:100%">
                                 <tbody>
                                 </tbody>
                             </table>

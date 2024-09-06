@@ -165,8 +165,8 @@
                 <h4 class="d-flex align-items-center"><i class='bx bx-list-ul'  style="font-size: 32px;"></i>Batch Transaction Details</h4>
                 <div class="row">
                     <div class="col-md">
-                        <div class="alert alert-danger">
-                            Batch ID Number: <b>{{$batch_id ? $batch_id :  'No Data Found'}}</b>
+                        <div class="alert alert-secondary">
+                            Total Transactions: <b>{{$TransCount}}</b>
                         </div>
                     </div>
                     <div class="col-md">
@@ -182,11 +182,11 @@
                 </div>
 
 
-                <div class="card shadow-none bg-label-secondary">
+                <div class="card shadow-none bg-label-primary">
                     <div class="card-body">
-                        <h5 class="card-title text-secondary">For Honorarium Transactions</h5>
+                        <h5 class="card-title text-primary">Tracking Number:</h5>
                         {{-- <h1 class="text-primary">{{$onQueue}}</h1> --}}
-                        <h1 class="text-secondary">{{$TransCount}}</h1>
+                        <h1 class="text-primary">{{$batch_id ? $batch_id :  'No Data Found'}}</h1>
                     </div>
                 </div>
             </div>
@@ -266,6 +266,7 @@
                     targets: [0, 1] // Apply date sorting to date_received and date_on_hold columns
                 }
             ],
+
             createdRow: function(row, data) {
                 $(row).addClass('unopened');
             }
