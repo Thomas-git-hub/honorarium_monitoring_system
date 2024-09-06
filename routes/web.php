@@ -50,6 +50,8 @@ Route::middleware(['auth_check'])->group(function () {
 
     Route::get('/sent_items', [AdminController::class, 'admin_open_email'])->name("admin_open_email");
     Route::get('/sent_items', [SentItemsController::class, 'sent_items'])->name("sent_items");
+    Route::post('/send_reply', [SentItemsController::class, 'send_reply'])->name("send_reply");
+    Route::get('/getEmailsSent', [SentItemsController::class, 'getEmails'])->name("getEmailsSent");
 
     //START SUPERADMIN ACCESS
 

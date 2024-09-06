@@ -144,6 +144,9 @@ class OpenAcknowledgementController extends Controller
         ->where('office', Auth::user()->office_id)
         ->first();
 
+
+
+
         foreach ($transactions as $transaction) {
             $logs = new Activity_logs();
             $logs->trans_id = $transaction->id;
@@ -177,8 +180,8 @@ class OpenAcknowledgementController extends Controller
             $emailData = [
                 'user_id' => $getCreateBy->createdBy->id,
                 'employee_fname' => $getCreateBy->createdBy->first_name,
-                'subject' => 'Batch Transaction was Acknowledged by' . Auth::user()->office_id,
-                'message' => 'Transaction was Acknowledge by ' . $ack->office_id . ' w/ Tracking No.' . $ack->batch_id,
+                'subject' => 'Batch Transaction was Acknowledged by' . Auth::user()->office->name,
+                'message' => 'Transaction was Acknowledge by ' . Auth::user()->office->name. ' w/ Tracking No.' . $ack->batch_id,
                 'sender_email' => Auth::user()->email, // Add sender email
             ];
 
@@ -194,6 +197,7 @@ class OpenAcknowledgementController extends Controller
         $email->status = 'Unread';
         $email->created_by = Auth::user()->id;
         $email->save();
+
 
         return response()->json(['success' => true, 'message' => 'Emails sent and transactions updated.']);
     }
