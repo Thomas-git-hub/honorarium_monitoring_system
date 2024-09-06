@@ -69,7 +69,10 @@ class SentItemsController extends Controller
     public function getEmails(Request $request)
     {
         // Query to get transactions with status 'On-hold'
-        $emails = Emailing::with(['employee', 'send_to_employee'])->where('created_by', Auth::user()->id)->get();
+        $emails = Emailing::with(['employee', 'send_to_employee'])
+        ->where('created_by', Auth::user()->id)
+        ->where('status', '!=', 'Deleted')
+        ->get();
         $ibu_dbcon = DB::connection('ibu_test');
 
         $months = [

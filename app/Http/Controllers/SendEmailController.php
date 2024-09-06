@@ -113,7 +113,10 @@ class SendEmailController extends Controller
     public function getEmails(Request $request)
     {
         // Query to get transactions with status 'On-hold'
-        $emails = Emailing::with('employee')->where('to_user', Auth::user()->employee_id)->get();
+        $emails = Emailing::with('employee')
+        ->where('to_user', Auth::user()->employee_id)
+        ->where('status', '!=', 'Deleted')
+        ->get();
         $ibu_dbcon = DB::connection('ibu_test');
 
         $months = [
@@ -160,6 +163,25 @@ class SendEmailController extends Controller
         }
 
         return response()->json(['success' => false, 'message' => 'Email not found'], 404);
+    }
+
+    public function deleteEmails(Request $request)
+    {
+        $ids = $request->input('ids');
+
+        if (empty($ids)) {
+            return response()->json(['success' => false, 'message' => 'No emails selected for deletion']);
+        }
+
+        // Update the status of the selected emails to "Deleted"
+        Emailing::whereIn('id', $ids)
+            ->update(
+                ['status' => 'Deleted',
+                 'updated_at' => now(),
+                ]
+            );
+
+        return response()->json(['success' => true, 'message' => 'Emails deleted successfully']);
     }
 
 }

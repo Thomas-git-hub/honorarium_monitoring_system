@@ -47,6 +47,7 @@ Route::middleware(['auth_check'])->group(function () {
     Route::post('/send_email', [SendEmailController::class, 'send_email'])->name("send_email");
     Route::get('/getEmails', [SendEmailController::class, 'getEmails'])->name("getEmails");
     Route::post('/updateEmailStatus', [SendEmailController::class, 'updateStatus'])->name('updateEmailStatus');
+    Route::post('/deleteEmails', [SendEmailController::class, 'deleteEmails'])->name('deleteEmails');
 
     Route::get('/sent_items', [AdminController::class, 'admin_open_email'])->name("admin_open_email");
     Route::get('/sent_items', [SentItemsController::class, 'sent_items'])->name("sent_items");
