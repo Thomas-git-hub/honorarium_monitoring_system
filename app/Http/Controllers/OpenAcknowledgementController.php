@@ -178,7 +178,7 @@ class OpenAcknowledgementController extends Controller
                 'user_id' => $getCreateBy->createdBy->id,
                 'employee_fname' => $getCreateBy->createdBy->first_name,
                 'subject' => 'Batch Transaction was Acknowledged by' . Auth::user()->office_id,
-                'message' => 'Transaction was Acknowledge by ' . Auth::user()->office_id . ' w/ Tracking No.' . $ack->batch_id,
+                'message' => 'Transaction was Acknowledge by ' . $ack->office_id . ' w/ Tracking No.' . $ack->batch_id,
                 'sender_email' => Auth::user()->email, // Add sender email
             ];
 
