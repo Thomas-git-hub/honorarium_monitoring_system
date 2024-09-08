@@ -62,18 +62,18 @@
     <div class="authentication-wrapper authentication-cover">
       <div class="authentication-inner row m-0">
         <!-- /Left Text -->
-        <div class="d-none d-lg-flex col-lg-7 col-xl-8 align-items-center" style="background: rgb(105,108,255); background: linear-gradient(140deg, rgba(105,108,255,1) 27%, rgba(0,212,255,1) 100%);">
-          <div class="w-100 d-flex justify-content-center">
-            <img src="{{ asset('assets/myimg/registration-animated.gif') }}" width="700" class="img-fluid"/>
-            {{-- <img
-              src="../../assets/img/illustrations/boy-with-rocket-light.png"
-              class="img-fluid"
-              alt="Login image"
-              width="700"
-              data-app-dark-img="illustrations/boy-with-rocket-dark.png"
-              data-app-light-img="illustrations/boy-with-rocket-light.png" /> --}}
-          </div>
-        </div>
+        {{-- <div class="d-none d-lg-flex col-lg-7 col-xl-8 align-items-center" style="background: rgb(105,108,255); background: linear-gradient(140deg, rgba(105,108,255,1) 27%, rgba(0,212,255,1) 100%);"> --}}
+            <div class="d-none d-lg-flex col-lg-7 col-xl-8 d-flex bg-primary"
+            style=" background-image: url('{{ asset('assets/myimg/animated.gif') }}');
+                    background-size: cover;
+                    background-position: center;
+                    background-repeat: no-repeat;">
+           <div class="w-100 d-flex justify-content-center">
+               <div class="d-flex justify-content-center align-items-center">
+                   <!-- You can add other content here if needed -->
+               </div>
+           </div>
+       </div>
         <!-- /Left Text -->
 
         <!-- Login -->
@@ -92,8 +92,8 @@
               </a>
             </div>
             <!-- /Logo -->
-            <h4 class="mb-2">BUGS Honorarium Monitoring System!</h4>
-            <p class="mb-4">Please enter your BU Email to register your account</p>
+            <h4 class="mb-2">Register an Account</h4>
+            <p class="">Please enter your BU Email to register your account</p>
 
             <form id="registerForm" class="mb-3">
               <div class="mb-3">
@@ -101,17 +101,18 @@
                 <input type="text" class="form-control" id="email" name="email" placeholder="@bicol-u.edu.com" autofocus />
                 <div class="invalid-feedback" id="emailError"></div>
               </div>
-              <button type="submit" class="btn btn-primary d-grid w-100">Register</button>
+              <button type="submit" class="btn btn-primary d-grid w-100 mb-1">Register</button>
+              <small class="text-secondary mb-4">Please ensure you have an existing account in the ORS before you register an account.</small>
             </form>
 
             <p class="text-center">
               <span>Already have an account?</span>
               <a href="/">
-                <span>Login</span>
+                <span>Login here</span>
               </a>
             </p>
 
-            <div class="divider my-4">
+            {{-- <div class="divider my-4">
               <div class="divider-text">or</div>
             </div>
 
@@ -127,7 +128,7 @@
               <a href="javascript:;" class="btn btn-icon btn-label-twitter">
                 <i class="tf-icons bx bxl-twitter"></i>
               </a>
-            </div>
+            </div> --}}
           </div>
         </div>
         <!-- /Login -->

@@ -66,12 +66,18 @@
     <div class="authentication-wrapper authentication-cover">
       <div class="authentication-inner row m-0">
         <!-- /Left Text -->
-        <div class="d-none d-lg-flex col-lg-7 col-xl-8 d-flex"  style="background: rgb(105,108,255); background: linear-gradient(140deg, rgba(105,108,255,1) 27%, rgba(0,212,255,1) 100%);">
-            <div class="w-100 d-flex justify-content-center">
-                <img src="{{ asset('assets/myimg/login-animated.gif') }}" width="700" class="img-fluid"/>
-                <div class="d-none">Illustration by <a href="https://icons8.com/illustrations/author/JTmm71Rqvb2T">Dani Grapevine</a> from <a href="https://icons8.com/illustrations">Ouch!</a></div>
-            </div>
-        </div>
+        {{-- <div class="d-none d-lg-flex col-lg-7 col-xl-8 d-flex"  style="background: rgb(105,108,255); background: linear-gradient(140deg, rgba(105,108,255,1) 27%, rgba(0,212,255,1) 100%);"> --}}
+        <div class="d-none d-lg-flex col-lg-7 col-xl-8 d-flex bg-primary"
+            style=" background-image: url('{{ asset('assets/myimg/animated.gif') }}');
+                    background-size: cover;
+                    background-position: center;
+                    background-repeat: no-repeat;">
+           <div class="w-100 d-flex justify-content-center">
+               <div class="d-flex justify-content-center align-items-center">
+                   <!-- You can add other content here if needed -->
+               </div>
+           </div>
+       </div>
         <!-- /Left Text -->
 
         <!-- Login -->
@@ -86,7 +92,7 @@
             </div>
             <!-- /Logo -->
             <h4 class="mb-2">Welcome to BUGS Honorarium Monitoring System</h4>
-            <p class="mb-4">Please sign-in to your account to track your honorarium</p>
+            <p class="mb-4">Please sign in to your account to monitor your honorarium</p>
 
             <form id="loginForm" class="mb-3">
                 @csrf
@@ -124,17 +130,17 @@
             </form>
 
             <p class="text-center">
-              <span>New on our platform?</span>
+              <span>Don't have an account?</span>
               <a href="{{route('registration')}}">
-                <span>Create an account</span>
+                <span>Register here</span>
               </a>
             </p>
 
-            <div class="divider my-4">
-              <div class="divider-text">or</div>
-            </div>
+            {{-- <div class="divider my-4">
+              <div class="divider-text"></div>
+            </div> --}}
 
-            <div class="d-flex justify-content-center">
+            {{-- <div class="d-flex justify-content-center">
               <a href="javascript:;" class="btn btn-icon btn-label-facebook me-3">
                 <i class="tf-icons bx bxl-facebook"></i>
               </a>
@@ -146,7 +152,7 @@
               <a href="javascript:;" class="btn btn-icon btn-label-twitter">
                 <i class="tf-icons bx bxl-twitter"></i>
               </a>
-            </div>
+            </div> --}}
           </div>
         </div>
         <!-- /Login -->

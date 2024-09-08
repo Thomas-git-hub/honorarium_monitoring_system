@@ -48,7 +48,7 @@ class AdminController extends Controller
         $id = $request->input('id');
         $data = Emailing::with('employee')->where('id', $id)->first();
 
-       
+
         return view('administration.admin_open_email', compact('data'));
     }
 
@@ -87,6 +87,7 @@ class AdminController extends Controller
     /* ---------------------------------------NEW ENTRIES FUNCTIONS-------------------------------------------- */
     public function admin_new_entries(){
         $onQueue = Transaction::where('status', 'Processing')
+            ->where('office', Auth::user()->office_id)
             ->count();
         return view('administration.admin_new_entries', compact('onQueue'));
     }
