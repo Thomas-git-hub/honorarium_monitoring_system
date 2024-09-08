@@ -246,7 +246,7 @@
             },
             columns: [
                 { data: 'id', name: 'id', title: 'ID', visible: false},
-                { data: 'batch_id', name: 'batch_id', title: 'Batch'},
+                { data: 'batch_id', name: 'batch_id', title: 'Tracking Number'},
                 { data: 'date_of_trans', name: 'date_of_trans', title: 'Date Received' },
                 { data: 'faculty', name: 'faculty', title: 'Faculty' },
                 { data: 'id_number', name: 'id_number', title: 'ID Number' },

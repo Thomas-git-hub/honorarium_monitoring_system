@@ -82,11 +82,11 @@
             <div class="card">
                 <div class="card-body">
                     <div class="row">
-                        <div class="col-md-8">
+                        <div class="col-md">
                             <a href="">
                                 <div class="card shadow-none bg-label-primary">
                                     <div class="card-body text-secondary">
-                                        <h5 class="card-title text-secondary">On Hold Transactions</h5>
+                                        <h5 class="card-title text-secondary">Lorem Ipsum</h5>
                                         <p class="card-text fs-3 d-flex align-items-center">
                                             <i class='bx bxs-error-alt fs-3'>&nbsp;</i>23
                                         </p>
@@ -94,7 +94,7 @@
                                 </div>
                             </a>
                         </div>
-                        <div class="col-md-4">
+                        {{-- <div class="col-md-4">
                             <a href="">
                                 <div class="card shadow-none bg-label-danger">
                                     <div class="card-body text-danger">
@@ -105,7 +105,7 @@
                                     </div>
                                 </div>
                             </a>
-                        </div>
+                        </div> --}}
                     </div>
                 </div>
             </div>

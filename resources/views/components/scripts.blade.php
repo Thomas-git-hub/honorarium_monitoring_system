@@ -356,7 +356,7 @@
                ],
                createdRow: function(row, data) {
                    // Add class to unopened rows
-                 
+
                }
            });
 

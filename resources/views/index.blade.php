@@ -85,7 +85,7 @@
           <div class="w-px-400 mx-auto">
             <!-- Logo -->
             <div class="app-brand mb-3">
-              <a href="index.html" class="app-brand-link gap-2">
+              <a class="app-brand-link gap-2">
                 <img src="{{ asset('assets/myimg/logo.png') }}" class="logo-container" alt="Login" style="width: 10%;">
                 <span class="app-brand-text demo text-body fw-bold text-uppercase">BUGS</span>
               </a>
