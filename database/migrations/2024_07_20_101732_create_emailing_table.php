@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('message');
             $table->string('status');
             $table->string('created_by');
+            $table->string('deleted_by')->nullable();
             $table->timestamps();
 
             $table->foreign('transaction_id')->references('id')->on('transaction');

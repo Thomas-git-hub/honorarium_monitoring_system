@@ -27,7 +27,7 @@ class SentItemsController extends Controller
         if ($validator->fails()) {
             return response()->json(['success' => false,'errors' => $validator->errors()], 422);
         }
-        
+
 
         $ibu_dbcon = DB::connection('ibu_test');
 
@@ -71,7 +71,10 @@ class SentItemsController extends Controller
         // Query to get transactions with status 'On-hold'
         $emails = Emailing::with(['employee', 'send_to_employee'])
         ->where('created_by', Auth::user()->id)
-        ->where('status', '!=', 'Deleted')
+        ->where(function($query) {
+            $query->whereNull('deleted_by')
+                  ->orWhere('deleted_by', '!=', Auth::user()->employee_id); // Show only emails not deleted by the user
+        })
         ->get();
         $ibu_dbcon = DB::connection('ibu_test');
 
@@ -105,7 +108,7 @@ class SentItemsController extends Controller
                 }else{
                     return $data->send_to_employee->first_name . ' ' . $data->send_to_employee->last_name;
                 }
-                
+
             })
             ->addColumn('subject', function ($data) {
                 return $data->subject;

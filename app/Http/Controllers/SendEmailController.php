@@ -115,7 +115,11 @@ class SendEmailController extends Controller
         // Query to get transactions with status 'On-hold'
         $emails = Emailing::with('employee')
         ->where('to_user', Auth::user()->employee_id)
-        ->where('status', '!=', 'Deleted')
+        // ->where('status', '!=', 'Deleted')
+        ->where(function($query) {
+            $query->whereNull('deleted_by')
+                  ->orWhere('deleted_by', '!=', Auth::user()->employee_id); // Show only emails not deleted by the user
+        })
         ->get();
         $ibu_dbcon = DB::connection('ibu_test');
 
@@ -175,12 +179,13 @@ class SendEmailController extends Controller
 
         // Update the status of the selected emails to "Deleted"
         Emailing::whereIn('id', $ids)
-            ->update(
-                ['status' => 'Deleted',
-                 'updated_at' => now(),
-                ]
-            );
-
+        ->where('to_user', Auth::user()->employee_id)  // Ensure the user is deleting their own emails
+        ->update(
+            [
+                'deleted_by' => Auth::user()->employee_id, // Track which user deleted the email
+                'updated_at' => now(),
+            ]
+        );
         return response()->json(['success' => true, 'message' => 'Emails deleted successfully']);
     }
 
