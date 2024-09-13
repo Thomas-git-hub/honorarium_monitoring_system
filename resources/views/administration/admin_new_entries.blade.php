@@ -157,7 +157,7 @@
     <div class="col-md-6">
         <div class="card">
             <div class="card-header">
-                <p class="text-secondary">Preview of Items in Queue</p>
+                <p class="text-secondary">In Queue</p>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
@@ -166,6 +166,9 @@
                             <!-- Data will be inserted here -->
                         </tbody>
                     </table>
+                </div>
+                <div class="d-flex justify-content-end mt-3">
+                    <button class="btn btn-primary w-100">Generate Tracking Number</button>
                 </div>
             </div>
         </div>
