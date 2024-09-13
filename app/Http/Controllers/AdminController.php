@@ -254,6 +254,10 @@ class AdminController extends Controller
             ->addColumn('id', function($data) {
                 return $data->id;
             })
+
+            ->addColumn('status', function($data) {
+                return $data->status;
+            })
             ->addColumn('batch_id', function($data) {
                 return $data->batch_id ? $data->batch_id: 'No Batch ID Found';
             })
