@@ -53,15 +53,47 @@
             </div>
 
             <div class="form-floating mb-4 border-bottom">
-                <input type="text" class="form-control border-none" id="floatingInput" placeholder=""
-                    aria-describedby="floatingInputHelp"  name="subject"/>
+                <input type="text" class="form-control border-none" id="floatingInput" placeholder="" aria-describedby="floatingInputHelp"  name="subject" value="Transaction On-Hold"/>
                 <label for="floatingInput">Subject</label>
             </div>
-            <div>
-                <textarea class="form-control" id="emailTextArea" name="message" rows="3" placeholder="Message" style="border: none;"></textarea>
+            <div >
+                <textarea class="form-control" id="emailTextArea" name="message" rows="3" placeholder="Message" style="border: none;">Please come to the Administration Office for compliance.</textarea>
             </div>
-            <div class="border-top mt-3">
+            {{-- <div class="border-bottom">
                 <small class="text-danger" id="label" style="display: none;">Please specify the reason for holding this transaction.</small>
+            </div> --}}
+
+            <div class="mt-4">
+                <div>
+                    <small class="text-danger">Check the missing document that needs for compliance</small>
+                </div>
+                <div class="form-check mt-2">
+                    <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
+                    <label class="form-check-label" for="defaultCheck1">
+                      Daily Time Record (DTR)
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
+                    <label class="form-check-label" for="defaultCheck1">
+                      Teaching Appointment
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
+                    <label class="form-check-label" for="defaultCheck1">
+                      Manual Entry
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
+                    <label class="form-check-label" for="defaultCheck1">
+                      Others
+                    </label>
+                </div>
+            </div>
+
+            <div class="border-top mt-3">
                 <div class="d-flex flex-row justify-content-end mt-3 gap-2">
                     <button type="button" class="btn btn-label-danger border-none btn-trash bg-transparent"
                         id="discard"><i class='bx bxs-trash-alt'></i></button>

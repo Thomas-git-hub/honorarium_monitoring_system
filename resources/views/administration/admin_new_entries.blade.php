@@ -167,9 +167,40 @@
                         </tbody>
                     </table>
                 </div>
-                <div class="d-flex justify-content-end mt-3">
-                    <button class="btn btn-primary w-100" id="GenerateTrackingNum">Generate Tracking Number</button>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-end mt-3">
+            <button class="btn btn-primary w-100" id="GenerateTrackingNum">Generate Tracking Number</button>
+        </div>
+
+        <div class="card border border-primary" id="trackingNumDisplay" style="display: none;">
+            <div class="card-body">
+                <div class="row d-flex align-items-center mb-3">
+                    <label for="html5-text-input" class="col-md-4 col-form-label fs-6">Tracking Number:</label>
+                    <div class="col-md-8">
+                      <b class="text-success">000-0000</b>
+                    </div>
                 </div>
+                <div class="row d-flex align-items-center">
+                    <label for="html5-text-input" class="col-md-4 col-form-label">Total Transactions:</label>
+                    <div class="col-md-8">
+                      <b class="text-dark">0</b>
+                    </div>
+                </div>
+                <div class="row d-flex align-items-center">
+                    <label for="html5-text-input" class="col-md-4 col-form-label">On-Hold Transactions:</label>
+                    <div class="col-md-8">
+                      <b class="text-danger">0</b>
+                    </div>
+                </div>
+                <div class="row d-flex align-items-center">
+                    <label for="html5-text-input" class="col-md-4 col-form-label">Transaction Date:</label>
+                    <div class="col-md-8">
+                      <small class="text-dark">Septemeber 13, 2024</small>
+                    </div>
+                </div>
+                <button class="btn btn-primary mt-3 w-100">Proceed to next office</button>
             </div>
         </div>
     </div>
@@ -333,6 +364,7 @@
 </script>
 {{-- ADDING NEW ENTRIES END --}}
 
+
 {{-- DATE PICKER START --}}
 <script>
     var flatpickrDate = document.querySelector(".flatpickr-date");
@@ -345,6 +377,8 @@
 </script>
 {{-- DATE PICKER END --}}
 
+
+{{-- DATATABLES --}}
 <script>
     $(function () {
 
@@ -362,15 +396,32 @@
             columns: [
                 { data: 'id', name: 'id', title: 'ID', visible: false},
                 { data: 'date_of_trans', name: 'date_of_trans', title: 'Date Received' },
-                { data: 'faculty', name: 'faculty', title: 'Faculty' },
+                // { data: 'faculty', name: 'faculty', title: 'Faculty' },
+                {
+                    data: 'faculty',
+                    name: 'faculty',
+                    title: 'Faculty',
+                    render: function(data, type, row) {
+                        return '<span class="text-primary">' + data + '</span>';
+                    }
+                },
                 { data: 'id_number', name: 'id_number', title: 'ID Number' },
                 { data: 'academic_rank', name: 'academic_rank', title: 'Academic Rank' },
                 { data: 'college', name: 'college', title: 'College' },
-                { data: 'honorarium', name: 'honorarium', title: 'Honorarium' },
+                // { data: 'honorarium', name: 'honorarium', title: 'Honorarium' },
+                {
+                    data: 'honorarium',
+                    name: 'honorarium',
+                    title: 'Honorarium',
+                    render: function(data, type, row) {
+                        return '<span class="badge rounded-pill bg-warning">' + data + '</span>';
+                    }
+                },
                 { data: 'sem', name: 'sem', title: 'Semester' },
                 { data: 'year', name: 'year', title: 'Semester Year' },
                 { data: 'month.month_name', name: 'month', title: 'Month Of' },
                 { data: 'created_by', name: 'created_by', title: 'Created By' },
+                { data: 'status', name: 'status', title: 'Status' },
                 // { data: 'action', name: 'action', title: 'Action' }
             ],
             order: [[0, 'desc']], // Sort by date_received column by default
@@ -631,5 +682,18 @@
         $('#addToQueue').show();
     });
 </script>
+
+
+
+{{-- DISPLAY OF TRACKING NUMBER --}}
+<script>
+    $(document).ready(function() {
+    $('#GenerateTrackingNum').click(function() {
+        $('#trackingNumDisplay').show(); // Show the tracking number display
+        $('#GenerateTrackingNum').hide(); // Hide the generate tracking number button
+    });
+});
+</script>
+{{-- DISPLAY OF TRACKING NUMBER END--}}
 
 @endsection
