@@ -168,7 +168,7 @@
                     </table>
                 </div>
                 <div class="d-flex justify-content-end mt-3">
-                    <button class="btn btn-primary w-100">Generate Tracking Number</button>
+                    <button class="btn btn-primary w-100" id="GenerateTrackingNum">Generate Tracking Number</button>
                 </div>
             </div>
         </div>
@@ -259,6 +259,76 @@
                 });
             }
         });
+
+        $('#GenerateTrackingNum').on('click', function(e) {
+            e.preventDefault();
+            let isValid = true;
+
+                $.ajax({
+                    type: 'POST',
+                    url: '{{ route('admin_new_entries.generate_trackingNum') }}',
+                    data: $('#newEntriesForm').serialize(),
+                    success: function(response) {
+                        if(response.success){
+                            Swal.fire({
+                            icon: 'success',
+                            title: '<div class="row text-success"><i class="bx bxs-badge-alt" style="font-size: 56px;"></i></div><div class="row text-success d-flex justify-content-center">Tracking Number generated successfully!</div>',
+                            text: '',
+                            showClass: {
+                                popup: 'animate__animated animate__bounceIn'
+                            },
+                            customClass: {
+                                confirmButton: 'btn btn-success'
+                            },
+                            buttonsStyling: false
+                            }).then(() => {
+                                $('#facultyTable').DataTable().ajax.reload();
+                                $('#newEntriesForm input[type="text"]').val('');
+                                $('#newEntriesForm input[type="date"]').val('');
+                                // $('#defaultSelect select').each(function() {
+                                //     $(this).val($(this).find('option[selected]').val());
+                                // });
+                                $('#month').val('');
+                                $('#defaultSelect').val('');
+                                $('#newEntriesForm input[type="radio"]').prop('checked', false);
+                                $('#facultySelect, #HonoSelect').val(null).trigger('change');
+                                // $('#newEntriesForm').off('submit').submit();
+                                $('#addToQueue').hide();
+                            });
+                        }else{
+                            Swal.fire({
+                            icon: 'error',
+                            title: 'Error!',
+                            text: response.message,
+                            showClass: {
+                                popup: 'animate__animated animate__bounceIn'
+                            },
+                            customClass: {
+                                confirmButton: 'btn btn-success'
+                            },
+                            buttonsStyling: false
+                        })
+
+                        }
+                    },
+                    error: function(response) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error!',
+                            text: response.message,
+                            showClass: {
+                                popup: 'animate__animated animate__bounceIn'
+                            },
+                            customClass: {
+                                confirmButton: 'btn btn-success'
+                            },
+                            buttonsStyling: false
+                        })
+                    }
+                });
+        });
+
+
     });
 </script>
 {{-- ADDING NEW ENTRIES END --}}

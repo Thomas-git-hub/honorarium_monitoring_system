@@ -193,13 +193,16 @@ class AdminController extends Controller
     public function list(Request $request)
     {
         if(Auth::user()->usertype->name === 'Superadmin'){
-            $query = Transaction::with(['honorarium', 'createdBy'])->where('status', 'Processing');
+            $query = Transaction::with(['honorarium', 'createdBy'])
+            ->where('status', 'Processing')
+            ->orWhere('status', 'On-hold');
 
         }
         elseif(Auth::user()->usertype->name === 'Admin'){
             $From_office = Office::where('name', 'BUGS Administration')->first();
             $query = Transaction::with(['honorarium', 'createdBy'])
             ->where('status', 'Processing')
+            ->orWhere('status', 'On-hold')
             ->where('created_by', Auth::user()->id);
 
         }elseif(Auth::user()->usertype->name === 'Budget Office'){
@@ -307,6 +310,47 @@ class AdminController extends Controller
             })
 
             ->make(true);
+    }
+
+    public function generate_trackingNum(Request $request){
+
+        $transactions = Transaction::whereNull('batch_id')
+        ->where('office', Auth::user()->office_id)
+        ->where('created_by', Auth::user()->id)
+        ->get();
+
+        if ($transactions->isEmpty()) {
+            return response()->json(['success'=> false, 'message' => 'No transactions found']);
+        }
+
+        // Find the last batch_id to increment the number part
+        $lastBatch = Transaction::whereNotNull('batch_id')
+            ->orderBy('batch_id', 'desc')
+            ->first();
+
+        $lastNumber = 0;
+        if ($lastBatch) {
+            // Extract the number before the dash
+            $batchParts = explode(' - ', $lastBatch->batch_id);
+            $lastNumber = intval(substr($batchParts[0], 2)); // Extract and convert to integer, skipping the "00" prefix
+        }
+
+        // Increment the batch number
+        $newNumber = str_pad($lastNumber + 1, 3, '0', STR_PAD_LEFT);
+
+        // Format the current date as 'mdy'
+        $date = now()->format('mdy');
+
+        // Generate the new batch_id
+        $newBatchId = "{$newNumber} - {$date}";
+
+        foreach ($transactions as $transaction) {
+            $transaction->batch_id = $newBatchId;
+            $transaction->save();
+        }
+
+        return response()->json(['success'=> true, 'message' => 'Tracking Number generated successfully', 'batch_id' => $newBatchId]);
+
     }
 
 }

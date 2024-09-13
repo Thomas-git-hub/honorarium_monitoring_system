@@ -232,7 +232,7 @@
         var table = $('#facultyTable').DataTable({
             processing: true,
             serverSide: true,
-            ajax: '{{ route('admin_new_entries.list') }}',
+            ajax: '{{ route('admin_on_queue.list') }}',
             pageLength: 10,
             paging: true,
             dom: '<"top"lf>rt<"bottom"ip>',

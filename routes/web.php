@@ -75,11 +75,13 @@ Route::middleware(['auth_check'])->group(function () {
 
         Route::get('/admin_new_entries', [AdminController::class, 'admin_new_entries'])->name("admin_new_entries");
         Route::get('/admin_new_entries/list', [AdminController::class, 'list'])->name("admin_new_entries.list");
+        Route::post('/admin_new_entries/generate_tracking_number', [AdminController::class, 'generate_trackingNum'])->name("admin_new_entries.generate_trackingNum");
         Route::post('/form/submit', [AdminController::class, 'submitForm'])->name('form.submit');
         Route::post('/submit/onHold', [AdminController::class, 'submitOnHold'])->name('submit.onHold');
         Route::post('insertFormData', [SendEmailController::class, 'reply_send'])->name('insertFormData');
 
         Route::get('/admin_on_queue', [AdminController::class, 'admin_on_queue'])->name('admin_on_queue');
+        Route::get('/admin_on_queue/list', [QueueController::class, 'list'])->name('admin_on_queue.list');
         Route::get('/admin_on_hold', [AdminController::class, 'admin_on_hold'])->name('admin_on_hold');
         Route::post('/admin_on_queue/proceed_to_budget-office', [QueueController::class, 'proceedToBudgetOffice'])->name('admin_on_queue.proceedToBudgetOffice');
         Route::post('/admin_on_queue/proceed_to_cashier', [QueueController::class, 'proceedToCashier'])->name('admin_on_queue.proceedToCashier');
