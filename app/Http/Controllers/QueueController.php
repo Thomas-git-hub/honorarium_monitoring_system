@@ -59,33 +59,39 @@ class QueueController extends Controller
         }
 
 
-        if (is_null($transaction->batch_id)) {
+        // if (is_null($transaction->batch_id)) {
+        //     $ack = new Acknowledgement();
+        //     $ack->trans_id = $transaction->id;
+        //     $ack->office_id = Auth::user()->office_id;
+        //     $ack->user_id = Auth::user()->id;
+        //     $ack->save();
+
+        //     // Update the batch_id after saving
+        //     $ack->batch_id = '00'. $ack->id . '-' . $ack->created_at->format('mdY');
+        //     $ack->save();
+
+        //     // Update the status to 'On Queue'
+        //     Transaction::where('status', 'Processing')
+        //     ->where('office', Auth::user()->office_id)
+        //     ->where('created_by', Auth::user()->id)
+        //     ->update([
+        //         'status' => 'On Queue',
+        //         'batch_id' => $ack->batch_id,
+        //         'office' => $office->id,
+        //         'created_by' => Auth::user()->id,
+        //     ]);
+
+        //     $transaction->batch_id = $ack->batch_id;
+        //     $batchId = $transaction->batch_id;
+        // }else{
+
             $ack = new Acknowledgement();
             $ack->trans_id = $transaction->id;
+            $ack->batch_id= $transaction->batch_id;
             $ack->office_id = Auth::user()->office_id;
             $ack->user_id = Auth::user()->id;
             $ack->save();
 
-            // Update the batch_id after saving
-            $ack->batch_id = '00'. $ack->id . '-' . $ack->created_at->format('mdY');
-            $ack->save();
-
-            // Update the status to 'On Queue'
-            Transaction::where('status', 'Processing')
-            ->where('office', Auth::user()->office_id)
-            ->where('created_by', Auth::user()->id)
-            ->update([
-                'status' => 'On Queue',
-                'batch_id' => $ack->batch_id,
-                'office' => $office->id,
-                'created_by' => Auth::user()->id,
-            ]);
-
-            $transaction->batch_id = $ack->batch_id;
-            $batchId = $transaction->batch_id;
-        }else{
-
-            
             // Update the status to 'On Queue'
             Transaction::where('status', 'Processing')
             ->where('office', Auth::user()->office_id)
@@ -98,7 +104,7 @@ class QueueController extends Controller
 
             $batchId = $transaction->batch_id;
 
-        }
+        // }
         return response()->json(['success' => true, 'batch_id'=> $batchId, 'message' => 'Emails sent and transactions updated.']);
     }
 
