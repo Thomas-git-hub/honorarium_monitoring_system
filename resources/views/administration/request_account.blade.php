@@ -62,18 +62,38 @@
     <div class="col-md">
         <diuv class="card">
             <div class="card-body">
-                hello world
+                <div class="table-responsive">
+                    <table id="requestAccountTable" class="table table-borderless" style="width:100%">
+                        <tbody class="text-center">
+                            <!-- Data will be inserted here -->
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </diuv>
     </div>
 
     <div class="col-md-8" id="requestFormContainer" style="display: none;">
         <form id="requestForm" action="">
-            <div class="card border border-primary shadow">
+            <div class="card border border-primary shadow" id="requestFormCard">
                 <div class="card-header">
                     <p class="text-secondary">Request Form</p>
                 </div>
                 <div class="card-body">
+                    <div class="row">
+                        <div class="mb-3">
+                            <label for="defaultSelect" class="form-label">Select Office</label>
+                            <select id="defaultSelect" class="form-select">
+                              <option>Default select</option>
+                              <option value="1">Administration</option>
+                              <option value="2">Dean</option>
+                              <option value="3">Budget Office</option>
+                              <option value="4">Accounting</option>
+                              <option value="5">Cashier</option>
+                              <option value="6">Faculty</option>
+                            </select>
+                          </div>
+                    </div>
                     <div class="row">
                         <div class="mb-5">
                             <label for="facultySelect" class="form-label">Select Employee</label>
@@ -147,8 +167,8 @@
                             <small class="small-button-warning text-danger" style="display:none;"><b> Warning, Please check the fields again.</b></small>
                         </div>
                         <div class="col-md d-flex justify-content-end gap-2">
-                            <button type="submit" class="btn btn-primary" id="submit" disabled>Send Request</button>
-                            <button type="button" class="btn btn-label-danger">Cancel</button>
+                            <button type="submit" class="btn btn-primary" id="submit">Send Request</button>
+                            <button type="button" class="btn btn-label-danger" id="cancelRequestButton">Cancel</button>
                         </div>
                     </div>
 
@@ -164,8 +184,41 @@
 
 @section('components.specific_page_scripts')
 
+{{-- DATATABLES --}}
 <script>
+    $(function () {
+    var data = [
+        {
+            faculty: '<strong>John Doe</strong>',
+        },
+        // Add more objects as needed
+    ];
 
+    var table = $('#requestAccountTable').DataTable({
+        processing: true,
+        serverSide: false, // Set serverSide to false to use local data
+        data: data,        // Provide the local data
+        pageLength: 10,
+        paging: true,      // Enable pagination
+
+        dom: '<"top"lf>rt<"bottom"ip>',
+        language: {
+            search: "", // Remove the default search label
+            searchPlaceholder: "Search..." // Set the placeholder text
+        },
+        columns: [
+            { data: 'office', name: 'office', title: 'office' }, // Map local data to the columns
+            { data: 'faculty', name: 'faculty', title: 'faculty' },
+            { data: 'email', name: 'email', title: 'email' },
+        ],
+    });
+});
+
+</script>
+
+
+{{-- FORM VALIDATION --}}
+<script>
 $(document).ready(function() {
     $('#requestButton').click(function() {
         $('#requestFormContainer').show();
@@ -274,11 +327,21 @@ $(document).ready(function() {
     // Initial validation on document ready
     validateForm();
 });
+</script>
 
 
+<script>
+    $(document).ready(function() {
+    $('#cancelRequestButton').click(function() {
+        // Clear all input fields
+        $('#requestFormCard input[type="text"]').val('');
+        $('#facultySelect').prop('selectedIndex', 0); // Reset the select option
+        $('.small-warning').hide(); // Hide all warnings
 
-
-
+        // Hide the request form card
+        $('#requestFormContainer').hide();
+    });
+});
 </script>
 
 @endsection
