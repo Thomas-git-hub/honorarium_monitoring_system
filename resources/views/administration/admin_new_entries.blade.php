@@ -174,33 +174,33 @@
             <button class="btn btn-primary w-100" id="GenerateTrackingNum">Generate Tracking Number</button>
         </div>
 
-        <div class="card border border-primary" id="trackingNumDisplay" style="display: none;">
+        <div class="card border border-primary trackingNumDisplay d-none" id="trackingNumDisplay">
             <div class="card-body">
                 <div class="row d-flex align-items-center mb-3">
                     <label for="html5-text-input" class="col-md-4 col-form-label fs-6">Tracking Number:</label>
                     <div class="col-md-8">
-                      <b class="text-success">000-0000</b>
+                      <b class="text-success" id="batchID">000-000000</b>
                     </div>
                 </div>
                 <div class="row d-flex align-items-center">
                     <label for="html5-text-input" class="col-md-4 col-form-label">Total Transactions:</label>
                     <div class="col-md-8">
-                      <b class="text-dark">0</b>
+                      <b class="text-dark" id="transCount">0</b>
                     </div>
                 </div>
                 <div class="row d-flex align-items-center">
                     <label for="html5-text-input" class="col-md-4 col-form-label">On-Hold Transactions:</label>
                     <div class="col-md-8">
-                      <b class="text-danger">0</b>
+                      <b class="text-danger" id="holdCount">0</b>
                     </div>
                 </div>
                 <div class="row d-flex align-items-center">
                     <label for="html5-text-input" class="col-md-4 col-form-label">Transaction Date:</label>
                     <div class="col-md-8">
-                      <small class="text-dark">Septemeber 13, 2024</small>
+                      <small class="text-dark" id="date"><?php echo date('F j, Y'); ?></small>
                     </div>
                 </div>
-                <button class="btn btn-primary mt-3 w-100">Proceed to next office</button>
+                <button class="btn btn-primary mt-3 w-100" id="proceedTransactionButton">Proceed to next office</button>
             </div>
         </div>
     </div>
@@ -216,6 +216,7 @@
 @section('components.specific_page_scripts')
 {{-- FORM VALIDATION FOR NEW ENTRIES --}}
 <script>
+
     $(document).ready(function() {
         $('input[name="is_complete"]').change(function() {
             if ($(this).val() === '1') {
@@ -301,31 +302,17 @@
                     data: $('#newEntriesForm').serialize(),
                     success: function(response) {
                         if(response.success){
-                            Swal.fire({
-                            icon: 'success',
-                            title: '<div class="row text-success"><i class="bx bxs-badge-alt" style="font-size: 56px;"></i></div><div class="row text-success d-flex justify-content-center">Tracking Number generated successfully!</div>',
-                            text: '',
-                            showClass: {
-                                popup: 'animate__animated animate__bounceIn'
-                            },
-                            customClass: {
-                                confirmButton: 'btn btn-success'
-                            },
-                            buttonsStyling: false
-                            }).then(() => {
-                                $('#facultyTable').DataTable().ajax.reload();
-                                $('#newEntriesForm input[type="text"]').val('');
-                                $('#newEntriesForm input[type="date"]').val('');
-                                // $('#defaultSelect select').each(function() {
-                                //     $(this).val($(this).find('option[selected]').val());
-                                // });
-                                $('#month').val('');
-                                $('#defaultSelect').val('');
-                                $('#newEntriesForm input[type="radio"]').prop('checked', false);
-                                $('#facultySelect, #HonoSelect').val(null).trigger('change');
-                                // $('#newEntriesForm').off('submit').submit();
-                                $('#addToQueue').hide();
-                            });
+                            var batchID = response.batch_id;
+                            var onhold_transactions = response.onhold_transactions;
+                            var processing_transactions = response.processing_transactions;
+
+                            $('#GenerateTrackingNum').hide(); // Hide the generate tracking number button
+                            $('#trackingNumDisplay').removeClass('d-none');
+                            $('#batchID').text(batchID);
+                            $('#holdCount').text(onhold_transactions);
+                            $('#transCount').text(processing_transactions);
+                            console.log(batchID);
+
                         }else{
                             Swal.fire({
                             icon: 'error',
@@ -359,8 +346,52 @@
                 });
         });
 
+        $('#proceedTransactionButton').off('click').on('click', function() {
+                $.ajax({
+                    url: '{{ route('admin_on_queue.proceedToBudgetOffice') }}',
+                    method: 'POST',
+                    data: {
+                        _token: $('meta[name="csrf-token"]').attr('content'),
+                    },
+                    beforeSend: function() {
+                        Swal.fire({
+                            title: 'Processing...',
+                            html: '<div class="spinner-border text-primary" role="status"></div>',
+                            showConfirmButton: false,
+                            allowOutsideClick: false
+                        });
+                    },
 
-    });
+                    success: function(response) {
+                        if(response.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Transaction forwarded succesfully',
+                                // html: `<h4 class="text-success">Tracking Number:<b>${response.batch_id}</b></h4><small class="text-danger">Note: Always attach the tracking number on the documents.</small>`,
+                                text: response.message,
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Something went wrong',
+                                text: response.message,
+                            });
+                        }
+                        // Reload DataTable
+                        $('#facultyTable').DataTable().ajax.reload();
+                    },
+                    error: function(xhr) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'There was a problem updating the transactions.',
+                        });
+                    }
+                });
+            });
+        });
+
+
 </script>
 {{-- ADDING NEW ENTRIES END --}}
 
@@ -420,7 +451,7 @@
                 { data: 'sem', name: 'sem', title: 'Semester' },
                 { data: 'year', name: 'year', title: 'Semester Year' },
                 { data: 'month.month_name', name: 'month', title: 'Month Of' },
-                { data: 'status', name: 'status', title: 'Status' },
+                // { data: 'status', name: 'status', title: 'Status' },
                 { data: 'created_by', name: 'created_by', title: 'Created By' },
                 { data: 'status', name: 'status', title: 'Status' },
                 // { data: 'action', name: 'action', title: 'Action' }
@@ -479,7 +510,7 @@
 
             // Update the hidden input and the To: container
             $('#user_id').val(facultyId);
-            $('.card-body .text-dark').html(`<b>To:&nbsp;</b> ${facultyName}&nbsp;<small class="text-secondary" style="font-style: italic;">${facultyEmail}</small>`);
+            $('.card-body .send_to').html(`<b>To:&nbsp;</b> ${facultyName}&nbsp;<small class="text-secondary" style="font-style: italic;">${facultyEmail}</small>`);
         });
 
         $('#facultySelect').select2({
@@ -684,17 +715,5 @@
     });
 </script>
 
-
-
-{{-- DISPLAY OF TRACKING NUMBER --}}
-<script>
-    $(document).ready(function() {
-    $('#GenerateTrackingNum').click(function() {
-        $('#trackingNumDisplay').show(); // Show the tracking number display
-        $('#GenerateTrackingNum').hide(); // Hide the generate tracking number button
-    });
-});
-</script>
-{{-- DISPLAY OF TRACKING NUMBER END--}}
 
 @endsection

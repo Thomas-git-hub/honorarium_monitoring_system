@@ -54,7 +54,7 @@ class UserController extends Controller
         }
 
         // $user = DB::connection('ors_pgsql')->table('employee_user')->where('email', $request->email)->first();
-        $user = DB::connection('ors_pgsql')->table('employee_user')->where('email', $request->email)->first();
+        $user = DB::connection('ibu_test')->table('employee_user')->where('email', $request->email)->first();
 
         if ($user) {
             $mysqlUserId = DB::connection('mysql')->table('users')->insertGetId([
@@ -65,7 +65,7 @@ class UserController extends Controller
             ]);
 
             // $employeeDetails = DB::connection('ors_pgsql')->table('employee')
-            $employeeDetails = DB::connection('ors_pgsql')->table('employee')
+            $employeeDetails = DB::connection('ibu_test')->table('employee')
             ->where('id', $user->id)
             ->first();
 
@@ -155,7 +155,7 @@ class UserController extends Controller
             })
             ->editColumn('college', function($user) {
                 if($user->college_id){
-                    $collegeDetails = DB::connection('ors_pgsql')->table('college')
+                    $collegeDetails = DB::connection('ibu_test')->table('college')
                     ->where('id', $user->college_id)
                     ->first();
                     return $collegeDetails->college_shortname;
@@ -201,7 +201,7 @@ class UserController extends Controller
         $searchTerm = $request->input('search'); // Capture search term
 
         // Join the 'employee' and 'employee_user' tables to get the email
-        $faculties = DB::connection('ors_pgsql')
+        $faculties = DB::connection('ibu_test')
                         ->table('employee')
                         ->where('active', 'T')
                         ->where(function($query) use ($searchTerm) {

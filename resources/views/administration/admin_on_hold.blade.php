@@ -264,10 +264,11 @@
                 success: function(response) {
                     Swal.close(); // Close the processing alert
                     if(response.success){
+                        var batchID = response.batchId;
                         Swal.fire({
                             icon: 'success',
                             title: 'Transaction forwarded successfully.',
-                            html: `<h4 class="text-success">Tracking Number: <b>00${transactionId}-${formattedDate}</b></h4><small class="text-danger">Note: Always attach the tracking number on the documents.</small>`,
+                            html: `<h4 class="text-success">Tracking Number: <b>${response.batch_id}</b></h4><small class="text-danger">Note: Always attach the tracking number on the documents.</small>`,
                             text: response.message,
                         }).then(() => {
                             // Reload the page after the success SweetAlert is closed

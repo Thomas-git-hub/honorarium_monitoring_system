@@ -47,7 +47,7 @@
             <div class="card mb-5">
                 <div class="card-body d-flex align-items-center">
                     <input type="hidden" name="id" id="user_id">
-                    <div class="text-dark"><b>To:&nbsp;</b> John Doe Duridut&nbsp;<small class="text-secondary"
+                    <div class="text-dark send_to"><b>To:&nbsp;</b> John Doe Duridut&nbsp;<small class="text-secondary"
                             style="font-style: italic;">johndoe@bicol-u.edu.ph</small></div>
                 </div>
             </div>

@@ -203,7 +203,7 @@
     <div class="col">
         <div class="row mb-2">
             <div class="col-md mx-auto d-flex justify-content-end">
-                <button type="button" class="btn btn-primary gap-1" id="proceedTransactionButton">Proceed<i class='bx bx-chevrons-right'></i></button>
+                <button type="button" class="btn btn-primary gap-1 d-none" id="proceedTransactionButton">Proceed<i class='bx bx-chevrons-right'></i></button>
             </div>
         </div>
 
@@ -459,6 +459,11 @@
 
 <script>
     $(document).ready(function() {
+
+        @if(Auth::user()->usertype->name !== 'Admin')
+        $('#proceedTransactionButton').removeClass('d-none');
+        @endif
+
 
         // Handle Proceed button click
         // $('#proceed_transaction').off('click').on('click', function() {

@@ -17,8 +17,8 @@ class OnHoldController extends Controller
     public function getOnHoldTransactions(Request $request)
     {
         // Query to get transactions with status 'On-hold'
-        $transactions = Transaction::where('status', 'On-hold')->get();
-        $ibu_dbcon = DB::connection('ors_pgsql');
+        $transactions = Transaction::where('batch_id', '!=', NULL)->where('status', 'On-hold')->get();
+        $ibu_dbcon = DB::connection('ibu_test');
 
         $months = [
             1 => 'January',
@@ -142,7 +142,7 @@ class OnHoldController extends Controller
 
     public function UpdateToProceed(Request $request){
 
-        $ibu_dbcon = DB::connection('ors_pgsql');
+        $ibu_dbcon = DB::connection('ibu_test');
 
         // Fetch all transactions with status 'On-hold'
         $transactions = Transaction::where('status', 'On-hold')->where('id', $request->id)->first();
@@ -172,30 +172,6 @@ class OnHoldController extends Controller
             $office = Office::where('name', 'Faculty')->first();
         }
 
-
-        if (is_null($transactions->batch_id)) {
-            $ack = new Acknowledgement();
-            $ack->trans_id = $transactions->id;
-            $ack->office_id = Auth::user()->office_id;
-            $ack->user_id = Auth::user()->id;
-            $ack->save();
-
-            // Update the batch_id after saving
-            $ack->batch_id = '00'. $ack->id . '-' . $ack->created_at->format('mdY');
-            $ack->save();
-
-            // Update the status to 'On Queue'
-            Transaction::where('status', 'On-hold')
-            ->where('office', Auth::user()->office_id)
-            ->where('created_by', Auth::user()->id)
-            ->update([
-                'status' => 'On Queue',
-                'batch_id' => $ack->batch_id,
-                'office' => $office->id,
-                'created_by' => Auth::user()->id,
-            ]);
-        }else{
-            // Update the status to 'On Queue'
             Transaction::where('status', 'On-hold')
             ->where('office', Auth::user()->office_id)
             ->where('created_by', Auth::user()->id)
@@ -205,7 +181,8 @@ class OnHoldController extends Controller
                 'created_by' => Auth::user()->id,
             ]);
 
-        }
-        return response()->json(['success' => true, 'message' => 'Emails sent and transactions updated.']);
+            $batchId = $transactions->batch_id;
+
+        return response()->json(['success' => true, 'batch_id'=> $batchId, 'message' => 'Emails sent and transactions updated.']);
     }
 }

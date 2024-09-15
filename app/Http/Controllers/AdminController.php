@@ -21,10 +21,12 @@ class AdminController extends Controller
         $pendingMails = Emailing::where('status', 'Unread')->where('to_user', Auth::user()->employee_id);
         $EmailCount = $pendingMails->count();
 
-        $OnQueue = Transaction::where('status', 'Processing')
+        $OnQueue = Transaction::where('status', 'On Queue')
         ->where('created_by', Auth::user()->id)
+        ->where('batch_id', '!=', NULL)
         ->count();
         $OnHold = Transaction::where('status', 'On-hold')
+        ->where('batch_id', '!=', NULL)
         ->where('office', Auth::user()->office_id)
         ->count();
 
@@ -66,7 +68,7 @@ class AdminController extends Controller
         $user = User::findOrFail($id);
 
 
-        $collegeDetails = DB::connection('ors_pgsql')->table('college')
+        $collegeDetails = DB::connection('ibu_test')->table('college')
                 ->where('id', $user->college_id)
                 ->first();
 
@@ -176,8 +178,9 @@ class AdminController extends Controller
     }
 
     public function admin_on_queue(){
-        $onQueue = Transaction::where('status', 'Processing')
+        $onQueue = Transaction::where('status', 'On Queue')
             ->where('created_by', Auth::user()->id)
+            ->where('batch_id', '!=', NULL)
             ->count();
         return view('administration.admin_on_queue', compact('onQueue'));
     }
@@ -185,6 +188,7 @@ class AdminController extends Controller
     public function admin_on_hold(){
         $OnHold = Transaction::where('status', 'On-hold')
         // ->where('office', Auth::user()->office_id)
+        ->where('batch_id', '!=', NULL)
         ->where('created_by', Auth::user()->id)
         ->count();
         return view('administration.admin_on_hold', compact('OnHold'));
@@ -233,7 +237,7 @@ class AdminController extends Controller
         }
 
         $transactions = $query->get();
-        $ibu_dbcon = DB::connection('ors_pgsql');
+        $ibu_dbcon = DB::connection('ibu_test');
 
         $months = [
             1 => 'January',
@@ -353,7 +357,26 @@ class AdminController extends Controller
             $transaction->save();
         }
 
-        return response()->json(['success'=> true, 'message' => 'Tracking Number generated successfully', 'batch_id' => $newBatchId]);
+        // Count total transactions for the new batch_id
+        $totalTransactions = Transaction::where('batch_id', $newBatchId)->count();
+
+        // Count transactions with the status 'processing' for the new batch_id
+        $processingTransactions = Transaction::where('batch_id', $newBatchId)
+            ->where('status', 'processing') // Adjust the 'status' value based on your actual column values
+            ->count();
+
+        $onHoldTransactions = Transaction::where('batch_id', $newBatchId)
+            ->where('status', 'On-hold') // Adjust the 'status' value based on your actual column values
+            ->count();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Tracking Number generated successfully',
+                'batch_id' => $newBatchId,
+                'total_transactions' => $totalTransactions, // Total transactions count
+                'processing_transactions' => $processingTransactions, // Count of processing transactions
+                'onhold_transactions' => $onHoldTransactions // Count of processing transactions
+            ]);
 
     }
 
