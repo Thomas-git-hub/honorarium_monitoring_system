@@ -324,6 +324,7 @@
                             var batchID = response.batch_id;
                             var onhold_transactions = response.onhold_transactions;
                             var processing_transactions = response.processing_transactions;
+                            var date = response.date;
 
                             $('#GenerateTrackingNum').hide(); // Hide the generate tracking number button
                             $('#trackingNumDisplay').removeClass('d-none');
@@ -335,18 +336,28 @@
 
 
                         }else{
-                            Swal.fire({
-                            icon: 'error',
-                            title: 'Error!',
-                            text: response.message,
-                            showClass: {
-                                popup: 'animate__animated animate__bounceIn'
-                            },
-                            customClass: {
-                                confirmButton: 'btn btn-success'
-                            },
-                            buttonsStyling: false
-                        })
+                            var batchID = response.last_batch_id;
+                            var onhold_transactions = response.onhold_transactions;
+                            var processing_transactions = response.processing_transactions;
+
+                            $('#GenerateTrackingNum').hide(); // Hide the generate tracking number button
+                            $('#trackingNumDisplay').removeClass('d-none');
+                            $('#batchID').text(batchID);
+                            $('#holdCount').text(onhold_transactions);
+                            $('#transCount').text(processing_transactions);
+                            $('#date').text(date);
+                        //     Swal.fire({
+                        //     icon: 'error',
+                        //     title: 'Error!',
+                        //     text: response.message,
+                        //     showClass: {
+                        //         popup: 'animate__animated animate__bounceIn'
+                        //     },
+                        //     customClass: {
+                        //         confirmButton: 'btn btn-success'
+                        //     },
+                        //     buttonsStyling: false
+                        // })
                         getNewEntries();
 
 
@@ -501,6 +512,7 @@
             }
         });
 
+
         // Handle Edit button click
         $('#facultyTable').on('click', '.edit-btn', function() {
             var row = $(this).closest('tr');
@@ -535,6 +547,9 @@
             $('#editEntryModal').modal('show');
         });
 
+        $('#floatingInput').val('Transaction On-Hold');
+        $('#emailTextArea').val('Please come to the Administration Office for compliance.');
+
         $('#facultySelect').on('select2:select', function(e) {
             var selectedOption = $(this).select2('data')[0]; // Get the selected option data
             var facultyName = `${selectedOption.employee_fname} ${selectedOption.employee_lname}`;
@@ -544,6 +559,8 @@
             // Update the hidden input and the To: container
             $('#user_id').val(facultyId);
             $('.card-body .send_to').html(`<b>To:&nbsp;</b> ${facultyName}&nbsp;<small class="text-secondary" style="font-style: italic;">${facultyEmail}</small>`);
+            $('#floatingInput').val('Transaction On-Hold');
+            $('#emailTextArea').val('Please come to the Administration Office for compliance.');
         });
 
         $('#facultySelect').select2({

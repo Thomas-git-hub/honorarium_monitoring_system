@@ -17,7 +17,9 @@ class OnHoldController extends Controller
     public function getOnHoldTransactions(Request $request)
     {
         // Query to get transactions with status 'On-hold'
-        $transactions = Transaction::where('batch_id', '!=', NULL)->where('status', 'On-hold')->get();
+        $transactions = Transaction::where('batch_id', '!=', NULL)->where('status', 'On-hold')
+        ->where('created_by', Auth::user()->id)
+        ->get();
         $ibu_dbcon = DB::connection('ibu_test');
 
         $months = [
