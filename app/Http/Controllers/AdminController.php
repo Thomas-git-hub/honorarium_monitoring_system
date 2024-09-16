@@ -147,6 +147,7 @@ class AdminController extends Controller
 
         return response()->json(['success' => true, 'message' => 'Form submitted successfully.']);
     }
+
     public function submitOnHold(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -352,8 +353,42 @@ class AdminController extends Controller
         ->where('created_by', Auth::user()->id)
         ->get();
 
+        // if ($transactions->isEmpty()) {
+        //     return response()->json(['success'=> false, 'message' => 'No transactions found']);
+        // }
+
         if ($transactions->isEmpty()) {
-            return response()->json(['success'=> false, 'message' => 'No transactions found']);
+            // Find the last batch_id
+            $lastBatch = Transaction::whereNotNull('batch_id')
+                ->orderBy('batch_id', 'desc')
+                ->first();
+
+
+            if ($lastBatch) {
+                $lastBatchCreatedAt = $lastBatch->created_at->format('F j, Y');
+
+                // Count transactions with the status 'processing' for the new batch_id
+                $processingTransactions = Transaction::where('batch_id', $lastBatch->batch_id)
+                ->where('status', 'processing') // Adjust the 'status' value based on your actual column values
+                ->count();
+
+                $onHoldTransactions = Transaction::where('batch_id', $lastBatch->batch_id)
+                ->where('status', 'On-hold') // Adjust the 'status' value based on your actual column values
+                ->count();
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No transactions found',
+                    'last_batch_id' => $lastBatch->batch_id, // Return last generated batch_id
+                    'processing_transactions' => $processingTransactions, // Count of processing transactions
+                    'onhold_transactions' => $onHoldTransactions, // Count of processing transactions
+                    'date' => $lastBatchCreatedAt // Count of processing transactions
+                ]);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No transactions and no batch_id found'
+                ]);
+            }
         }
 
         // Find the last batch_id to increment the number part

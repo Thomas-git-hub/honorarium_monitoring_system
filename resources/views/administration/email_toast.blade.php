@@ -53,11 +53,11 @@
             </div>
 
             <div class="form-floating mb-4 border-bottom">
-                <input type="text" class="form-control border-none" id="floatingInput" placeholder="" aria-describedby="floatingInputHelp"  name="subject" value="Transaction On-Hold"/>
+                <input type="text" class="form-control border-none" id="floatingInput" placeholder="" aria-describedby="floatingInputHelp"  name="subject" />
                 <label for="floatingInput">Subject</label>
             </div>
             <div >
-                <textarea class="form-control" id="emailTextArea" name="message" rows="3" placeholder="Message" style="border: none;">Please come to the Administration Office for compliance.</textarea>
+                <textarea class="form-control" id="emailTextArea" name="message" rows="3" placeholder="Message" style="border: none;"></textarea>
             </div>
             {{-- <div class="border-bottom">
                 <small class="text-danger" id="label" style="display: none;">Please specify the reason for holding this transaction.</small>

@@ -3,7 +3,7 @@
 @section('content')
 
 <!-- Modal -->
-<div class="modal fade" id="proceed" tabindex="-1" aria-hidden="true">
+{{-- <div class="modal fade" id="proceed" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
@@ -20,7 +20,7 @@
         </div>
       </div>
     </div>
-</div>
+</div> --}}
 {{-- EDIT MODAL END --}}
 
 <!-- EDIT MODAL START -->
@@ -198,7 +198,7 @@
     <div class="col">
         <div class="row mb-3">
             <div class="col-md mx-auto d-flex justify-content-end">
-                <button type="button" class="btn btn-primary gap-1 ProceedAcknowledge" id="ProceedAcknowledge" data-bs-toggle="modal" data-bs-target="#proceed">Acknowledge Transaction<i class='bx bx-chevrons-right'></i></button>
+                <button type="button" class="btn btn-primary gap-1 ProceedAcknowledge" id="ProceedAcknowledge" >Acknowledge Transaction<i class='bx bx-chevrons-right'></i></button>
             </div>
         </div>
 
@@ -281,6 +281,15 @@
                     _token: $('meta[name="csrf-token"]').attr('content'),
                     batchId: batchId,
                 },
+                beforeSend: function() {
+                        Swal.fire({
+                            title: 'Processing...',
+                            html: '<div class="spinner-border text-primary" role="status"></div>',
+                            showConfirmButton: false,
+                            allowOutsideClick: false
+                        });
+                    },
+
                 success: function(response) {
                     if(response.success){
 
@@ -289,7 +298,9 @@
                             title: 'Success',
                             text: response.message,
                         });
-                        $('#proceed').modal('show');
+                        $('#facultyTable').DataTable().ajax.reload();
+                        // $('#proceed').modal('show');
+                        window.location.href = `/admin_on_queue`;
 
                     }else{
                         Swal.fire({
@@ -297,12 +308,13 @@
                             title: 'Oh no!',
                             text: response.message,
                         });
+                        $('#facultyTable').DataTable().ajax.reload();
 
-                        $('#proceed').modal('hide');
+                        // $('#proceed').modal('hide');
 
                     }
-                    $('#facultyTable').DataTable().ajax.reload();
-                    window.location.href = `/for_acknowledgement`;
+
+
                 },
                 error: function(xhr) {
                     // Handle error
