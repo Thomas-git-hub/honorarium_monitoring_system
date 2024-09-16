@@ -42,7 +42,7 @@
 </div> --}}
 
 <div class="row mt-4">
-    <div class="col-md-6">
+    <div class="col-md-4">
         <div class="card mb-5">
             <div class="card-header">
                 <p class="text-secondary">Add Entries</p>
@@ -154,10 +154,10 @@
         </div>
 
     </div>
-    <div class="col-md-6">
+    <div class="col-md-8">
         <div class="card">
             <div class="card-header">
-                <p class="text-secondary">In Queue</p>
+                <p class="text-secondary">In Queue Transactions</p>
             </div>
             <div class="card-body">
                 <div class="table-responsive">

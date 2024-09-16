@@ -7,15 +7,68 @@
 
 <!--VIEW DETAILS-->
     <div class="modal fade" id="modalToggle" aria-labelledby="modalToggleLabel" tabindex="-1" style="display: none;" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-            <h5 class="modal-title" id="modalToggleLabel">Modal 1</h5>
+            <h5 class="modal-title" id="modalToggleLabel">Details</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <div class="row">
-
+                <div class="row mb-2">
+                    <div class="col-md-4">
+                        Office:
+                    </div>
+                    <div class="col-md-8">
+                        <b>Lorem Ipsum</b>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-md-4">
+                        Full Name:
+                    </div>
+                    <div class="col-md-8">
+                        <b>John Doe</b>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-md-4">
+                        ID Number:
+                    </div>
+                    <div class="col-md-8">
+                        <b>000-0000</b>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-md-4">
+                        Position/Academic Rank:
+                    </div>
+                    <div class="col-md-8">
+                        <b>Lorem Ipsum</b>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-md-4">
+                        Mother College:
+                    </div>
+                    <div class="col-md-8">
+                        <b>College of Ipsum</b>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-md-4">
+                        Contact Number:
+                    </div>
+                    <div class="col-md-8">
+                        <b>09156748573</b>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-md-4">
+                        Email:
+                    </div>
+                    <div class="col-md-8">
+                        <b>lorem@bicol-u.edu.ph</b>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">
@@ -81,8 +134,24 @@
     </div>
 </div>
 
-<div class="row mb-3" id="requestFormContainer" style="display: none;">
+
+
+<div class="row">
     <div class="col-md">
+        <diuv class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table id="requestAccountTable" class="table table-borderless" style="width:100%">
+                        <tbody class="text-center">
+                            <!-- Data will be inserted here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </diuv>
+    </div>
+
+    <div class="col-md" id="requestFormContainer" style="display: none;">
         <form id="requestForm" action="">
             <div class="card border border-primary shadow" id="requestFormCard">
                 <div class="card-header">
@@ -90,28 +159,26 @@
                 </div>
                 <div class="card-body">
                     <div class="row">
-                        <div class="mb-3">
-                            <label for="defaultSelect" class="form-label">Select Office</label>
-                            <select id="defaultSelect" class="form-select">
-                              <option>Default select</option>
-                              <option value="1">Administration</option>
-                              <option value="2">Dean</option>
-                              <option value="3">Budget Office</option>
-                              <option value="4">Accounting</option>
-                              <option value="5">Cashier</option>
-                              <option value="6">Faculty</option>
-                            </select>
-                          </div>
-                    </div>
-
-                    <div class="row">
                         <div class="mb-5">
-                            <label for="facultySelect" class="form-label">Select Employee</label>
-                            <select class="form-control" id="facultySelect" name="employee_id" style="width: 100%;">
-                                <option selected disabled>Search by Name/Email...</option>
-                                <!-- Other existing options can go here -->
+                            <label for="defaultSelect" class="form-label">Request Account for:</label>
+                            <select id="defaultSelect" class="form-select">
+                            <option>Default select</option>
+                            <option value="1">Administration</option>
+                            <option value="2">Dean</option>
+                            <option value="3">Budget Office</option>
+                            <option value="4">Accounting</option>
+                            <option value="5">Cashier</option>
+                            <option value="6" id="facultyOption">Faculty</option>
                             </select>
                         </div>
+                    </div>
+
+                    <div class="row mb-3" id="selectFaculty" style="display: none;">
+                        <label for="facultySelect" class="form-label">Select Faculty</label>
+                        <select class="form-control" id="facultySelect" name="employee_id" style="width: 100%;">
+                            <option selected disabled>Search by Name/Email...</option>
+                            <!-- Other existing options can go here -->
+                        </select>
                     </div>
 
 
@@ -145,18 +212,20 @@
                                 <input type="text" class="form-control" name="ee_number" id="ee_number" placeholder="-" aria-describedby="defaultFormControlHelp"/>
                                 <small class="text-danger small-warning">Employee ID is Required</small>
                             </div>
-                            <div class="col-md">
-                                <label for="defaultFormControlInput" class="form-label">Academic Rank</label>
-                                <input type="text" class="form-control" name="position" id="position" placeholder="-" aria-describedby="defaultFormControlHelp" disabled/>
+                            <div class="col-md" style="display: none;" id="academicRankContainer">
+                                <label for="academicRank" class="form-label">Academic Rank</label>
+                                <input type="text" class="form-control" name="position" id="academicRank" placeholder="-" disabled/>
+                            </div>
+                            <div class="col-md" id="positionContainer">
+                                <label for="position" class="form-label">Position</label>
+                                <input type="text" class="form-control" name="position" id="position" placeholder="-" />
                             </div>
                         </div>
 
-                        <div class="row mb-3">
+                        <div class="row mb-3" id="motherCollege" style="display: none;">
                             <div class="col-md">
-                                <div class="col-md">
-                                    <label for="defaultFormControlInput" class="form-label">Mother College</label>
-                                    <input type="text" class="form-control" name="college" id="college" placeholder="-" aria-describedby="defaultFormControlHelp" disabled/>
-                                </div>
+                                <label for="defaultFormControlInput" class="form-label">Mother College</label>
+                                <input type="text" class="form-control" name="college" id="college" placeholder="-" aria-describedby="defaultFormControlHelp" disabled/>
                             </div>
                         </div>
 
@@ -189,22 +258,6 @@
         </form>
 
     </div>
-</div>
-
-<div class="row">
-    <div class="col-md">
-        <diuv class="card">
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table id="requestAccountTable" class="table table-borderless" style="width:100%">
-                        <tbody class="text-center">
-                            <!-- Data will be inserted here -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </diuv>
-    </div>
 
 </div>
 @endsection
@@ -223,7 +276,7 @@
             faculty: '<strong>John Doe</strong>',
             email: 'user@bicol-u.edu.ph',
             status: 'pending',
-            action: '<button type="button" class="btn btn-icon me-2 btn-label-primary" data-bs-toggle="modal" data-bs-target="#modalToggle"><span class="tf-icons bx bx-show-alt bx-22px"></span></button>',
+            action: '<button type="button" class="btn btn-icon me-2 btn-label-primary mb-1" data-bs-toggle="modal" data-bs-target="#modalToggle"><span class="tf-icons bx bx-show-alt bx-22px"></span></button> <button type="button" class="btn btn-icon me-2 btn-label-success"><span class="tf-icons bx bxs-check-circle bx-22px"></span></button>',
         },
         // Add more objects as needed
     ];
@@ -255,6 +308,30 @@
 
 
 {{-- FORM VALIDATION --}}
+<script>
+    $(document).ready(function() {
+    // Show #academicRank and hide #position when 'Faculty' is selected
+    $('#defaultSelect').on('change', function() {
+        let selectedValue = $(this).val();
+
+        if (selectedValue == '6') {  // 6 is the value of 'Faculty'
+            $('#academicRankContainer').show();  // Show Academic Rank
+            $('#selectFaculty').show();
+            $('#motherCollege').show();
+            $('#positionContainer').hide();  // Hide Position
+        } else {
+            $('#academicRankContainer').hide();  // Hide Academic Rank
+            $('#selectFaculty').hide();
+            $('#positionContainer').show();  // Show Position
+        }
+    });
+
+    // Initial validation on document ready
+    validateForm();
+});
+
+</script>
+
 <script>
 $(document).ready(function() {
     $('#requestButton').click(function() {
