@@ -172,7 +172,6 @@ class QueueController extends Controller
 
 
     public function update(Request $request){
-
         // Validation
         $validator = Validator::make($request->all(), [
             'honorarium_id' => 'required|exists:honorarium,id',
@@ -378,6 +377,22 @@ class QueueController extends Controller
             ->make(true);
     }
 
+
+    public function OpenOnQueue(Request $request){
+        return view('administration.open_on_queue');
+        // $batch_id = $request->input('id');
+
+        // $acknowledgements = Acknowledgement::with(['user', 'office', 'transaction'])
+        // ->select('batch_id', 'trans_id as transaction_id', 'office_id', 'created_at', 'user_id')
+        // ->where('batch_id', $batch_id)
+        // ->first();
+
+        // $TransCount = Transaction::with(['honorarium', 'createdBy'])->where('status', 'On Queue')->where('batch_id', $batch_id)->count();
+
+        // $office = Office::where('id', $acknowledgements->office_id)->first();
+
+        // return view('administration.open_on_queue', compact('batch_id', 'acknowledgements', 'office', 'TransCount'));
+    }
 
 
 }

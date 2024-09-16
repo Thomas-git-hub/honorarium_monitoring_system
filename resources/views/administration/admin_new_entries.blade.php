@@ -260,8 +260,8 @@
                     success: function(response) {
                         Swal.fire({
                             icon: 'success',
-                            title: '<div class="row text-success"><i class="bx bxs-badge-alt" style="font-size: 56px;"></i></div><div class="row text-success d-flex justify-content-center">Added to Queue Succesfully!</div>',
-                            text: 'Form added to queue.',
+                            title: '<div class="row text-success"><i class="bx bxs-badge-alt" style="font-size: 56px;"></i></div><div class="row text-success d-flex justify-content-center">Added to Queue!</div>',
+                            // text: '',
                             showClass: {
                                 popup: 'animate__animated animate__bounceIn'
                             },

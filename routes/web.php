@@ -83,6 +83,7 @@ Route::middleware(['auth_check'])->group(function () {
         Route::post('insertFormData', [SendEmailController::class, 'reply_send'])->name('insertFormData');
 
         Route::get('/admin_on_queue', [AdminController::class, 'admin_on_queue'])->name('admin_on_queue');
+        Route::get('/open_on_queue', [QueueController::class, 'OpenOnQueue'])->name('open_on_queue');
         Route::get('/admin_on_queue/list', [QueueController::class, 'list'])->name('admin_on_queue.list');
         Route::get('/admin_on_hold', [AdminController::class, 'admin_on_hold'])->name('admin_on_hold');
         Route::post('/admin_on_queue/proceed_to_budget-office', [QueueController::class, 'proceedToBudgetOffice'])->name('admin_on_queue.proceedToBudgetOffice');

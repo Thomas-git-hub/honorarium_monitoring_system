@@ -71,7 +71,7 @@
                 error: function(xhr, status, error) {
                     $('#spinner').hide();
                     $('#sendingFailed').toast('show');
-                    
+
                     console.error('AJAX Error:', status, error);
                 }
 
