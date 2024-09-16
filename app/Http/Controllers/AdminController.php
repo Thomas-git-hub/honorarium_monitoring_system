@@ -21,10 +21,21 @@ class AdminController extends Controller
         $pendingMails = Emailing::where('status', 'Unread')->where('to_user', Auth::user()->employee_id);
         $EmailCount = $pendingMails->count();
 
-        $OnQueue = Transaction::where('status', 'On Queue')
-        ->where('created_by', Auth::user()->id)
-        ->where('batch_id', '!=', NULL)
-        ->count();
+        if(Auth::user()->usertype->name === 'Admin'){
+            $OnQueue = Transaction::where('status', 'Processing')
+            ->orWhere('status', 'On Queue')
+            ->where('created_by', Auth::user()->id)
+            ->where('batch_id', '!=', NULL)
+            ->count();
+        }
+        else{
+            $OnQueue = Transaction::where('status', 'Processing')
+            ->where('created_by', Auth::user()->id)
+            ->where('batch_id', '!=', NULL)
+            ->count();
+        }
+
+
         $OnHold = Transaction::where('status', 'On-hold')
         ->where('batch_id', '!=', NULL)
         ->where('office', Auth::user()->office_id)
@@ -88,6 +99,7 @@ class AdminController extends Controller
 
     /* ---------------------------------------NEW ENTRIES FUNCTIONS-------------------------------------------- */
     public function admin_new_entries(){
+
         $onQueue = Transaction::where('status', 'Processing')
             ->where('office', Auth::user()->office_id)
             ->count();
@@ -178,10 +190,22 @@ class AdminController extends Controller
     }
 
     public function admin_on_queue(){
-        $onQueue = Transaction::where('status', 'On Queue')
+
+        if(Auth::user()->usertype->name === 'Admin'){
+            $onQueue = Transaction::where('status', 'Processing')
+            ->orWhere('status', 'On Queue')
             ->where('created_by', Auth::user()->id)
             ->where('batch_id', '!=', NULL)
             ->count();
+        }
+        else{
+            $onQueue = Transaction::where('status', 'Processing')
+            ->where('created_by', Auth::user()->id)
+            ->where('batch_id', '!=', NULL)
+            ->count();
+
+        }
+
         return view('administration.admin_on_queue', compact('onQueue'));
     }
 

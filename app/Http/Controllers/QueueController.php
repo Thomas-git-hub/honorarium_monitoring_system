@@ -40,6 +40,33 @@ class QueueController extends Controller
             $logs->user_id = Auth::user()->id;
             $logs->save();
 
+            $employee = $ibu_dbcon->table('employee_user')
+            ->where('id', $transaction->employee_id)
+            ->first();
+            $employeedetails = $ibu_dbcon->table('employee')
+            ->where('id', $transaction->employee_id)
+            ->first();
+
+            if (!empty($employee->email)) {
+                $emailData = [
+                    'transaction_id' => $transaction->id,
+                    'employee_fname' => $employeedetails->employee_fname,
+                    'employee_lname' => $employeedetails->employee_lname,
+                    'status' => $transaction->status,
+                ];
+
+                Mail::to($employee->email)->send(new TransactionStatusChanged($emailData));
+            }
+
+            $email = new Emailing();
+            $email->transaction_id = $transaction->id;
+            $email->subject = 'Transaction Processing';
+            $email->to_user = $employeedetails->id;
+            $email->message = 'Your transaction is to be acknowledge by budget office. Please wait for further updates.';
+            $email->status = 'Unread';
+            $email->created_by = Auth::user()->id;
+            $email->save();
+
         }
 
         $usertype = Auth::user()->usertype->name;
@@ -234,28 +261,29 @@ class QueueController extends Controller
         elseif(Auth::user()->usertype->name === 'Admin'){
             $From_office = Office::where('name', 'BUGS Administration')->first();
             $query = Transaction::with(['honorarium', 'createdBy'])
-            ->where('status', 'On Queue')
+            ->where('status', 'Processing')
+            ->orWhere('status', 'On Queue')
             ->where('batch_id', '!=', NULL)
             ->where('created_by', Auth::user()->id);
 
         }elseif(Auth::user()->usertype->name === 'Budget Office'){
             $From_office = Office::where('name', 'BUGS Administration')->first();
             $query = Transaction::with(['honorarium', 'createdBy'])
-            ->where('status', 'On Queue')
+            ->where('status', 'Processing')
             ->where('batch_id', '!=', NULL)
             ->where('created_by', Auth::user()->id);
 
         }elseif(Auth::user()->usertype->name === 'Dean'){
             $From_office = Office::where('name', 'Budget Office')->first();
             $query = Transaction::with(['honorarium', 'createdBy'])
-            ->where('status', 'On Queue')
+            ->where('status', 'Processing')
             ->where('batch_id', '!=', NULL)
             ->where('created_by', Auth::user()->id);
 
         }elseif(Auth::user()->usertype->name === 'Accounting' || Auth::user()->usertype->name === 'Cashiers'){
             $From_office = Office::where('name', 'Dean')->first();
             $query = Transaction::with(['honorarium', 'createdBy'])
-            ->where('status', 'On Queue')
+            ->where('status', 'Processing')
             ->where('batch_id', '!=', NULL)
             ->where('created_by', Auth::user()->id);
 
@@ -264,7 +292,7 @@ class QueueController extends Controller
             $From_office_acc = Office::where('name', 'Accounting')->first();
             $From_office_BO = Office::where('name', 'Budget Office')->first();
             $query = Transaction::with(['honorarium', 'createdBy'])
-            ->where('status', 'On Queue')
+            ->where('status', 'Processing')
             ->where('batch_id', '!=', NULL)
             ->where('created_by', Auth::user()->id);
         }
