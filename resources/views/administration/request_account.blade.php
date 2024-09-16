@@ -3,6 +3,29 @@
 
 
 @section('content')
+
+
+<!--VIEW DETAILS-->
+    <div class="modal fade" id="modalToggle" aria-labelledby="modalToggleLabel" tabindex="-1" style="display: none;" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title" id="modalToggleLabel">Modal 1</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+
+                </div>
+            </div>
+            <div class="modal-footer">
+            <button class="btn btn-label-danger">Close</button>
+            </div>
+        </div>
+        </div>
+    </div>
+
+
 <div class="row mt-4 mb-3">
     <div class="col-md">
         <div class="card">
@@ -58,22 +81,8 @@
     </div>
 </div>
 
-<div class="row">
+<div class="row mb-3" id="requestFormContainer" style="display: none;">
     <div class="col-md">
-        <diuv class="card">
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table id="requestAccountTable" class="table table-borderless" style="width:100%">
-                        <tbody class="text-center">
-                            <!-- Data will be inserted here -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </diuv>
-    </div>
-
-    <div class="col-md-8" id="requestFormContainer" style="display: none;">
         <form id="requestForm" action="">
             <div class="card border border-primary shadow" id="requestFormCard">
                 <div class="card-header">
@@ -94,14 +103,17 @@
                             </select>
                           </div>
                     </div>
+
                     <div class="row">
                         <div class="mb-5">
                             <label for="facultySelect" class="form-label">Select Employee</label>
                             <select class="form-control" id="facultySelect" name="employee_id" style="width: 100%;">
                                 <option selected disabled>Search by Name/Email...</option>
+                                <!-- Other existing options can go here -->
                             </select>
                         </div>
                     </div>
+
 
                     <div id="fields" style="display:;">
                         <!-- Other fields as before -->
@@ -109,17 +121,17 @@
                             <div class="col-md">
                                 <label for="defaultFormControlInput" class="form-label">First name</label>
                                 <input type="text" class="form-control" name="first_name" id="firstName" placeholder="-" aria-describedby="defaultFormControlHelp"/>
-                                <small class="text-danger small-warning">Kindly input first name</small>
+                                <small class="text-danger small-warning">Enter Employee's First Name</small>
                             </div>
                             <div class="col-md">
                                 <label for="defaultFormControlInput" class="form-label">Middle name</label>
                                 <input type="text" class="form-control" name="middle_name" id="middleName" placeholder="-" aria-describedby="defaultFormControlHelp"/>
-                                <small class="text-danger small-warning">Kindly input middle name</small>
+                                <small class="text-danger small-warning">Enter Employee's Middle Name</small>
                             </div>
                             <div class="col-md">
                                 <label for="defaultFormControlInput" class="form-label">Last name</label>
                                 <input type="text" class="form-control" name="last_name" id="lastName" placeholder="-" aria-describedby="defaultFormControlHelp"/>
-                                <small class="text-danger small-warning">Kindly input last name</small>
+                                <small class="text-danger small-warning">Enter Employee's Last Name</small>
                             </div>
                             <div class="col-md">
                                 <label for="defaultFormControlInput" class="form-label">Suffix</label>
@@ -152,12 +164,12 @@
                             <div class="col-md-4">
                                 <label for="defaultFormControlInput" class="form-label">Contact No.</label>
                                 <input type="text" class="form-control" name="contact" id="contact" placeholder="-" aria-describedby="defaultFormControlHelp"/>
-                                <small class="text-danger small-warning">Kindly input correct contact number</small>
+                                <small class="text-danger small-warning">Enter Valid Contact Number</small>
                             </div>
                             <div class="col-md-8">
                                 <label for="defaultFormControlInput" class="form-label">Email</label>
                                 <input type="text" class="form-control" name="email" id="email" placeholder="-" aria-describedby="defaultFormControlHelp"/>
-                                <small class="text-danger small-warning">Kindly input BU Email address</small>
+                                <small class="text-danger small-warning">Enter Valid Email Address</small>
                             </div>
                         </div>
                     </div>
@@ -178,6 +190,23 @@
 
     </div>
 </div>
+
+<div class="row">
+    <div class="col-md">
+        <diuv class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table id="requestAccountTable" class="table table-borderless" style="width:100%">
+                        <tbody class="text-center">
+                            <!-- Data will be inserted here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </diuv>
+    </div>
+
+</div>
 @endsection
 
 
@@ -189,7 +218,12 @@
     $(function () {
     var data = [
         {
+            date: 'September 16, 2024',
+            office: 'System Admin',
             faculty: '<strong>John Doe</strong>',
+            email: 'user@bicol-u.edu.ph',
+            status: 'pending',
+            action: '<button type="button" class="btn btn-icon me-2 btn-label-primary" data-bs-toggle="modal" data-bs-target="#modalToggle"><span class="tf-icons bx bx-show-alt bx-22px"></span></button>',
         },
         // Add more objects as needed
     ];
@@ -207,14 +241,17 @@
             searchPlaceholder: "Search..." // Set the placeholder text
         },
         columns: [
-            { data: 'office', name: 'office', title: 'office' }, // Map local data to the columns
-            { data: 'faculty', name: 'faculty', title: 'faculty' },
+            { data: 'date', name: 'date', title: 'requested last' },
+            { data: 'office', name: 'office', title: 'office of' }, // Map local data to the columns
+            { data: 'faculty', name: 'faculty', title: 'Account For' },
             { data: 'email', name: 'email', title: 'email' },
+            { data: 'status', name: 'status', title: 'status' },
+            { data: 'action', name: 'action', title: 'action' },
         ],
     });
 });
-
 </script>
+{{-- DATATABLES END--}}
 
 
 {{-- FORM VALIDATION --}}
@@ -328,6 +365,42 @@ $(document).ready(function() {
     validateForm();
 });
 </script>
+{{-- FORM VALIDATION END--}}
+
+
+{{-- INPUT X SELECT OPTION FIELD BY NAME OR EMAIL --}}
+<script>
+$(document).ready(function() {
+    $('#facultySelect').select2({
+        placeholder: 'Search by Name/Email...',
+        tags: true, // Allow custom values
+        allowClear: true,
+        width: '100%', // Ensure full width
+        createTag: function(params) {
+            // Custom logic to create a new tag from user input
+            let term = $.trim(params.term);
+            if (term === '') {
+                return null;
+            }
+            return {
+                id: term, // Set the id to the custom input
+                text: term, // Display the custom input
+                newOption: true
+            };
+        },
+        templateResult: function(data) {
+            // Mark new entries with a special indication
+            let $result = $('<span></span>');
+            $result.text(data.text);
+            if (data.newOption) {
+                $result.append(' <em>(new)</em>');
+            }
+            return $result;
+        }
+    });
+});
+</script>
+{{-- INPUT X SELECT FIELD NAME OR EMAIL  END--}}
 
 
 <script>
