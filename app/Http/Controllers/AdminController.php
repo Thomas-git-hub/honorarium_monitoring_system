@@ -226,39 +226,41 @@ class AdminController extends Controller
             ->orWhere('status', 'On-hold');
 
         }
-        elseif(Auth::user()->usertype->name === 'Admin'){
+        else{
             $From_office = Office::where('name', 'BUGS Administration')->first();
             $query = Transaction::with(['honorarium', 'createdBy'])
+            ->where('created_by', Auth::user()->id)
             ->where('status', 'Processing')
-            ->orWhere('status', 'On-hold')
-            ->where('created_by', Auth::user()->id);
-
-        }elseif(Auth::user()->usertype->name === 'Budget Office'){
-            $From_office = Office::where('name', 'BUGS Administration')->first();
-            $query = Transaction::with(['honorarium', 'createdBy'])
-            ->where('status', 'Processing')
-            ->where('created_by', Auth::user()->id);
-
-        }elseif(Auth::user()->usertype->name === 'Dean'){
-            $From_office = Office::where('name', 'Budget Office')->first();
-            $query = Transaction::with(['honorarium', 'createdBy'])
-            ->where('status', 'Processing')
-            ->where('created_by', Auth::user()->id);
-
-        }elseif(Auth::user()->usertype->name === 'Accounting' || Auth::user()->usertype->name === 'Cashiers'){
-            $From_office = Office::where('name', 'Dean')->first();
-            $query = Transaction::with(['honorarium', 'createdBy'])
-            ->where('status', 'Processing')
-            ->where('created_by', Auth::user()->id);
+            ->orWhere('status', 'On-hold');
 
 
-        }elseif(Auth::user()->usertype->name === 'Dean'){
-            $From_office_acc = Office::where('name', 'Accounting')->first();
-            $From_office_BO = Office::where('name', 'Budget Office')->first();
-            $query = Transaction::with(['honorarium', 'createdBy'])
-            ->where('status', 'Processing')
-            ->where('created_by', Auth::user()->id);
-        }
+        };
+        // elseif(Auth::user()->usertype->name === 'Budget Office'){
+        //     $From_office = Office::where('name', 'BUGS Administration')->first();
+        //     $query = Transaction::with(['honorarium', 'createdBy'])
+        //     ->where('status', 'Processing')
+        //     ->where('created_by', Auth::user()->id);
+
+        // }elseif(Auth::user()->usertype->name === 'Dean'){
+        //     $From_office = Office::where('name', 'Budget Office')->first();
+        //     $query = Transaction::with(['honorarium', 'createdBy'])
+        //     ->where('status', 'Processing')
+        //     ->where('created_by', Auth::user()->id);
+
+        // }elseif(Auth::user()->usertype->name === 'Accounting' || Auth::user()->usertype->name === 'Cashiers'){
+        //     $From_office = Office::where('name', 'Dean')->first();
+        //     $query = Transaction::with(['honorarium', 'createdBy'])
+        //     ->where('status', 'Processing')
+        //     ->where('created_by', Auth::user()->id);
+
+
+        // }elseif(Auth::user()->usertype->name === 'Dean'){
+        //     $From_office_acc = Office::where('name', 'Accounting')->first();
+        //     $From_office_BO = Office::where('name', 'Budget Office')->first();
+        //     $query = Transaction::with(['honorarium', 'createdBy'])
+        //     ->where('status', 'Processing')
+        //     ->where('created_by', Auth::user()->id);
+        // }
 
         $transactions = $query->get();
         $ibu_dbcon = DB::connection('ibu_test');
