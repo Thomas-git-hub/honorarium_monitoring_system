@@ -263,15 +263,16 @@ class QueueController extends Controller
             $query = Transaction::with(['honorarium', 'createdBy'])
             ->where('status', 'Processing')
             ->orWhere('status', 'On Queue')
-            ->where('batch_id', '!=', NULL)
-            ->where('created_by', Auth::user()->id);
+            ->where('batch_id', '!=', NULL);
+            // ->where('created_by', Auth::user()->id);
 
         }elseif(Auth::user()->usertype->name === 'Budget Office'){
             $From_office = Office::where('name', 'BUGS Administration')->first();
             $query = Transaction::with(['honorarium', 'createdBy'])
+            ->where('created_by', Auth::user()->id)
             ->where('status', 'Processing')
             ->where('batch_id', '!=', NULL)
-            ->where('created_by', Auth::user()->id);
+           ;
 
         }elseif(Auth::user()->usertype->name === 'Dean'){
             $From_office = Office::where('name', 'Budget Office')->first();

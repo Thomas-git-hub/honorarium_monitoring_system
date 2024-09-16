@@ -19,7 +19,7 @@
                                     <div class="card-body text-success">
                                         <div class="row d-flex align-items-center">
                                             <div class="col-md d-flex align-items-center gap-2">
-                                                <h1 class="text-success text-center d-flex align-items-center" style="font-size: 48px;">
+                                                <h1 id="emailtoday" class="text-success text-center d-flex align-items-center" style="font-size: 48px;">
                                                     {{$emailtoday ? $emailtoday : 0}}<i class='bx bx-envelope' style="font-size: 48px;"></i></h1>
                                                 <h5 class="card-title text-success">New Emails Today</h5>
                                             </div>
@@ -36,7 +36,7 @@
                                     <div class="card-body text-danger">
                                         <div class="row d-flex align-items-center">
                                             <div class="col-md d-flex align-items-center gap-2">
-                                                <h1 class="text-danger text-center d-flex align-items-center" style="font-size: 48px;">{{$UnreadCount ? $UnreadCount : 0}}<i class='bx bxs-envelope' style="font-size: 48px;"></i></h1>
+                                                <h1 id="UnreadCount" class="text-danger text-center d-flex align-items-center" style="font-size: 48px;">{{$UnreadCount ? $UnreadCount : 0}}<i class='bx bxs-envelope' style="font-size: 48px;"></i></h1>
                                                 <h5 class="card-title text-danger">Unread Emails</h5>
                                             </div>
                                         </div>

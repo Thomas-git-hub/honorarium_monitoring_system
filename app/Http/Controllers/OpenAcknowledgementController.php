@@ -39,8 +39,8 @@ class OpenAcknowledgementController extends Controller
         elseif(Auth::user()->usertype->name === 'Budget Office'){
             $office = Office::where('name', 'Budget Office')->first();
             $query = Transaction::with(['honorarium', 'createdBy'])
-                                    ->where('status', 'On Queue')
                                     ->where('batch_id', $request->batch_id)
+                                    ->where('status', 'On Queue')
                                     ->where('office_id',  $office->id);
 
         }elseif(Auth::user()->usertype->name === 'Dean'){
@@ -143,9 +143,6 @@ class OpenAcknowledgementController extends Controller
         ->where('status', 'On Queue')
         ->where('office', Auth::user()->office_id)
         ->first();
-
-
-
 
         foreach ($transactions as $transaction) {
             $logs = new Activity_logs();

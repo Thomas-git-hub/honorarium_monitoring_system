@@ -46,6 +46,7 @@ Route::middleware(['auth_check'])->group(function () {
 
     Route::post('/send_email', [SendEmailController::class, 'send_email'])->name("send_email");
     Route::get('/getEmails', [SendEmailController::class, 'getEmails'])->name("getEmails");
+    Route::get('/getadmin_email', [AdminController::class, 'getadmin_email'])->name("getadmin_email");
     Route::post('/updateEmailStatus', [SendEmailController::class, 'updateStatus'])->name('updateEmailStatus');
     Route::post('/deleteEmails', [SendEmailController::class, 'deleteEmails'])->name('deleteEmails');
 
@@ -74,6 +75,7 @@ Route::middleware(['auth_check'])->group(function () {
         Route::get('/admin/honorarium/getHonorarium', [HonorariumController::class, 'getHonorarium'])->name('getHonorarium');
 
         Route::get('/admin_new_entries', [AdminController::class, 'admin_new_entries'])->name("admin_new_entries");
+        Route::get('/Getadmin_new_entries', [AdminController::class, 'Getadmin_new_entries'])->name("Getadmin_new_entries");
         Route::get('/admin_new_entries/list', [AdminController::class, 'list'])->name("admin_new_entries.list");
         Route::post('/admin_new_entries/generate_tracking_number', [AdminController::class, 'generate_trackingNum'])->name("admin_new_entries.generate_trackingNum");
         Route::post('/form/submit', [AdminController::class, 'submitForm'])->name('form.submit');

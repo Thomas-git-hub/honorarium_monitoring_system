@@ -18,7 +18,7 @@
                         <div class="card-body text-success">
                             <div class="row d-flex align-items-center">
                                 <div class="col-md d-flex align-items-center gap-3">
-                                    <h1 class="text-success text-center d-flex align-items-center" style="font-size: 48px;">{{$onQueue}}<i class='bx bx-group' style="font-size: 48px;"></i></h1>
+                                    <h1 class="text-success text-center d-flex align-items-center" id="onQueue" style="font-size: 48px;">{{$onQueue}}<i class='bx bx-group' style="font-size: 48px;"></i></h1>
                                     <h5 class="card-title text-success">Faculty Honorarium has been added to the Queue</h5>
                                 </div>
                             </div>
@@ -217,6 +217,18 @@
 {{-- FORM VALIDATION FOR NEW ENTRIES --}}
 <script>
 
+        function getNewEntries() {
+            $.ajax({
+                url: '{{ route('Getadmin_new_entries') }}',
+                method: 'GET',
+                success: function(data) {
+                    $('#onQueue').text(data.onQueue);
+
+                }
+            });
+        }
+        getNewEntries();
+
     $(document).ready(function() {
         $('input[name="is_complete"]').change(function() {
             if ($(this).val() === '1') {
@@ -258,6 +270,7 @@
                             },
                             buttonsStyling: false
                         }).then(() => {
+                            getNewEntries();
                             $('#facultyTable').DataTable().ajax.reload();
                             $('#newEntriesForm input[type="text"]').val('');
                             $('#newEntriesForm input[type="date"]').val('');
@@ -270,13 +283,19 @@
                             $('#facultySelect, #HonoSelect').val(null).trigger('change');
                             // $('#newEntriesForm').off('submit').submit();
                             $('#addToQueue').hide();
+
+
                         });
                     },
                     error: function(response) {
+                        getNewEntries();
+
                         alert('Error in submission');
                     }
                 });
             } else {
+                getNewEntries();
+
                 Swal.fire({
                     icon: 'error',
                     title: 'Fill in the Blanks!',
@@ -312,6 +331,8 @@
                             $('#holdCount').text(onhold_transactions);
                             $('#transCount').text(processing_transactions);
                             console.log(batchID);
+                            getNewEntries();
+
 
                         }else{
                             Swal.fire({
@@ -326,10 +347,14 @@
                             },
                             buttonsStyling: false
                         })
+                        getNewEntries();
+
 
                         }
                     },
                     error: function(response) {
+                        getNewEntries();
+
                         Swal.fire({
                             icon: 'error',
                             title: 'Error!',
@@ -370,17 +395,23 @@
                                 // html: `<h4 class="text-success">Tracking Number:<b>${response.batch_id}</b></h4><small class="text-danger">Note: Always attach the tracking number on the documents.</small>`,
                                 text: response.message,
                             });
+                            getNewEntries();
+
                         } else {
                             Swal.fire({
                                 icon: 'error',
                                 title: 'Something went wrong',
                                 text: response.message,
                             });
+                            getNewEntries();
+
                         }
                         // Reload DataTable
                         $('#facultyTable').DataTable().ajax.reload();
                     },
                     error: function(xhr) {
+                        getNewEntries();
+
                         Swal.fire({
                             icon: 'error',
                             title: 'Error',
@@ -412,6 +443,8 @@
 {{-- DATATABLES --}}
 <script>
     $(function () {
+
+
 
         var table = $('#facultyTable').DataTable({
             processing: true,

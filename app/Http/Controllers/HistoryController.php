@@ -25,37 +25,45 @@ class HistoryController extends Controller
         ->where('batch_id', $batch_id)
         ->first();
 
-        $TransCount = Transaction::with(['honorarium', 'createdBy'])->where('batch_id', $batch_id)->count();
+        $TransCount = Transaction::with(['honorarium', 'createdBy'])
+        ->where('batch_id', $batch_id)
+        ->where('status', '!=', 'On-hold')
+        ->count();
 
         return view('administration.open_history', compact('batch_id', 'acknowledgements', 'TransCount'));
     }
 
     public function list(Request $request)
     {
-        // Fetch data from the Acknowledgement table
-        $acknowledgements = collect(); // Initialize an empty collection
+        $acknowledgements = collect();
+        DB::statement("SET SQL_MODE=''");
 
         if (Auth::user()->usertype->name === 'Superadmin') {
             $acknowledgements = Acknowledgement::with(['user', 'office', 'transaction'])
                 ->select('batch_id', 'trans_id as transaction_id', 'office_id', 'created_at', 'user_id', 'id')
+                ->groupBy('batch_id')
                 ->get();
         } elseif (Auth::user()->usertype->name === 'Budget Office') {
-            $From_office = Office::where('name', 'BUGS Administration')->first();
+            $Budget_Office = Office::where('name', 'Budget Office')->first();
+            $Admin_Office = Office::where('name', 'BUGS Administration')->first();
             $acknowledgements = Acknowledgement::with(['user', 'office', 'transaction'])
                 ->select('batch_id', 'trans_id as transaction_id', 'office_id', 'created_at', 'user_id', 'id')
-                ->where('office_id', $From_office->id)
+                ->whereNotIn('office_id', [$Budget_Office->id, $Admin_Office->id])
+                ->groupBy('batch_id')
                 ->get();
         } elseif (Auth::user()->usertype->name === 'Dean') {
             $From_office = Office::where('name', 'Budget Office')->first();
             $acknowledgements = Acknowledgement::with(['user', 'office', 'transaction'])
                 ->select('batch_id', 'trans_id as transaction_id', 'office_id', 'created_at', 'user_id', 'id')
                 ->where('office_id', $From_office->id)
+                ->groupBy('batch_id')
                 ->get();
         } elseif (Auth::user()->usertype->name === 'Accounting' || Auth::user()->usertype->name === 'Cashiers') {
             $From_office = Office::where('name', 'Dean')->first();
             $acknowledgements = Acknowledgement::with(['user', 'office', 'transaction'])
                 ->select('batch_id', 'trans_id as transaction_id', 'office_id', 'created_at', 'user_id', 'id')
                 ->where('office_id', $From_office->id)
+                ->groupBy('batch_id')
                 ->get();
         } elseif (Auth::user()->usertype->name === 'Dean') {
             $From_office_acc = Office::where('name', 'Accounting')->first();
@@ -64,6 +72,7 @@ class HistoryController extends Controller
                 ->select('batch_id', 'trans_id as transaction_id', 'office_id', 'created_at', 'user_id', 'id')
                 ->where('office_id', $From_office_acc->id)
                 ->orWhere('office_id', $From_office_BO->id)
+                ->groupBy('batch_id')
                 ->get();
         }else{
             $acknowledgements = collect();
@@ -92,7 +101,9 @@ class HistoryController extends Controller
                     '(' . $data->office->name . ')';
             })
             ->addColumn('number_of_transactions', function ($data) {
-                return Transaction::where('batch_id', $data->batch_id)->count();
+                return Transaction::where('batch_id', $data->batch_id)
+                ->where('status','!=',  'On-hold')
+                ->count();
             })
             ->addColumn('date', function ($data) {
                 return $data->created_at ? $data->created_at->format('Y-m-d H:i:s') : 'N/A';
@@ -102,7 +113,9 @@ class HistoryController extends Controller
 
     public function OpenHistoryList(Request $request){
 
-        $query = Transaction::with(['honorarium', 'createdBy'])->where('batch_id', $request->batch_id);
+        $query = Transaction::with(['honorarium', 'createdBy'])
+        ->where('batch_id', $request->batch_id)
+        ->where('status', '!=', 'On-hold');
         $transactions = $query->get();
         $ibu_dbcon = DB::connection('ibu_test');
 

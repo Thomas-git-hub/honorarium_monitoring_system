@@ -45,8 +45,7 @@ class AdminController extends Controller
     }
 
     public function admin_email(){
-        $emailtoday = Emailing:: where('status', 'Unread')
-        ->whereDate('created_at', Carbon::today())
+        $emailtoday = Emailing::whereDate('created_at', Carbon::today())
         ->where('to_user', Auth::user()->employee_id)
         ->count();
 
@@ -194,7 +193,7 @@ class AdminController extends Controller
         if(Auth::user()->usertype->name === 'Admin'){
             $onQueue = Transaction::where('status', 'Processing')
             ->orWhere('status', 'On Queue')
-            ->where('created_by', Auth::user()->id)
+            // ->where('created_by', Auth::user()->id)
             ->where('batch_id', '!=', NULL)
             ->count();
         }
@@ -404,6 +403,37 @@ class AdminController extends Controller
                 'onhold_transactions' => $onHoldTransactions // Count of processing transactions
             ]);
 
+    }
+
+    public function Getadmin_new_entries(){
+
+        $onQueue = Transaction::where('office', Auth::user()->office_id)
+            ->where('status', 'Processing')
+            ->orWhere('status', 'On-hold')
+            ->count();
+        return response()->json([
+            'onQueue' => $onQueue,
+
+        ]);
+    }
+
+
+    public function getadmin_email(){
+        $emailtoday = Emailing::whereDate('created_at', Carbon::today())
+        ->where('deleted_by', '=', NULL)
+        ->where('to_user', Auth::user()->employee_id)
+        ->count();
+
+        $UnreadCount = Emailing::where('deleted_by', '=', NULL)
+        ->where('status', 'Unread')
+        ->where('to_user', Auth::user()->employee_id)
+        ->count();
+
+        return response()->json([
+            'emailtoday' => $emailtoday,
+            'UnreadCount' => $UnreadCount,
+
+        ]);
     }
 
 }

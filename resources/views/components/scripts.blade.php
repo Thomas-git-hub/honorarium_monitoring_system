@@ -149,6 +149,20 @@
 
     <script>
         $(function () {
+
+            function getEmail() {
+                $.ajax({
+                    url: '{{ route('getadmin_email') }}',
+                    method: 'GET',
+                    success: function(data) {
+                        $('#UnreadCount').text(data.UnreadCount);
+                        $('#emailtoday').text(data.emailtoday);
+
+                    }
+                });
+            }
+            getEmail();
+
             var table = $('#inboxTable').DataTable({
                 processing: true,
                 serverSide: true,
@@ -273,6 +287,7 @@
                                 ids: selectedIds
                             },
                             success: function(response) {
+                                getEmail();
                                 if (response.success) {
                                     // Remove the selected rows from the table
                                     $('#inboxTable tbody input.row-checkbox:checked').each(function() {
@@ -293,6 +308,7 @@
                                 }
                             },
                             error: function(xhr, status, error) {
+                                  getEmail();
                                 Swal.fire({
                                     icon: 'error',
                                     title: 'Error!',
@@ -318,22 +334,10 @@
                     $('#toggleCheck').text('Uncheck');
                 }
             });
+
         });
     </script>
     {{-- EMAIL DATATABLES END --}}
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 {{-- ACKNOWLEDGEMENT DATATABLES START --}}
 <script>
@@ -435,6 +439,7 @@
     $(document).ready(function() {
         $('#navigatePrevious').on('click', function() {
             window.history.back();
+            console.log('here');
         });
     });
 </script>
