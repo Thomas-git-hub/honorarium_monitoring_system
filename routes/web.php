@@ -113,6 +113,13 @@ Route::middleware(['auth_check'])->group(function () {
         Route::get('/open_history/list', [HistoryController::class, 'OpenHistoryList'])->name('OpenHistoryList');
         Route::get('/history/list', [HistoryController::class, 'list'])->name('history.list');
 
+        Route::get('/faculty/bugs', [UserController::class, 'AdminList'])->name('faculty.bugs');
+        Route::get('/faculty/budget-office', [UserController::class, 'BudgetList'])->name('faculty.budget-office');
+        Route::get('/faculty/dean_office', [UserController::class, 'DeanList'])->name('faculty.dean_office');
+        Route::get('/faculty/accounting', [UserController::class, 'AccountList'])->name('faculty.accounting');
+        Route::get('/faculty/cashier', [UserController::class, 'CashierList'])->name('faculty.cashier');
+        Route::get('/faculty/honorarium_released', [UserController::class, 'honorarium_released'])->name('faculty.honorarium_released');
+
 
     // });
 

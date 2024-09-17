@@ -67,8 +67,11 @@ class AdminController extends Controller
     public function admin_faculty(){
 
         $today = Carbon::today();
+        $employeeIds = DB::connection('ibu_test')->table('employee_user')->pluck('id');
         $newAccountsToday = DB::connection('mysql')->table('users')
             ->whereDate('created_at', $today)
+            ->whereNull('deleted_at')
+            ->whereIn('employee_id', $employeeIds)
             ->count();
             return view('administration.admin_faculty', compact('newAccountsToday'));
     }
@@ -78,7 +81,7 @@ class AdminController extends Controller
         $user = User::findOrFail($id);
 
 
-        $collegeDetails = DB::connection('ors_pgsql')->table('college')
+        $collegeDetails = DB::connection('ibu_test')->table('college')
                 ->where('id', $user->college_id)
                 ->first();
 
@@ -263,7 +266,7 @@ class AdminController extends Controller
         // }
 
         $transactions = $query->get();
-        $ibu_dbcon = DB::connection('ors_pgsql');
+        $ibu_dbcon = DB::connection('ibu_test');
 
         $months = [
             1 => 'January',
