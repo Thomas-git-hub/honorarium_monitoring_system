@@ -75,7 +75,7 @@
         </li>
         @endif
         @if(Auth::user()->usertype->name !== 'Faculties')
-        <li class="menu-item {{ request()->is('cashier_in_queue') ? 'active' : '' }}">
+        <li class="menu-item {{ request()->is('cashier_in_queue') || request()->is('cashier_open_queue') ? 'active' : '' }}">
           <a href="/cashier_in_queue" class="menu-link">
             <i class='menu-icon tf-icons bx bx-list-ol'></i>
             <div class="text-truncate" data-i18n="Page 2">Cashier In Queue</div>

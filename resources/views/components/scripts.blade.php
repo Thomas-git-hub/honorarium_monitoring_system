@@ -399,8 +399,8 @@
 <script>
     $(document).ready(function() {
         $('#navigatePrevious').on('click', function() {
-            window.history.back();
-            console.log('here');
+            window.history.back(); // Go back to the previous page
+            console.log('Navigating back');
         });
     });
 </script>
