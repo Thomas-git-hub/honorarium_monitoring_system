@@ -26,6 +26,7 @@ class QueueController extends Controller
 
         // Fetch all transactions with status 'Processing'
         $transactions = Transaction::where('status', 'Processing')
+        ->where('batch_id', '!=', NULL)
         ->where('office', Auth::user()->office_id)
         ->where('created_by', Auth::user()->id)
         ->get();
