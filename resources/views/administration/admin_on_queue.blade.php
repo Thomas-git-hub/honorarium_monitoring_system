@@ -69,20 +69,4 @@
 
 @endsection
 
-        // Row click event
-        $('#inQueueTable tbody').on('click', 'tr', function() {
-                var rowData = table.row($(this).closest('tr')).data();
-
-                // If the row is unopened, change its class to opened
-                if ($(this).hasClass('unopened')) {
-                    $(this).removeClass('unopened').addClass('opened');
-                }
-
-                // Redirect to another page with full details (example)
-                window.location.href = `/open_on_queue?id=${rowData.batch_id}`;
-            });
-    });
-</script>
-@endsection
-
 

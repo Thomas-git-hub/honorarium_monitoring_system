@@ -512,8 +512,24 @@ class QueueController extends Controller
             $acknowledgements = collect();
         }
 
-        if(Auth::user()->usertype->name !== 'Admin'){
-            // Filter out acknowledgements with a transaction count of 0
+        if(Auth::user()->usertype->name === 'Admin'){
+            $filteredAcknowledgements = $acknowledgements->filter(function ($acknowledgement) {
+                $countTran = Transaction::where('batch_id', $acknowledgement->batch_id)
+                ->where('status', 'Processing')
+                ->orwhere('status', 'On Queue')
+                ->count();
+                return $countTran > 0;
+            });
+
+        }elseif(Auth::user()->usertype->name === 'Superadmin'){
+            $filteredAcknowledgements = $acknowledgements->filter(function ($acknowledgement) {
+                $countTran = Transaction::where('batch_id', $acknowledgement->batch_id)
+                ->where('status', 'Processing')
+                ->count();
+                return $countTran > 0;
+            });
+        }
+        else{
             $filteredAcknowledgements = $acknowledgements->filter(function ($acknowledgement) {
                 $countTran = Transaction::where('batch_id', $acknowledgement->batch_id)
                 ->where('status', 'Processing')
@@ -522,14 +538,6 @@ class QueueController extends Controller
                 return $countTran > 0;
             });
 
-        }else{
-            $filteredAcknowledgements = $acknowledgements->filter(function ($acknowledgement) {
-                $countTran = Transaction::where('batch_id', $acknowledgement->batch_id)
-                ->where('status', 'Processing')
-                ->orwhere('status', 'On Queue')
-                ->count();
-                return $countTran > 0;
-            });
 
         }
 
@@ -545,7 +553,7 @@ class QueueController extends Controller
                     '(' . $data->office->name . ')';
             })
             ->addColumn('trans_id', function ($data) {
-                if(Auth::user()->usertype->name === 'Admin'){
+                if(Auth::user()->usertype->name === 'Admin' || Auth::user()->usertype->name === 'Superadmin'){
                     return Transaction::where('batch_id', $data->batch_id)
                     ->where('status','!=', 'On-hold')
                     ->count();

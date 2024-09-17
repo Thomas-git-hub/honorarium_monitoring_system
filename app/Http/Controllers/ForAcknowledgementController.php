@@ -84,14 +84,31 @@ class ForAcknowledgementController extends Controller
             $acknowledgements = collect();
         }
 
-        // Filter out acknowledgements with a transaction count of 0
-        $filteredAcknowledgements = $acknowledgements->filter(function ($acknowledgement) {
-            $countTran = Transaction::where('batch_id', $acknowledgement->batch_id)
-            ->where('status', 'On Queue')
-            ->where('office', Auth::user()->office_id)
-            ->count();
-            return $countTran > 0; // Only keep acknowledgements with a transaction count greater than 0
-        });
+        if(Auth::user()->usertype->name === 'Admin' || Auth::user()->usertype->name === 'Superadmin'){
+            // Filter out acknowledgements with a transaction count of 0
+            $filteredAcknowledgements = $acknowledgements->filter(function ($acknowledgement) {
+                $countTran = Transaction::where('batch_id', $acknowledgement->batch_id)
+                ->where('status', 'On Queue')
+                // ->where('office', Auth::user()->office_id)
+                ->count();
+                return $countTran > 0; // Only keep acknowledgements with a transaction count greater than 0
+            });
+
+
+        }else{
+           // Filter out acknowledgements with a transaction count of 0
+            $filteredAcknowledgements = $acknowledgements->filter(function ($acknowledgement) {
+                $countTran = Transaction::where('batch_id', $acknowledgement->batch_id)
+                ->where('status', 'On Queue')
+                ->where('office', Auth::user()->office_id)
+                ->count();
+                return $countTran > 0; // Only keep acknowledgements with a transaction count greater than 0
+            });
+
+
+        }
+
+
 
         // Return data as JSON using DataTables
         return DataTables::of($filteredAcknowledgements)
