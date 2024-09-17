@@ -348,8 +348,8 @@ class AdminController extends Controller
 
     public function generate_trackingNum(Request $request){
 
-        $transactions = Transaction::whereNull('batch_id')
-        ->where('office', Auth::user()->office_id)
+        $transactions = Transaction::where('office', Auth::user()->office_id)
+        // whereNull('batch_id')
         ->where('created_by', Auth::user()->id)
         ->get();
 

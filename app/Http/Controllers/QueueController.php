@@ -108,6 +108,95 @@ class QueueController extends Controller
         return response()->json(['success' => true, 'batch_id'=> $batchId, 'message' => 'Emails sent and transactions updated.']);
     }
 
+    public function proceed(Request $request)
+    {
+        $ibu_dbcon = DB::connection('ibu_test');
+
+        // Fetch all transactions with status 'Processing'
+        $transactions = Transaction::where('status', 'Processing')
+        ->where('office', Auth::user()->office_id)
+        ->where('created_by', Auth::user()->id)
+        ->where('batch_id', $request->batch_id)
+        ->get();
+
+        if ($transactions->isEmpty()) {
+            return response()->json(['success' => false, 'message' => 'No transactions found with status Processing']);
+        }
+        foreach ($transactions as $transaction) {
+            $logs = new Activity_logs();
+            $logs->trans_id = $transaction->id;
+            $logs->office_id = Auth::user()->office_id;
+            $logs->user_id = Auth::user()->id;
+            $logs->save();
+
+            $employee = $ibu_dbcon->table('employee_user')
+            ->where('id', $transaction->employee_id)
+            ->first();
+            $employeedetails = $ibu_dbcon->table('employee')
+            ->where('id', $transaction->employee_id)
+            ->first();
+
+            if (!empty($employee->email)) {
+                $emailData = [
+                    'transaction_id' => $transaction->id,
+                    'employee_fname' => $employeedetails->employee_fname,
+                    'employee_lname' => $employeedetails->employee_lname,
+                    'status' => $transaction->status,
+                ];
+
+                Mail::to($employee->email)->send(new TransactionStatusChanged($emailData));
+            }
+
+            $email = new Emailing();
+            $email->transaction_id = $transaction->id;
+            $email->subject = 'Transaction Processing';
+            $email->to_user = $employeedetails->id;
+            $email->message = 'Your transaction is to be acknowledge by budget office. Please wait for further updates.';
+            $email->status = 'Unread';
+            $email->created_by = Auth::user()->id;
+            $email->save();
+
+        }
+
+        $usertype = Auth::user()->usertype->name;
+
+        if($usertype === 'Admin' || $usertype === 'Superadmin'){
+            $office = Office::where('name', 'Budget Office')->first();
+        }
+        elseif($usertype === 'Budget Office' || $usertype === 'Accounting' ){
+            $office = Office::where('name', 'Dean')->first();
+        }
+        elseif($usertype === 'Dean' ){
+            $office = Office::where('name', 'Accounting')->first();
+        }elseif($usertype === 'Cashiers'){
+            $office = Office::where('name', 'Faculty')->first();
+        }else{
+            return response()->json(['success' => false, 'message' => 'No office Found']);
+        }
+
+
+            $ack = new Acknowledgement();
+            $ack->trans_id = $transaction->id;
+            $ack->batch_id= $transaction->batch_id;
+            $ack->office_id = Auth::user()->office_id;
+            $ack->user_id = Auth::user()->id;
+            $ack->save();
+
+            // Update the status to 'On Queue'
+            Transaction::where('status', 'Processing')
+            ->where('office', Auth::user()->office_id)
+            ->where('created_by', Auth::user()->id)
+            ->update([
+                'status' => 'On Queue',
+                'office' => $office->id,
+                'created_by' => Auth::user()->id,
+            ]);
+
+            $batchId = $transaction->batch_id;
+
+        return response()->json(['success' => true, 'batch_id'=> $batchId, 'message' => 'Emails sent and transactions updated.']);
+    }
+
     public function proceedToCashier(Request $request)
     {
         $ibu_dbcon = DB::connection('ibu_test');
@@ -249,54 +338,276 @@ class QueueController extends Controller
 
     }
 
+    // public function list(Request $request)
+    // {
+    //     if(Auth::user()->usertype->name === 'Superadmin'){
+    //         $query = Transaction::with(['honorarium', 'createdBy'])
+    //         ->where('batch_id', '!=', NULL)
+    //         ->where('status', 'On Queue');
+
+    //     }
+    //     elseif(Auth::user()->usertype->name === 'Admin'){
+    //         $From_office = Office::where('name', 'BUGS Administration')->first();
+    //         $query = Transaction::with(['honorarium', 'createdBy'])
+    //         ->where('status', 'Processing')
+    //         ->orWhere('status', 'On Queue')
+    //         ->where('batch_id', '!=', NULL);
+    //         // ->where('created_by', Auth::user()->id);
+
+    //     }elseif(Auth::user()->usertype->name === 'Budget Office'){
+    //         $From_office = Office::where('name', 'BUGS Administration')->first();
+    //         $query = Transaction::with(['honorarium', 'createdBy'])
+    //         ->where('created_by', Auth::user()->id)
+    //         ->where('status', 'Processing')
+    //         ->where('batch_id', '!=', NULL)
+    //        ;
+
+    //     }elseif(Auth::user()->usertype->name === 'Dean'){
+    //         $From_office = Office::where('name', 'Budget Office')->first();
+    //         $query = Transaction::with(['honorarium', 'createdBy'])
+    //         ->where('status', 'Processing')
+    //         ->where('batch_id', '!=', NULL)
+    //         ->where('created_by', Auth::user()->id);
+
+    //     }elseif(Auth::user()->usertype->name === 'Accounting' || Auth::user()->usertype->name === 'Cashiers'){
+    //         $From_office = Office::where('name', 'Dean')->first();
+    //         $query = Transaction::with(['honorarium', 'createdBy'])
+    //         ->where('status', 'Processing')
+    //         ->where('batch_id', '!=', NULL)
+    //         ->where('created_by', Auth::user()->id);
+
+
+    //     }elseif(Auth::user()->usertype->name === 'Dean'){
+    //         $From_office_acc = Office::where('name', 'Accounting')->first();
+    //         $From_office_BO = Office::where('name', 'Budget Office')->first();
+    //         $query = Transaction::with(['honorarium', 'createdBy'])
+    //         ->where('status', 'Processing')
+    //         ->where('batch_id', '!=', NULL)
+    //         ->where('created_by', Auth::user()->id);
+    //     }
+
+    //     $transactions = $query->get();
+    //     $ibu_dbcon = DB::connection('ibu_test');
+
+    //     $months = [
+    //         1 => 'January',
+    //         2 => 'February',
+    //         3 => 'March',
+    //         4 => 'April',
+    //         5 => 'May',
+    //         6 => 'June',
+    //         7 => 'July',
+    //         8 => 'August',
+    //         9 => 'September',
+    //         10 => 'October',
+    //         11 => 'November',
+    //         12 => 'December',
+    //     ];
+
+    //     return DataTables::of($transactions)
+    //         ->addColumn('id', function($data) {
+    //             return $data->id;
+    //         })
+    //         ->addColumn('batch_id', function($data) {
+    //             return $data->batch_id ? $data->batch_id: 'No Batch ID Found';
+    //         })
+    //         ->addColumn('faculty', function($data) use($ibu_dbcon) {
+    //             $employeeDetails = $ibu_dbcon->table('employee')
+    //             ->where('id', $data->employee_id)
+    //             ->first();
+    //             return ucfirst($employeeDetails->employee_fname) . ' ' . ucfirst($employeeDetails->employee_lname);
+    //         })
+    //         ->addColumn('id_number', function($data) use($ibu_dbcon) {
+    //             // $employeeDetails = $ibu_dbcon->table('employee')
+    //             // ->where('id', $data->employee_id)
+    //             // ->first();
+    //             return $data->ee_number ? $data->ee_number : 0;
+    //         })
+    //         ->addColumn('academic_rank', function($data) use($ibu_dbcon) {
+    //             $employeeDetails = $ibu_dbcon->table('employee')
+    //             ->where('id', $data->employee_id)
+    //             ->first();
+    //             return ucfirst($employeeDetails->employee_academic_rank);
+    //         })
+
+    //         ->addColumn('college', function($data) use($ibu_dbcon) {
+    //             $employeeDetails = $ibu_dbcon->table('employee')
+    //             ->where('id', $data->employee_id)
+    //             ->first();
+
+    //             $collegeDetails = $ibu_dbcon->table('college')
+    //             ->where('id', $employeeDetails->college_id)
+    //             ->first();
+    //             return $collegeDetails->college_shortname ? $collegeDetails->college_shortname : 'No College Found';
+    //         })
+
+    //         ->addColumn('honorarium', function($data) {
+    //             return $data->honorarium_id ? $data->honorarium->name : 'N/A';
+    //         })
+
+    //         ->addColumn('month', function($data) use ($months) {
+    //             // return $months[$data->month] ?? 'Unknown';
+    //             return [
+    //                 'month_number' => $data->month,
+    //                 'month_name' => $months[$data->month] ?? 'Unknown'
+    //             ];
+    //         })
+
+    //         ->addColumn('created_by', function($data) {
+    //             return $data->createdBy ? $data->createdBy->first_name  . ' ' . $data->createdBy->last_name: 'Unknown';
+    //         })
+    //         ->addColumn('action', function($data) {
+    //             $editButton = '<button type="button" class="btn btn-icon me-2 btn-label-success edit-btn"><span class="tf-icons bx bx-pencil bx-18px"></span></button>';
+    //             $on_holdButton = '<button type="button" class="btn btn-icon me-2 btn-label-danger on-hold-btn"><span class="tf-icons bx bxs-hand bx-18px"></span></button>';
+
+    //             return '<div class="d-flex flex-row" data-id="' . $data->id . '">' . $editButton . $on_holdButton . '</div>';
+    //         })
+
+    //         ->make(true);
+    // }
+
     public function list(Request $request)
     {
-        if(Auth::user()->usertype->name === 'Superadmin'){
-            $query = Transaction::with(['honorarium', 'createdBy'])
-            ->where('batch_id', '!=', NULL)
-            ->where('status', 'On Queue');
+        // Fetch data from the Acknowledgement table
+        $acknowledgements = collect(); // Initialize an empty collection
+        DB::statement("SET SQL_MODE=''");
 
-        }
-        elseif(Auth::user()->usertype->name === 'Admin'){
+        if (Auth::user()->usertype->name === 'Superadmin' || Auth::user()->usertype->name === 'Admin') {
+            $acknowledgements = Acknowledgement::with(['user', 'office', 'transaction'])
+                ->select('batch_id', 'trans_id as transaction_id', 'office_id', 'created_at', 'user_id')
+                ->groupBy('batch_id', 'user_id')
+                ->get();
+        } elseif (Auth::user()->usertype->name === 'Budget Office') {
             $From_office = Office::where('name', 'BUGS Administration')->first();
-            $query = Transaction::with(['honorarium', 'createdBy'])
-            ->where('status', 'Processing')
-            ->orWhere('status', 'On Queue')
-            ->where('batch_id', '!=', NULL);
-            // ->where('created_by', Auth::user()->id);
-
-        }elseif(Auth::user()->usertype->name === 'Budget Office'){
-            $From_office = Office::where('name', 'BUGS Administration')->first();
-            $query = Transaction::with(['honorarium', 'createdBy'])
-            ->where('created_by', Auth::user()->id)
-            ->where('status', 'Processing')
-            ->where('batch_id', '!=', NULL)
-           ;
-
-        }elseif(Auth::user()->usertype->name === 'Dean'){
+            $acknowledgements = Acknowledgement::with(['user', 'office', 'transaction'])
+                ->select('batch_id', 'trans_id as transaction_id', 'office_id', 'created_at', 'user_id')
+                ->where('office_id', Auth::user()->office_id)
+                ->groupBy('batch_id')
+                ->get();
+        } elseif (Auth::user()->usertype->name === 'Dean') {
             $From_office = Office::where('name', 'Budget Office')->first();
-            $query = Transaction::with(['honorarium', 'createdBy'])
-            ->where('status', 'Processing')
-            ->where('batch_id', '!=', NULL)
-            ->where('created_by', Auth::user()->id);
-
-        }elseif(Auth::user()->usertype->name === 'Accounting' || Auth::user()->usertype->name === 'Cashiers'){
+            $acknowledgements = Acknowledgement::with(['user', 'office', 'transaction'])
+                ->select('batch_id', 'trans_id as transaction_id', 'office_id', 'created_at', 'user_id')
+                ->where('office_id', $From_office->id)
+                ->groupBy('batch_id')
+                ->get();
+        } elseif (Auth::user()->usertype->name === 'Accounting' || Auth::user()->usertype->name === 'Cashiers') {
             $From_office = Office::where('name', 'Dean')->first();
-            $query = Transaction::with(['honorarium', 'createdBy'])
-            ->where('status', 'Processing')
-            ->where('batch_id', '!=', NULL)
-            ->where('created_by', Auth::user()->id);
-
-
-        }elseif(Auth::user()->usertype->name === 'Dean'){
+            $acknowledgements = Acknowledgement::with(['user', 'office', 'transaction'])
+                ->select('batch_id', 'trans_id as transaction_id', 'office_id', 'created_at', 'user_id')
+                ->where('office_id', $From_office->id)
+                ->groupBy('batch_id')
+                ->get();
+        } elseif (Auth::user()->usertype->name === 'Dean') {
             $From_office_acc = Office::where('name', 'Accounting')->first();
             $From_office_BO = Office::where('name', 'Budget Office')->first();
-            $query = Transaction::with(['honorarium', 'createdBy'])
-            ->where('status', 'Processing')
-            ->where('batch_id', '!=', NULL)
-            ->where('created_by', Auth::user()->id);
+            $acknowledgements = Acknowledgement::with(['user', 'office', 'transaction'])
+                ->select('batch_id', 'trans_id as transaction_id', 'office_id', 'created_at', 'user_id')
+                ->where('office_id', $From_office_acc->id)
+                ->orWhere('office_id', $From_office_BO->id)
+                ->groupBy('batch_id')
+                ->get();
+        }else{
+            $acknowledgements = collect();
         }
 
+        if(Auth::user()->usertype->name !== 'Admin'){
+            // Filter out acknowledgements with a transaction count of 0
+            $filteredAcknowledgements = $acknowledgements->filter(function ($acknowledgement) {
+                $countTran = Transaction::where('batch_id', $acknowledgement->batch_id)
+                ->where('status', 'Processing')
+                ->where('office', Auth::user()->office_id)
+                ->count();
+                return $countTran > 0;
+            });
+
+        }else{
+            $filteredAcknowledgements = $acknowledgements->filter(function ($acknowledgement) {
+                $countTran = Transaction::where('batch_id', $acknowledgement->batch_id)
+                ->where('status', 'Processing')
+                ->orwhere('status', 'On Queue')
+                ->whereNot('office', Auth::user()->office_id)
+                ->count();
+                return $countTran > 0;
+            });
+
+        }
+
+
+
+        // Return data as JSON using DataTables
+        return DataTables::of($filteredAcknowledgements)
+            ->addColumn('batch_id', function ($data) {
+                return $data->batch_id;
+            })
+            ->addColumn('from', function ($data) {
+                return $data->user->first_name . ' ' . $data->user->last_name . ' ' .
+                    '(' . $data->office->name . ')';
+            })
+            ->addColumn('trans_id', function ($data) {
+                if(Auth::user()->usertype->name === 'Admin'){
+                    return Transaction::where('batch_id', $data->batch_id)
+                    ->where('status','!=', 'On-hold')
+                    ->count();
+                }
+                else{
+                    return Transaction::where('batch_id', $data->batch_id)->where('status', 'Processing')->count();
+                }
+
+            })
+            ->addColumn('created_at', function ($data) {
+                return $data->created_at ? $data->created_at->format('Y-m-d H:i:s') : 'N/A';
+            })
+            ->make(true);
+    }
+
+
+    public function OpenOnQueue(Request $request){
+        // return view('administration.open_on_queue');
+        $batch_id = $request->input('id');
+
+        $acknowledgements = Acknowledgement::with(['user', 'office', 'transaction'])
+        ->select('batch_id', 'trans_id as transaction_id', 'office_id', 'created_at', 'user_id')
+        ->where('batch_id', $batch_id)
+        ->first();
+
+        $TransCount = Transaction::with(['honorarium', 'createdBy'])->where('status', 'Processing')->where('batch_id', $batch_id)->count();
+
+        $office = Office::where('id', $acknowledgements->office_id)->first();
+
+        return view('administration.open_on_queue', compact('batch_id', 'acknowledgements', 'office', 'TransCount'));
+    }
+
+    public function open_list(Request $request){
+
+        if(Auth::user()->usertype->name === 'Superadmin'){
+            $query = Transaction::with(['honorarium', 'createdBy'])->where('status', 'Processing')->where('batch_id', $request->batch_id);
+        }
+        elseif(Auth::user()->usertype->name === 'Admin'){
+            $office = Office::where('name', 'Budget Office')->first();
+            $query = Transaction::with(['honorarium', 'createdBy'])
+                                    ->where('batch_id', $request->batch_id)
+                                    ->where('status','!=', 'On-hold');
+
+        }
+        elseif(Auth::user()->usertype->name === 'Budget Office'){
+            $office = Office::where('name', 'Budget Office')->first();
+            $query = Transaction::with(['honorarium', 'createdBy'])
+                                    ->where('batch_id', $request->batch_id)
+                                    ->where('status', 'Processing')
+                                    ->where('office_id',  $office->id);
+
+        }elseif(Auth::user()->usertype->name === 'Dean'){
+            $office = Office::where('name', 'Dean')->first();
+            $query = Transaction::with(['honorarium', 'createdBy'])
+                                    ->where('status', 'Processing')
+                                    ->where('batch_id', $request->batch_id)
+                                    ->where('office_id',  $office->id);
+
+        }
+
+
+        // $query = Transaction::with(['honorarium', 'createdBy'])->where('status', 'Processing')->where('batch_id', $request->batch_id);
         $transactions = $query->get();
         $ibu_dbcon = DB::connection('ibu_test');
 
@@ -318,9 +629,6 @@ class QueueController extends Controller
         return DataTables::of($transactions)
             ->addColumn('id', function($data) {
                 return $data->id;
-            })
-            ->addColumn('batch_id', function($data) {
-                return $data->batch_id ? $data->batch_id: 'No Batch ID Found';
             })
             ->addColumn('faculty', function($data) use($ibu_dbcon) {
                 $employeeDetails = $ibu_dbcon->table('employee')
@@ -368,31 +676,18 @@ class QueueController extends Controller
                 return $data->createdBy ? $data->createdBy->first_name  . ' ' . $data->createdBy->last_name: 'Unknown';
             })
             ->addColumn('action', function($data) {
-                $editButton = '<button type="button" class="btn btn-icon me-2 btn-label-success edit-btn"><span class="tf-icons bx bx-pencil bx-18px"></span></button>';
-                $on_holdButton = '<button type="button" class="btn btn-icon me-2 btn-label-danger on-hold-btn"><span class="tf-icons bx bxs-hand bx-18px"></span></button>';
+                    $editButton = '<button type="button" class="btn btn-icon me-2 btn-label-success edit-btn"><span class="tf-icons bx bx-pencil bx-18px"></span></button>';
+                    $on_holdButton = '<button type="button" class="btn btn-icon me-2 btn-label-danger on-hold-btn"><span class="tf-icons bx bxs-hand bx-18px"></span></button>';
 
-                return '<div class="d-flex flex-row" data-id="' . $data->id . '">' . $editButton . $on_holdButton . '</div>';
-            })
+                    return '<div class="d-flex flex-row" data-id="' . $data->id . '">' . $editButton . $on_holdButton . '</div>';
+                })
 
             ->make(true);
+
     }
 
 
-    public function OpenOnQueue(Request $request){
-        return view('administration.open_on_queue');
-        // $batch_id = $request->input('id');
 
-        // $acknowledgements = Acknowledgement::with(['user', 'office', 'transaction'])
-        // ->select('batch_id', 'trans_id as transaction_id', 'office_id', 'created_at', 'user_id')
-        // ->where('batch_id', $batch_id)
-        // ->first();
-
-        // $TransCount = Transaction::with(['honorarium', 'createdBy'])->where('status', 'On Queue')->where('batch_id', $batch_id)->count();
-
-        // $office = Office::where('id', $acknowledgements->office_id)->first();
-
-        // return view('administration.open_on_queue', compact('batch_id', 'acknowledgements', 'office', 'TransCount'));
-    }
 
 
 }
