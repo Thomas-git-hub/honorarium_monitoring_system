@@ -84,8 +84,10 @@ Route::middleware(['auth_check'])->group(function () {
         Route::get('/admin_on_queue', [AdminController::class, 'admin_on_queue'])->name('admin_on_queue');
         Route::get('/open_on_queue', [QueueController::class, 'OpenOnQueue'])->name('open_on_queue');
         Route::get('/admin_on_queue/list', [QueueController::class, 'list'])->name('admin_on_queue.list');
+        Route::get('/admin_on_queue/open_list', [QueueController::class, 'open_list'])->name('admin_on_queue.open_list');
         Route::get('/admin_on_hold', [AdminController::class, 'admin_on_hold'])->name('admin_on_hold');
         Route::post('/admin_on_queue/proceed_to_budget-office', [QueueController::class, 'proceedToBudgetOffice'])->name('admin_on_queue.proceedToBudgetOffice');
+        Route::post('/admin_on_queue/proceed', [QueueController::class, 'proceed'])->name('admin_on_queue.proceed');
         Route::post('/admin_on_queue/proceed_to_cashier', [QueueController::class, 'proceedToCashier'])->name('admin_on_queue.proceedToCashier');
         Route::match(['post', 'put'], 'admin_on_queue/update', [QueueController::class, 'update'])->name('admin_on_queue.update');
         Route::match(['post', 'put'], 'admin_on_queue/change_to_onhold', [QueueController::class, 'change_to_onhold'])->name('admin_on_queue.change_to_onhold');

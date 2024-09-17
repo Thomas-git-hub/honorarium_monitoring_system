@@ -187,7 +187,7 @@
                 <div class="row">
                     <div class="col-md">
                         <div class="alert alert-secondary">
-                            Total Transactions: <b></b>
+                            Total Transactions: <b>{{$TransCount}}</b>
                         </div>
                     </div>
                     {{-- <div class="col-md">
@@ -202,7 +202,7 @@
                     <div class="card-body">
                         <h5 class="card-title text-primary">Tracking Number:</h5>
                         {{-- <h1 class="text-primary">{{$onQueue}}</h1> --}}
-                        <h1 class="text-primary">000-0000</h1>
+                        <h1 class="text-primary">{{$batch_id ? $batch_id :  'No Data Found'}}</h1>
                     </div>
                 </div>
             </div>
@@ -239,11 +239,17 @@
 {{--FACULTY DATATABLES START --}}
 <script>
     $(function () {
+        var batchId = {!! json_encode($batch_id) !!};
 
         var table = $('#facultyTable').DataTable({
             processing: true,
             serverSide: true,
-            ajax: '{{ route('admin_on_queue.list') }}',
+            ajax: {
+                url: '{{ route('admin_on_queue.open_list') }}',
+                data: function(d) {
+                    d.batch_id = batchId; // Passing the batch ID as a parameter
+                }
+            },
             pageLength: 10,
             paging: true,
             dom: '<"top"lf>rt<"bottom"ip>',
@@ -273,13 +279,14 @@
                     targets: [0, 1] // Apply date sorting to date_received and date_on_hold columns
                 }
             ],
+
             createdRow: function(row, data) {
                 $(row).addClass('unopened');
             }
         });
 
         // Handle Edit button click
-        $('#facultyTable').on('click', '.edit-btn', function() {
+        $('#facultyTable').off('click').on('click', '.edit-btn', function() {
             var row = $(this).closest('tr');
             var rowData = table.row(row).data();
 
@@ -321,6 +328,10 @@
             //         console.error('Error fetching Honorarium:', error);
             //     }
             // });
+
+           // Clear previous options from the honorarium select field
+            var select = $('#editHonorarium');
+            select.empty(); // Clear all previous options
 
             $.ajax({
                 url: '{{ route('getHonorarium') }}',
@@ -451,7 +462,7 @@
             }, 2000); // Simulate a 2-second delay for the operation
         });
     });
-    </script>
+</script>
 {{-- SENDING EMAIL FOR SPINNER AND STATUS END--}}
 
 
@@ -470,6 +481,7 @@
 
 <script>
     $(document).ready(function() {
+        var batchId = {!! json_encode($batch_id) !!};
 
         @if(Auth::user()->usertype->name !== 'Admin')
         $('#proceedTransactionButton').removeClass('d-none');
@@ -536,9 +548,10 @@
                 if (result.isConfirmed) {
                     // AJAX Request to proceed with the transaction
                     $.ajax({
-                        url: '{{ route('admin_on_queue.proceedToBudgetOffice') }}',
+                        url: '{{ route('admin_on_queue.proceed') }}',
                         method: 'POST',
                         data: {
+                            batch_id: batchId,
                             _token: $('meta[name="csrf-token"]').attr('content'),
                         },
                         beforeSend: function() {

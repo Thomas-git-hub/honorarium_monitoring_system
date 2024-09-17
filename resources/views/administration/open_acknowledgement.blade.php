@@ -198,7 +198,7 @@
     <div class="col">
         <div class="row mb-3">
             <div class="col-md mx-auto d-flex justify-content-end">
-                <button type="button" class="btn btn-primary gap-1 ProceedAcknowledge" id="ProceedAcknowledge" >Acknowledge Transaction<i class='bx bx-chevrons-right'></i></button>
+                <button type="button" class="btn btn-primary gap-1 ProceedAcknowledge " id="ProceedAcknowledge" >Acknowledge Transaction<i class='bx bx-chevrons-right'></i></button>
             </div>
         </div>
 
