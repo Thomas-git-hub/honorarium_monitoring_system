@@ -275,7 +275,7 @@
             email: 'user@bicol-u.edu.ph',
             date: 'September 16, 2024',
             status: 'active',
-            action: '<button type="button" class="btn btn-icon me-2 btn-label-primary" data-bs-toggle="modal" data-bs-target="#modalToggle"><span class="tf-icons bx bx-show-alt bx-22px"></span></button> <button type="button" class="btn btn-icon me-2 btn-label-success"><span class="tf-icons bx bxs-check-circle bx-22px"></span></button>',
+            action: '<button type="button" class="btn btn-icon me-2 btn-label-primary" data-bs-toggle="modal" data-bs-target="#modalToggle"><span class="tf-icons bx bx-show-alt bx-22px"></span></button>',
         },
         // Add more objects as needed
     ];

@@ -78,7 +78,7 @@ class AdminController extends Controller
         $user = User::findOrFail($id);
 
 
-        $collegeDetails = DB::connection('ibu_test')->table('college')
+        $collegeDetails = DB::connection('ors_pgsql')->table('college')
                 ->where('id', $user->college_id)
                 ->first();
 
@@ -263,7 +263,7 @@ class AdminController extends Controller
         // }
 
         $transactions = $query->get();
-        $ibu_dbcon = DB::connection('ibu_test');
+        $ibu_dbcon = DB::connection('ors_pgsql');
 
         $months = [
             1 => 'January',

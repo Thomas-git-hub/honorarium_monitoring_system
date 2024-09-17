@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="row mt-4">
-        <h4 class="card-title text-secondary">In Queue Transactions</h4>
+        <h4 class="card-title text-secondary">Cashier In Queue Transactions</h4>
     </div>
 
 
@@ -12,7 +12,7 @@
             <div class="card custom-card">
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table id="inQueueTable" class="table table-borderless table-hover" style="width:100%">
+                        <table id="cashierInQueueTable" class="table table-borderless table-hover" style="width:100%">
                             <tbody>
                             </tbody>
                         </table>
@@ -30,10 +30,10 @@
 {{-- ACKNOWLEDGEMENT DATATABLES START --}}
 <script>
     $(function () {
-        var table = $('#inQueueTable').DataTable({
+        var table = $('#cashierInQueueTable').DataTable({
             processing: true,
-            serverSide: false,
-            // ajax: '{{route('for_acknowledgement.list')}}',
+            serverSide: true,
+            ajax: '{{route('for_acknowledgement.list')}}',
             pageLength: 100,
             paging: true, // abled pagination
             dom: '<"top"lf>rt<"bottom"ip>',
@@ -55,7 +55,7 @@
 
 
         // Row click event
-        $('#inQueueTable tbody').on('click', 'tr', function() {
+        $('#cashierInQueueTable tbody').on('click', 'tr', function() {
                 var rowData = table.row($(this).closest('tr')).data();
 
                 // If the row is unopened, change its class to opened
@@ -64,10 +64,11 @@
                 }
 
                 // Redirect to another page with full details (example)
-                window.location.href = `/open_on_queue?id=${rowData.batch_id}`;
+                window.location.href = `/cashier_open_queue?id=${rowData.batch_id}`;
             });
     });
 </script>
 {{-- ACKNOWLEDGEMENT DATATABLES END --}}
+
 
 @endsection

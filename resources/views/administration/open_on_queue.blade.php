@@ -40,7 +40,7 @@
 
 <!-- EDIT MODAL START -->
 <div class="modal fade" id="editEntryModal" tabindex="-1" aria-labelledby="editEntryModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="editEntryModalLabel">Edit Entry</h5>
@@ -116,8 +116,8 @@
                 <input type="hidden" id="editRowIndex">
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-label-danger" data-bs-dismiss="modal"><i class='bx bxs-x-circle'></i></button>
                 <button type="submit" class="btn btn-primary" id="saveChanges">Save changes</button>
+                <button type="button" class="btn btn-label-danger" data-bs-dismiss="modal"><i class='bx bxs-x-circle'></i></button>
             </div>
         </form>
         </div>

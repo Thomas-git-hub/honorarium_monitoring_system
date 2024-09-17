@@ -16,6 +16,7 @@ use App\Http\Controllers\OnHoldController;
 use App\Http\Controllers\ProfileController;
 use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
 use App\Http\Controllers\UserManagementController;
+use App\Http\Controllers\CashierQueueController;
 
 //START NO AUTHENTICATED ACCESS
 Route::middleware(['guest'])->group(function () {
@@ -88,6 +89,9 @@ Route::middleware(['auth_check'])->group(function () {
         Route::post('/admin_on_queue/proceed_to_cashier', [QueueController::class, 'proceedToCashier'])->name('admin_on_queue.proceedToCashier');
         Route::match(['post', 'put'], 'admin_on_queue/update', [QueueController::class, 'update'])->name('admin_on_queue.update');
         Route::match(['post', 'put'], 'admin_on_queue/change_to_onhold', [QueueController::class, 'change_to_onhold'])->name('admin_on_queue.change_to_onhold');
+        Route::get('/cashier_in_queue', [CashierQueueController::class, 'cashier_in_queue'])->name('cashier_in_queue');
+        Route::get('/cashier_open_queue', [CashierQueueController::class, 'cashier_open_queue'])->name('cashier_open_queue');
+
 
         Route::get('/for_acknowledgement', [ForAcknowledgementController::class, 'for_acknowledgement'])->name('for_acknowledgement');
         Route::get('/for_acknowledgement/list', [ForAcknowledgementController::class, 'list'])->name("for_acknowledgement.list");
