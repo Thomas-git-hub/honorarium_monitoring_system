@@ -67,8 +67,11 @@ class AdminController extends Controller
     public function admin_faculty(){
 
         $today = Carbon::today();
+        $employeeIds = DB::connection('ibu_test')->table('employee_user')->pluck('id');
         $newAccountsToday = DB::connection('mysql')->table('users')
             ->whereDate('created_at', $today)
+            ->whereNull('deleted_at')
+            ->whereIn('employee_id', $employeeIds)
             ->count();
             return view('administration.admin_faculty', compact('newAccountsToday'));
     }

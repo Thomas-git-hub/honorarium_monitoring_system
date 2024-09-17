@@ -527,7 +527,6 @@ class QueueController extends Controller
                 $countTran = Transaction::where('batch_id', $acknowledgement->batch_id)
                 ->where('status', 'Processing')
                 ->orwhere('status', 'On Queue')
-                ->whereNot('office', Auth::user()->office_id)
                 ->count();
                 return $countTran > 0;
             });

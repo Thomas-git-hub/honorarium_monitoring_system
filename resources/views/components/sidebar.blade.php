@@ -111,13 +111,13 @@
         </li>
         @endif
 
-        @if(Auth::user()->usertype->name === 'Admin' || Auth::user()->usertype->name === 'Superadmin')
+        {{-- @if(Auth::user()->usertype->name === 'Admin' || Auth::user()->usertype->name === 'Superadmin') --}}
         <li class="menu-item {{ request()->is('admin_faculty') || request()->is('admin_view_faculty') ? 'active' : '' }}">
           <a href="/admin_faculty" class="menu-link">
             <i class='menu-icon tf-icons bx bx-group'></i>
             <div class="text-truncate" data-i18n="Page 2">Faculties</div>
           </a>
         </li>
-        @endif
+        {{-- @endif --}}
       </ul>
   </aside>
