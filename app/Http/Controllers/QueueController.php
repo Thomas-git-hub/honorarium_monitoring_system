@@ -596,14 +596,14 @@ class QueueController extends Controller
             $query = Transaction::with(['honorarium', 'createdBy'])
                                     ->where('batch_id', $request->batch_id)
                                     ->where('status', 'Processing')
-                                    ->where('office_id',  $office->id);
+                                    ->where('office',  $office->id);
 
         }elseif(Auth::user()->usertype->name === 'Dean'){
             $office = Office::where('name', 'Dean')->first();
             $query = Transaction::with(['honorarium', 'createdBy'])
                                     ->where('status', 'Processing')
                                     ->where('batch_id', $request->batch_id)
-                                    ->where('office_id',  $office->id);
+                                    ->where('office',  $office->id);
 
         }
 
