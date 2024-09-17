@@ -75,6 +75,14 @@
         </li>
         @endif
         @if(Auth::user()->usertype->name !== 'Faculties')
+        <li class="menu-item {{ request()->is('cashier_in_queue') ? 'active' : '' }}">
+          <a href="/cashier_in_queue" class="menu-link">
+            <i class='menu-icon tf-icons bx bx-list-ol'></i>
+            <div class="text-truncate" data-i18n="Page 2">Cashier In Queue</div>
+          </a>
+        </li>
+        @endif
+        @if(Auth::user()->usertype->name !== 'Faculties')
         <li class="menu-item {{ request()->is('admin_on_hold') ? 'active' : '' }}">
           <a href="/admin_on_hold" class="menu-link">
             <i class='menu-icon tf-icons bx bx-error-alt'></i>

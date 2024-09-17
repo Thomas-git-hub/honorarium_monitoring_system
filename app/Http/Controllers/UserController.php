@@ -53,7 +53,7 @@ class UserController extends Controller
             return response()->json(['success' => false, 'message' => 'User already has an account'], 200);
         }
 
-        // $user = DB::connection('ibu_test')->table('employee_user')->where('email', $request->email)->first();
+        // $user = DB::connection('ors_pgsql')->table('employee_user')->where('email', $request->email)->first();
         $user = DB::connection('ibu_test')->table('employee_user')->where('email', $request->email)->first();
 
         if ($user) {
@@ -64,7 +64,7 @@ class UserController extends Controller
 
             ]);
 
-            // $employeeDetails = DB::connection('ibu_test')->table('employee')
+            // $employeeDetails = DB::connection('ors_pgsql')->table('employee')
             $employeeDetails = DB::connection('ibu_test')->table('employee')
             ->where('id', $user->id)
             ->first();
@@ -176,7 +176,7 @@ class UserController extends Controller
     //     $searchTerm = $request->input('search'); // Capture search term
 
     //     // Join the 'employee' and 'employee_user' tables to get the email
-    //     $faculties = DB::connection('ibu_test')
+    //     $faculties = DB::connection('ors_pgsql')
     //                     ->table('employee')
     //                     ->join('employee_user', 'employee.id', '=', 'employee_user.id')
     //                     ->select(
