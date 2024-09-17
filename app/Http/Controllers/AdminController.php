@@ -65,6 +65,20 @@ class AdminController extends Controller
     }
 
     public function admin_faculty(){
+        if(Auth::user()->usertype->name === 'Faculties'){
+            $user = Auth::user();
+            $collegeDetails = DB::connection('ibu_test')->table('college')
+            ->where('id', $user->college_id)
+            ->first();
+
+            if(!empty($collegeDetails)){
+                $college = $collegeDetails->college_name;
+            }
+            else{
+                $college = 'No Assigned College';
+            }
+            return view('administration.view_auth_faculty', compact('user', 'college'));
+        }
 
         $today = Carbon::today();
         $employeeIds = DB::connection('ibu_test')->table('employee_user')->pluck('id');
