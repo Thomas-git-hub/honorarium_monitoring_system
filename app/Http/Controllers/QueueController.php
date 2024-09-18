@@ -22,10 +22,11 @@ class QueueController extends Controller
 
     public function proceedToBudgetOffice(Request $request)
     {
-        $ibu_dbcon = DB::connection('ors_pgsql');
+        $ibu_dbcon = DB::connection('ibu_test');
 
         // Fetch all transactions with status 'Processing'
         $transactions = Transaction::where('status', 'Processing')
+        ->orwhere('status', 'On-hold')
         ->where('batch_id', '!=', NULL)
         ->where('office', Auth::user()->office_id)
         ->where('created_by', Auth::user()->id)
@@ -104,6 +105,14 @@ class QueueController extends Controller
                 'created_by' => Auth::user()->id,
             ]);
 
+            Transaction::where('status', 'On-hold')
+            ->where('office', Auth::user()->office_id)
+            ->where('created_by', Auth::user()->id)
+            ->update([
+                'office' => $office->id,
+                'created_by' => Auth::user()->id,
+            ]);
+
             $batchId = $transaction->batch_id;
 
         return response()->json(['success' => true, 'batch_id'=> $batchId, 'message' => 'Emails sent and transactions updated.']);
@@ -111,7 +120,7 @@ class QueueController extends Controller
 
     public function proceed(Request $request)
     {
-        $ibu_dbcon = DB::connection('ors_pgsql');
+        $ibu_dbcon = DB::connection('ibu_test');
 
         // Fetch all transactions with status 'Processing'
         $transactions = Transaction::where('status', 'Processing')
@@ -200,7 +209,7 @@ class QueueController extends Controller
 
     public function proceedToCashier(Request $request)
     {
-        $ibu_dbcon = DB::connection('ors_pgsql');
+        $ibu_dbcon = DB::connection('ibu_test');
 
         // Fetch all transactions with status 'Processing'
         $transactions = Transaction::where('status', 'Processing')
@@ -297,7 +306,7 @@ class QueueController extends Controller
 
         // Find the transaction by ID
         $transaction = Transaction::find($request->id);
-        $ibu_dbcon = DB::connection('ors_pgsql');
+        $ibu_dbcon = DB::connection('ibu_test');
         // dd($transaction->employee_id);
 
         if (!$transaction) {
@@ -388,7 +397,7 @@ class QueueController extends Controller
     //     }
 
     //     $transactions = $query->get();
-    //     $ibu_dbcon = DB::connection('ors_pgsql');
+    //     $ibu_dbcon = DB::connection('ibu_test');
 
     //     $months = [
     //         1 => 'January',
@@ -559,7 +568,9 @@ class QueueController extends Controller
                     ->count();
                 }
                 else{
-                    return Transaction::where('batch_id', $data->batch_id)->where('status', 'Processing')->count();
+                    return Transaction::where('batch_id', $data->batch_id)->where('status', 'Processing')
+                    ->where('office', Auth::user()->office_id)
+                    ->count();
                 }
 
             })
@@ -579,7 +590,11 @@ class QueueController extends Controller
         ->where('batch_id', $batch_id)
         ->first();
 
-        $TransCount = Transaction::with(['honorarium', 'createdBy'])->where('status', 'Processing')->where('batch_id', $batch_id)->count();
+        $TransCount = Transaction::with(['honorarium', 'createdBy'])
+        ->where('office', Auth::user()->office_id)
+        ->where('status', 'Processing')
+        ->where('batch_id', $batch_id)
+        ->count();
 
         $office = Office::where('id', $acknowledgements->office_id)->first();
 
@@ -601,9 +616,10 @@ class QueueController extends Controller
         elseif(Auth::user()->usertype->name === 'Budget Office'){
             $office = Office::where('name', 'Budget Office')->first();
             $query = Transaction::with(['honorarium', 'createdBy'])
+                                    ->where('office',  $office->id)
                                     ->where('batch_id', $request->batch_id)
-                                    ->where('status', 'Processing')
-                                    ->where('office',  $office->id);
+                                    ->where('status', 'Processing');
+
 
         }elseif(Auth::user()->usertype->name === 'Dean'){
             $office = Office::where('name', 'Dean')->first();
@@ -617,7 +633,7 @@ class QueueController extends Controller
 
         // $query = Transaction::with(['honorarium', 'createdBy'])->where('status', 'Processing')->where('batch_id', $request->batch_id);
         $transactions = $query->get();
-        $ibu_dbcon = DB::connection('ors_pgsql');
+        $ibu_dbcon = DB::connection('ibu_test');
 
         $months = [
             1 => 'January',

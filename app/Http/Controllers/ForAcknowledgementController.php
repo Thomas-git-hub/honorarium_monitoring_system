@@ -120,7 +120,10 @@ class ForAcknowledgementController extends Controller
                     '(' . $data->office->name . ')';
             })
             ->addColumn('trans_id', function ($data) {
-                return Transaction::where('batch_id', $data->batch_id)->where('status', 'On Queue')->count();
+                return Transaction::where('batch_id', $data->batch_id)
+                ->where('status', 'On Queue')
+                ->where('office', Auth::user()->office_id)
+                ->count();
             })
             ->addColumn('created_at', function ($data) {
                 return $data->created_at ? $data->created_at->format('Y-m-d H:i:s') : 'N/A';

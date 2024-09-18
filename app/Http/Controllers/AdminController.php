@@ -67,7 +67,7 @@ class AdminController extends Controller
     public function admin_faculty(){
         if(Auth::user()->usertype->name === 'Faculties'){
             $user = Auth::user();
-            $collegeDetails = DB::connection('ors_pgsql')->table('college')
+            $collegeDetails = DB::connection('ibu_test')->table('college')
             ->where('id', $user->college_id)
             ->first();
 
@@ -81,7 +81,7 @@ class AdminController extends Controller
         }
 
         $today = Carbon::today();
-        $employeeIds = DB::connection('ors_pgsql')->table('employee_user')->pluck('id');
+        $employeeIds = DB::connection('ibu_test')->table('employee_user')->pluck('id');
         $newAccountsToday = DB::connection('mysql')->table('users')
             ->whereDate('created_at', $today)
             ->whereNull('deleted_at')
@@ -95,7 +95,7 @@ class AdminController extends Controller
         $user = User::findOrFail($id);
 
 
-        $collegeDetails = DB::connection('ors_pgsql')->table('college')
+        $collegeDetails = DB::connection('ibu_test')->table('college')
                 ->where('id', $user->college_id)
                 ->first();
 
@@ -118,6 +118,7 @@ class AdminController extends Controller
 
         $onQueue = Transaction::where('status', 'Processing')
             ->where('office', Auth::user()->office_id)
+            ->orWhere('status', 'On-hold')
             ->count();
         return view('administration.admin_new_entries', compact('onQueue'));
     }
@@ -241,15 +242,17 @@ class AdminController extends Controller
             $bugs_office = Office::where('name', 'BUGS Administration')->first();
             $query = Transaction::with(['honorarium', 'createdBy'])
             ->where('office', $bugs_office->id)
-            ->where('status', 'Processing');
+            ->where('status', 'Processing')
+            ->orWhere('status', 'On-hold');
 
         }
         else{
-            $From_office = Office::where('name', 'BUGS Administration')->first();
+            $bugs_office = Office::where('name', 'BUGS Administration')->first();
             $query = Transaction::with(['honorarium', 'createdBy'])
             ->where('created_by', Auth::user()->id)
-            ->where('status', 'Processing');
-            // ->orWhere('status', 'On-hold');
+            ->where('office', $bugs_office->id)
+            ->where('status', 'Processing')
+            ->orWhere('status', 'On-hold');
 
 
         };
@@ -281,7 +284,7 @@ class AdminController extends Controller
         // }
 
         $transactions = $query->get();
-        $ibu_dbcon = DB::connection('ors_pgsql');
+        $ibu_dbcon = DB::connection('ibu_test');
 
         $months = [
             1 => 'January',

@@ -20,11 +20,17 @@ class OpenAcknowledgementController extends Controller
         $batch_id = $request->input('id');
 
         $acknowledgements = Acknowledgement::with(['user', 'office', 'transaction'])
-        ->select('batch_id', 'trans_id as transaction_id', 'office_id', 'created_at', 'user_id')
+        ->select('id','batch_id', 'trans_id as transaction_id', 'office_id', 'created_at', 'user_id')
         ->where('batch_id', $batch_id)
         ->first();
 
-        $TransCount = Transaction::with(['honorarium', 'createdBy'])->where('status', 'On Queue')->where('batch_id', $batch_id)->count();
+        dd($acknowledgements);
+
+        $TransCount = Transaction::with(['honorarium', 'createdBy'])
+        ->where('office', Auth::user()->office_id)
+        ->where('status', 'On Queue')
+        ->where('batch_id', $batch_id)
+        ->count();
 
         $office = Office::where('id', $acknowledgements->office_id)->first();
 
@@ -39,23 +45,26 @@ class OpenAcknowledgementController extends Controller
         elseif(Auth::user()->usertype->name === 'Budget Office'){
             $office = Office::where('name', 'Budget Office')->first();
             $query = Transaction::with(['honorarium', 'createdBy'])
+                                    ->where('office',  $office->id)
                                     ->where('batch_id', $request->batch_id)
                                     ->where('status', 'On Queue')
-                                    ->where('office_id',  $office->id);
+                                    ;
 
         }elseif(Auth::user()->usertype->name === 'Dean'){
             $office = Office::where('name', 'Dean')->first();
             $query = Transaction::with(['honorarium', 'createdBy'])
+                                    ->where('office',  $office->id)
                                     ->where('status', 'On Queue')
                                     ->where('batch_id', $request->batch_id)
-                                    ->where('office_id',  $office->id);
+
+                                    ;
 
         }
 
 
-        $query = Transaction::with(['honorarium', 'createdBy'])->where('status', 'On Queue')->where('batch_id', $request->batch_id);
+        // $query = Transaction::with(['honorarium', 'createdBy'])->where('status', 'On Queue')->where('batch_id', $request->batch_id);
         $transactions = $query->get();
-        $ibu_dbcon = DB::connection('ors_pgsql');
+        $ibu_dbcon = DB::connection('ibu_test');
 
         $months = [
             1 => 'January',
@@ -134,14 +143,16 @@ class OpenAcknowledgementController extends Controller
 
     public function acknowledge(Request $request){
 
-        $transactions = Transaction::where('batch_id', $request->batchId)
+        $transactions = Transaction::where('office', Auth::user()->office_id)
+                                ->where('batch_id', $request->batchId)
                                 ->where('status', 'On Queue')
-                                ->where('office', Auth::user()->office_id)
+
                                 ->get();
+
         $getCreateBy = Transaction::with(['user', 'createdBy'])
+        ->where('office', Auth::user()->office_id)
         ->where('batch_id', $request->batchId)
         ->where('status', 'On Queue')
-        ->where('office', Auth::user()->office_id)
         ->first();
 
         foreach ($transactions as $transaction) {
@@ -163,7 +174,10 @@ class OpenAcknowledgementController extends Controller
         $ack->save();
 
         foreach ($transactions as $batch_id) {
-            Transaction::where('status', 'On Queue')->where('batch_id', $transaction->batch_id)->update([
+            Transaction::where('status', 'On Queue')
+            ->where('batch_id', $transaction->batch_id)
+            ->where('office', Auth::user()->office_id)
+            ->update([
                 'status' => 'Processing',
                 'batch_id' => $ack->batch_id,
                 'office' => Auth::user()->office_id,
