@@ -33,7 +33,7 @@ class SendEmailController extends Controller
             return response()->json(['success' => false,'errors' => $validator->errors()], 422);
         }
 
-        $ibu_dbcon = DB::connection('ibu_test');
+        $ibu_dbcon = DB::connection('ors_pgsql');
 
         $employee = $ibu_dbcon->table('employee_user')
                 ->where('id', $request->user_id)
@@ -106,7 +106,7 @@ class SendEmailController extends Controller
             $email->save();
         }
 
-        return response()->json(['success' => true, 'message' => 'The transaction is on hold and the email has been sent.']);
+        return response()->json(['success' => true, 'message' => 'Email Sent Succesfully']);
     }
 
 
@@ -121,7 +121,7 @@ class SendEmailController extends Controller
                   ->orWhere('deleted_by', '!=', Auth::user()->employee_id); // Show only emails not deleted by the user
         })
         ->get();
-        $ibu_dbcon = DB::connection('ibu_test');
+        $ibu_dbcon = DB::connection('ors_pgsql');
 
         $months = [
             1 => 'January',

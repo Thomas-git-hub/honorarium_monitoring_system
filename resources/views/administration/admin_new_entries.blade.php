@@ -30,17 +30,6 @@
     </div>
 </div>
 
-{{-- <div class="row mt-4 gap-3">
-    <div class="col-md">
-        <div class="card shadow-none bg-label-success">
-        <div class="card-body text-success">
-            <h5 class="card-title text-success">Faculty Honorarium has been Added to the Queue</h5>
-            <h1 class="text-success">{{$onQueue}}</h1>
-        </div>
-        </div>
-    </div>
-</div> --}}
-
 <div class="row mt-4">
     <div class="col-md-4">
         <div class="card mb-5">
@@ -54,16 +43,8 @@
 
                     <div class="mb-3">
                         <label for="flatpickr-human-friendly" class="form-label">Requirements Date Received</label>
-                        <input type="text" class="form-control flatpickr-date" placeholder="Month DD, YYYY" id="dateReceived" name="date_of_trans" />
+                        <input type="text" class="form-control flatpickr-date" placeholder="Month DD, YYYY" id="dateReceived" name="date_of_trans"/>
                     </div>
-
-                    {{-- <div class="mb-3">
-                        <label for="exampleDataList" class="form-label">Faculty</label>
-                        <input class="form-control" list="datalistOptions" id="addEntryName" name="faculty" placeholder="Search by Name/ID Number...">
-                        <datalist id="datalistOptions">
-                          <option value="San Francisco"></option>
-                        </datalist>
-                    </div> --}}
 
                     <div class="mb-3">
                         <label for="facultySelect" class="form-label">Faculty</label>
@@ -76,9 +57,6 @@
                         <label for="HonoSelect" class="form-label">Honorarium</label>
                         <select id="HonoSelect" class="form-select" name="honorarium_id">
                           <option selected disabled>Select Honorarium</option>
-                          {{-- <option value="1">Honorariums for Guest Lectures</option>
-                          <option value="2">Research Assistantships (RAs)</option>
-                          <option value="3">Teaching Assistantships (TAs)</option> --}}
                         </select>
                     </div>
 
@@ -382,6 +360,8 @@
                 });
         });
 
+
+        // 1. Whole line was modified, whole page will relaod after submission
         $('#proceedTransactionButton').off('click').on('click', function() {
                 $.ajax({
                     url: '{{ route('admin_on_queue.proceedToBudgetOffice') }}',
@@ -432,6 +412,62 @@
                 });
             });
         });
+
+        // 2. Whole line was modified, whole page will relaod after submission
+        // $('#proceedTransactionButton').off('click').on('click', function() {
+        // $.ajax({
+        //     url: '{{ route('admin_on_queue.proceedToBudgetOffice') }}',
+        //     method: 'POST',
+        //     data: {
+        //         _token: $('meta[name="csrf-token"]').attr('content'),
+        //     },
+        //     beforeSend: function() {
+        //         Swal.fire({
+        //             title: 'Processing...',
+        //             html: '<div class="spinner-border text-primary" role="status"></div>',
+        //             showConfirmButton: false,
+        //             allowOutsideClick: false
+        //         });
+        //     },
+
+        //     success: function(response) {
+        //         if (response.success) {
+        //             Swal.fire({
+        //                 icon: 'success',
+        //                 title: 'Transaction forwarded successfully',
+        //                 text: response.message,
+        //             }).then(function() {
+        //                 // Reload the entire page when the "OK" button is clicked
+        //                 location.reload();
+        //             });
+
+        //             getNewEntries();
+
+        //         } else {
+        //             Swal.fire({
+        //                 icon: 'error',
+        //                 title: 'Something went wrong',
+        //                 text: response.message,
+        //             });
+
+        //             getNewEntries();
+        //         }
+
+        //         // Reload DataTable
+        //         $('#facultyTable').DataTable().ajax.reload();
+        //     },
+        //     error: function(xhr) {
+        //         getNewEntries();
+
+        //         Swal.fire({
+        //             icon: 'error',
+        //             title: 'Error',
+        //             text: 'There was a problem updating the transactions.',
+        //         });
+        //     }
+        // });
+});
+
 
 
 </script>
@@ -633,6 +669,76 @@
         $('#sendingFailed').show();
 
 
+        // $('#sendButton').on('click', function(event) {
+        //     event.preventDefault();
+        //     $('#spinner').show();
+
+        //     var formData = {
+        //         user_id: $('#user_id').val(),
+        //         subject: $('#floatingInput').val(),
+        //         message: $('#emailTextArea').val(),
+        //         date_of_trans: $('#dateReceived').val(),
+        //         employee_id: $('#facultySelect').val(),
+        //         honorarium_id: $('#HonoSelect').val(),
+        //         sem: $('#defaultSelect').val(),
+        //         year: $('#year').val(),
+        //         month: $('#month').val(),
+        //         is_complete: $('#radioIncomplete').val(),
+        //     };
+
+
+        //     $.ajax({
+        //         type: 'POST',
+        //         url: '{{ route('insertFormData') }}',
+        //         data: formData,
+        //         headers: {
+        //             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        //         },
+        //         success: function(response) {
+
+        //             if(response.success){
+        //                 $('#spinner').hide();
+        //                 $('#toastSuccess').toast('show');
+
+        //                 Swal.fire({
+        //                 icon: 'success',
+        //                 title: 'Sent!',
+        //                 text: response.message,
+        //             });
+
+        //                      $('#facultyTable').DataTable().ajax.reload();
+        //                     $('#newEntriesForm input[type="text"]').val('');
+        //                     $('#newEntriesForm input[type="date"]').val('');
+        //                     // $('#defaultSelect select').each(function() {
+        //                     //     $(this).val($(this).find('option[selected]').val());
+        //                     // });
+        //                     $('#month').val('');
+        //                     $('#defaultSelect').val('');
+        //                     $('#newEntriesForm input[type="radio"]').prop('checked', false);
+        //                     $('#facultySelect, #HonoSelect').val(null).trigger('change');
+
+        //             }else{
+        //                 $('#spinner').hide();
+        //                 $('#sendingFailed').toast('show');
+        //             }
+        //         },
+        //         error: function(xhr, status, error) {
+        //             $('#spinner').hide();
+        //             $('#sendingFailed').toast('show');
+        //             Swal.fire({
+        //                 icon: 'error',
+        //                 title: 'Error Occurred During Form Submission',
+        //                 text: 'An error occurred during form submission. Please ensure all fields are filled out correctly and none are left blank',
+        //             });
+        //             console.error('AJAX Error:', status, error);
+        //         }
+
+        //     });
+
+
+
+        // });
+
         $('#sendButton').on('click', function(event) {
             event.preventDefault();
             $('#spinner').show();
@@ -650,7 +756,6 @@
                 is_complete: $('#radioIncomplete').val(),
             };
 
-
             $.ajax({
                 type: 'POST',
                 url: '{{ route('insertFormData') }}',
@@ -659,30 +764,29 @@
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
                 success: function(response) {
+                    $('#spinner').hide();
 
-                    if(response.success){
-                        $('#spinner').hide();
+                    if (response.success) {
                         $('#toastSuccess').toast('show');
 
                         Swal.fire({
-                        icon: 'success',
-                        title: 'Success',
-                        text: response.message,
-                    });
+                            icon: 'success',
+                            title: 'Sent!',
+                            text: response.message,
+                        }).then(function() {
+                            // This will reload the page once the "OK" button is clicked
+                            location.reload();
+                        });
 
-                             $('#facultyTable').DataTable().ajax.reload();
-                            $('#newEntriesForm input[type="text"]').val('');
-                            $('#newEntriesForm input[type="date"]').val('');
-                            // $('#defaultSelect select').each(function() {
-                            //     $(this).val($(this).find('option[selected]').val());
-                            // });
-                            $('#month').val('');
-                            $('#defaultSelect').val('');
-                            $('#newEntriesForm input[type="radio"]').prop('checked', false);
-                            $('#facultySelect, #HonoSelect').val(null).trigger('change');
+                        $('#facultyTable').DataTable().ajax.reload();
+                        $('#newEntriesForm input[type="text"]').val('');
+                        $('#newEntriesForm input[type="date"]').val('');
+                        $('#month').val('');
+                        $('#defaultSelect').val('');
+                        $('#newEntriesForm input[type="radio"]').prop('checked', false);
+                        $('#facultySelect, #HonoSelect').val(null).trigger('change');
 
-                    }else{
-                        $('#spinner').hide();
+                    } else {
                         $('#sendingFailed').toast('show');
                     }
                 },
@@ -691,17 +795,14 @@
                     $('#sendingFailed').toast('show');
                     Swal.fire({
                         icon: 'error',
-                        title: 'Error',
-                        text: 'An error occurred while submitting the form. Please try again.',
+                        title: 'Error Occurred During Form Submission',
+                        text: 'Please ensure all fields are filled out correctly and none are left blank',
                     });
                     console.error('AJAX Error:', status, error);
                 }
-
             });
-
-
-
         });
+
     });
 </script>
 {{-- SENDING EMAIL FOR SPINNER AND STATUS END--}}
