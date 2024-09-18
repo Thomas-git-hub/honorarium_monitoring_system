@@ -24,8 +24,6 @@ class OpenAcknowledgementController extends Controller
         ->where('batch_id', $batch_id)
         ->first();
 
-        dd($acknowledgements);
-
         $TransCount = Transaction::with(['honorarium', 'createdBy'])
         ->where('office', Auth::user()->office_id)
         ->where('status', 'On Queue')
