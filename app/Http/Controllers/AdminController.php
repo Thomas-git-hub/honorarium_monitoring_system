@@ -118,7 +118,8 @@ class AdminController extends Controller
 
         $onQueue = Transaction::where('status', 'Processing')
             ->where('office', Auth::user()->office_id)
-            ->orWhere('status', 'On-hold')
+            ->where('created_by', Auth::user()->id)
+            // ->orWhere('status', 'On-hold')
             ->count();
         return view('administration.admin_new_entries', compact('onQueue'));
     }
@@ -247,12 +248,15 @@ class AdminController extends Controller
 
         }
         else{
+
             $bugs_office = Office::where('name', 'BUGS Administration')->first();
             $query = Transaction::with(['honorarium', 'createdBy'])
-            ->where('created_by', Auth::user()->id)
             ->where('office', $bugs_office->id)
+            ->where('created_by', Auth::user()->id)
             ->where('status', 'Processing')
-            ->orWhere('status', 'On-hold');
+            // ->orWhere('status', 'On-hold')
+
+           ;
 
 
         };
