@@ -362,111 +362,112 @@
 
 
         // 1. Whole line was modified, whole page will relaod after submission
-        $('#proceedTransactionButton').off('click').on('click', function() {
-                $.ajax({
-                    url: '{{ route('admin_on_queue.proceedToBudgetOffice') }}',
-                    method: 'POST',
-                    data: {
-                        _token: $('meta[name="csrf-token"]').attr('content'),
-                    },
-                    beforeSend: function() {
-                        Swal.fire({
-                            title: 'Processing...',
-                            html: '<div class="spinner-border text-primary" role="status"></div>',
-                            showConfirmButton: false,
-                            allowOutsideClick: false
-                        });
-                    },
+        // $('#proceedTransactionButton').off('click').on('click', function() {
+        //         $.ajax({
+        //             url: '{{ route('admin_on_queue.proceedToBudgetOffice') }}',
+        //             method: 'POST',
+        //             data: {
+        //                 _token: $('meta[name="csrf-token"]').attr('content'),
+        //             },
+        //             beforeSend: function() {
+        //                 Swal.fire({
+        //                     title: 'Processing...',
+        //                     html: '<div class="spinner-border text-primary" role="status"></div>',
+        //                     showConfirmButton: false,
+        //                     allowOutsideClick: false
+        //                 });
+        //             },
 
-                    success: function(response) {
-                        if(response.success) {
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Transaction forwarded succesfully',
-                                // html: `<h4 class="text-success">Tracking Number:<b>${response.batch_id}</b></h4><small class="text-danger">Note: Always attach the tracking number on the documents.</small>`,
-                                text: response.message,
-                            });
-                            getNewEntries();
+        //             success: function(response) {
+        //                 if(response.success) {
+        //                     Swal.fire({
+        //                         icon: 'success',
+        //                         title: 'Transaction forwarded succesfully',
+        //                         // html: `<h4 class="text-success">Tracking Number:<b>${response.batch_id}</b></h4><small class="text-danger">Note: Always attach the tracking number on the documents.</small>`,
+        //                         text: response.message,
+        //                     });
+        //                     getNewEntries();
 
-                        } else {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Something went wrong',
-                                text: response.message,
-                            });
-                            getNewEntries();
+        //                 } else {
+        //                     Swal.fire({
+        //                         icon: 'error',
+        //                         title: 'Something went wrong',
+        //                         text: response.message,
+        //                     });
+        //                     getNewEntries();
 
-                        }
-                        // Reload DataTable
-                        $('#facultyTable').DataTable().ajax.reload();
-                    },
-                    error: function(xhr) {
-                        getNewEntries();
+        //                 }
+        //                 // Reload DataTable
+        //                 $('#facultyTable').DataTable().ajax.reload();
+        //             },
+        //             error: function(xhr) {
+        //                 getNewEntries();
 
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: 'There was a problem updating the transactions.',
-                        });
-                    }
-                });
-            });
-        });
+        //                 Swal.fire({
+        //                     icon: 'error',
+        //                     title: 'Error',
+        //                     text: 'There was a problem updating the transactions.',
+        //                 });
+        //             }
+        //         });
+        //     });
+        // });
 
         // 2. Whole line was modified, whole page will relaod after submission
-        // $('#proceedTransactionButton').off('click').on('click', function() {
-        // $.ajax({
-        //     url: '{{ route('admin_on_queue.proceedToBudgetOffice') }}',
-        //     method: 'POST',
-        //     data: {
-        //         _token: $('meta[name="csrf-token"]').attr('content'),
-        //     },
-        //     beforeSend: function() {
-        //         Swal.fire({
-        //             title: 'Processing...',
-        //             html: '<div class="spinner-border text-primary" role="status"></div>',
-        //             showConfirmButton: false,
-        //             allowOutsideClick: false
-        //         });
-        //     },
+        $('#proceedTransactionButton').off('click').on('click', function() {
+            $.ajax({
+                url: '{{ route('admin_on_queue.proceedToBudgetOffice') }}',
+                method: 'POST',
+                data: {
+                    _token: $('meta[name="csrf-token"]').attr('content'),
+                },
+                beforeSend: function() {
+                    Swal.fire({
+                        title: 'Processing...',
+                        html: '<div class="spinner-border text-primary" role="status"></div>',
+                        showConfirmButton: false,
+                        allowOutsideClick: false
+                    });
+                },
 
-        //     success: function(response) {
-        //         if (response.success) {
-        //             Swal.fire({
-        //                 icon: 'success',
-        //                 title: 'Transaction forwarded successfully',
-        //                 text: response.message,
-        //             }).then(function() {
-        //                 // Reload the entire page when the "OK" button is clicked
-        //                 location.reload();
-        //             });
+                success: function(response) {
+                    if (response.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Transaction forwarded successfully',
+                            text: response.message,
+                        }).then(function() {
+                            // Reload the entire page when the "OK" button is clicked
+                            location.reload();
+                        });
 
-        //             getNewEntries();
+                        getNewEntries();
 
-        //         } else {
-        //             Swal.fire({
-        //                 icon: 'error',
-        //                 title: 'Something went wrong',
-        //                 text: response.message,
-        //             });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Something went wrong',
+                            text: response.message,
+                        });
 
-        //             getNewEntries();
-        //         }
+                        getNewEntries();
+                    }
 
-        //         // Reload DataTable
-        //         $('#facultyTable').DataTable().ajax.reload();
-        //     },
-        //     error: function(xhr) {
-        //         getNewEntries();
+                    // Reload DataTable
+                    $('#facultyTable').DataTable().ajax.reload();
+                },
+                error: function(xhr) {
+                    getNewEntries();
 
-        //         Swal.fire({
-        //             icon: 'error',
-        //             title: 'Error',
-        //             text: 'There was a problem updating the transactions.',
-        //         });
-        //     }
-        // });
-});
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'There was a problem updating the transactions.',
+                    });
+                }
+            });
+        });
+    });
 
 
 

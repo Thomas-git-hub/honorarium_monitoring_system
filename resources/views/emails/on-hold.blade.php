@@ -1,18 +1,3 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>{{ $emailData['subject'] }}</title>
-</head>
-<body>
-    <div style="border: 1px solid #ddd; padding: 10px; border-radius: 5px; max-width: 600px; margin: auto;">
-        <p><strong>Message:</strong></p>
-        <p>{{ $emailData['message'] }}</p>
-        <p><strong>Sent to:</strong> {{ $emailData['employee_fname'] }}</p>
-    </div>
-</body>
-</html>
-
-
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional //EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
 
@@ -258,7 +243,7 @@
                             <td style="overflow-wrap:break-word;word-break:break-word;padding:10px;font-family:arial,helvetica,sans-serif;" align="left">
 
                               <div style="font-family: inherit; font-size: 26px; font-weight: 700; color: #4744cc; line-height: 140%; text-align: center; word-wrap: break-word;">
-                                <p style="line-height: 140%;"><span style="color: #e03e2d; line-height: 36.4px;">{{ $emailData['subject'] }}</span></p>
+                                <p style="line-height: 140%;"><span style="color: #e03e2d; line-height: 36.4px;">Transaction On-Hold</span></p>
                               </div>
 
                             </td>
@@ -299,7 +284,7 @@
                             <td style="overflow-wrap:break-word;word-break:break-word;padding:10px;font-family:arial,helvetica,sans-serif;" align="left">
 
                               <div style="font-size: 14px; line-height: 140%; text-align: left; word-wrap: break-word;">
-                                <p style="line-height: 140%;">Hi John Doe, 🖐</p>
+                                <p style="line-height: 140%;">Hi Dear {{ $emailData['employee_fname'] }}, 🖐</p>
                                 <p style="line-height: 140%;">&nbsp;</p>
                                 <p style="line-height: 140%;"><span style="color: #e03e2d; line-height: 19.6px;">Your transaction has been put <strong>On-Hold</strong> by <strong><em>Accounting </em></strong>due to missing requirements <strong>(Daily Time Record)</strong>.</span></p>
                                 <p style="line-height: 140%;">&nbsp;</p>

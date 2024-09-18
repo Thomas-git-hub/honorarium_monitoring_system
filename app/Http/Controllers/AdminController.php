@@ -248,8 +248,8 @@ class AdminController extends Controller
             $From_office = Office::where('name', 'BUGS Administration')->first();
             $query = Transaction::with(['honorarium', 'createdBy'])
             ->where('created_by', Auth::user()->id)
-            ->where('status', 'Processing')
-            ->orWhere('status', 'On-hold');
+            ->where('status', 'Processing');
+            // ->orWhere('status', 'On-hold');
 
 
         };
