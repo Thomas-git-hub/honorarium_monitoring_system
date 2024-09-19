@@ -49,7 +49,7 @@
                     <div class="mb-3">
                         <label for="facultySelect" class="form-label">Faculty</label>
                         <select class="form-control" id="facultySelect" name="employee_id" style="width: 100%;">
-                            <option selected disabled>Search by Name/ID Number...</option>
+                            <option selected disabled>Search by Name</option>
                         </select>
                     </div>
 
@@ -361,59 +361,7 @@
         });
 
 
-        // 1. Whole line was modified, whole page will relaod after submission
-        // $('#proceedTransactionButton').off('click').on('click', function() {
-        //         $.ajax({
-        //             url: '{{ route('admin_on_queue.proceedToBudgetOffice') }}',
-        //             method: 'POST',
-        //             data: {
-        //                 _token: $('meta[name="csrf-token"]').attr('content'),
-        //             },
-        //             beforeSend: function() {
-        //                 Swal.fire({
-        //                     title: 'Processing...',
-        //                     html: '<div class="spinner-border text-primary" role="status"></div>',
-        //                     showConfirmButton: false,
-        //                     allowOutsideClick: false
-        //                 });
-        //             },
 
-        //             success: function(response) {
-        //                 if(response.success) {
-        //                     Swal.fire({
-        //                         icon: 'success',
-        //                         title: 'Transaction forwarded succesfully',
-        //                         // html: `<h4 class="text-success">Tracking Number:<b>${response.batch_id}</b></h4><small class="text-danger">Note: Always attach the tracking number on the documents.</small>`,
-        //                         text: response.message,
-        //                     });
-        //                     getNewEntries();
-
-        //                 } else {
-        //                     Swal.fire({
-        //                         icon: 'error',
-        //                         title: 'Something went wrong',
-        //                         text: response.message,
-        //                     });
-        //                     getNewEntries();
-
-        //                 }
-        //                 // Reload DataTable
-        //                 $('#facultyTable').DataTable().ajax.reload();
-        //             },
-        //             error: function(xhr) {
-        //                 getNewEntries();
-
-        //                 Swal.fire({
-        //                     icon: 'error',
-        //                     title: 'Error',
-        //                     text: 'There was a problem updating the transactions.',
-        //                 });
-        //             }
-        //         });
-        //     });
-        // });
-
-        // 2. Whole line was modified, whole page will relaod after submission
         $('#proceedTransactionButton').off('click').on('click', function() {
             $.ajax({
                 url: '{{ route('admin_on_queue.proceedToBudgetOffice') }}',

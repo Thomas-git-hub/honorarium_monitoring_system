@@ -6,7 +6,7 @@
 <body>
     <div style="border: 1px solid #ddd; padding: 10px; border-radius: 5px; max-width: 600px; margin: auto;">
         <p><strong>Message:</strong></p>
-        <p>{{ $emailData['message'] }}</p>
+        <p>{{ $emailData['message'] }} by {{ $emailData['office']}} with tracking number {{$emailData['batch_id']}}</p>
         <p><strong>Sent to:</strong> {{ $emailData['employee_fname'] }}</p>
     </div>
 </body>

@@ -36,38 +36,44 @@ class QueueController extends Controller
             return response()->json(['success' => false, 'message' => 'No transactions found with status Processing']);
         }
         foreach ($transactions as $transaction) {
-            $logs = new Activity_logs();
-            $logs->trans_id = $transaction->id;
-            $logs->office_id = Auth::user()->office_id;
-            $logs->user_id = Auth::user()->id;
-            $logs->save();
+            if ($transaction->status === 'Processing'){
+                $logs = new Activity_logs();
+                $logs->trans_id = $transaction->id;
+                $logs->office_id = Auth::user()->office_id;
+                $logs->user_id = Auth::user()->id;
+                $logs->save();
 
-            $employee = $ibu_dbcon->table('employee_user')
-            ->where('id', $transaction->employee_id)
-            ->first();
-            $employeedetails = $ibu_dbcon->table('employee')
-            ->where('id', $transaction->employee_id)
-            ->first();
+                $employee = $ibu_dbcon->table('employee_user')
+                ->where('id', $transaction->employee_id)
+                ->first();
+                $employeedetails = $ibu_dbcon->table('employee')
+                ->where('id', $transaction->employee_id)
+                ->first();
 
-            if (!empty($employee->email)) {
-                $emailData = [
-                    'transaction_id' => $transaction->id,
-                    'employee_fname' => $employeedetails->employee_fname,
-                    'employee_lname' => $employeedetails->employee_lname,
-                    'status' => $transaction->status,
-                ];
+                if (!empty($employee->email)) {
+                    $emailData = [
+                        'transaction_id' => $transaction->id,
+                        'employee_fname' => $employeedetails->employee_fname,
+                        'employee_lname' => $employeedetails->employee_lname,
+                        'status' => $transaction->status,
+                    ];
 
-                Mail::to($employee->email)->send(new TransactionStatusChanged($emailData));
+                    Mail::to($employee->email)->send(new TransactionStatusChanged($emailData));
+                    sleep(1);
+                }
+
+
+                $email = new Emailing();
+                $email->transaction_id = $transaction->id;
+                $email->subject = 'Transaction Processing';
+                $email->to_user = $employeedetails->id;
+                $email->message = 'Your transaction is to be acknowledge by budget office. Please wait for further updates.';
+                $email->status = 'Unread';
+                $email->created_by = Auth::user()->id;
+                $email->save();
+
             }
 
-            $email = new Emailing();
-            $email->transaction_id = $transaction->id;
-            $email->subject = 'Transaction Processing';
-            $email->to_user = $employeedetails->id;
-            $email->message = 'Your transaction is to be acknowledge by budget office. Please wait for further updates.';
-            $email->status = 'Unread';
-            $email->created_by = Auth::user()->id;
-            $email->save();
 
         }
 

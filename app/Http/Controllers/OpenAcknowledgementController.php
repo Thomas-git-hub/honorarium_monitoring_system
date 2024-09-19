@@ -145,7 +145,6 @@ class OpenAcknowledgementController extends Controller
         $transactions = Transaction::where('office', Auth::user()->office_id)
                                 ->where('batch_id', $request->batchId)
                                 ->where('status', 'On Queue')
-
                                 ->get();
 
         $getCreateBy = Transaction::with(['user', 'createdBy'])
@@ -153,6 +152,10 @@ class OpenAcknowledgementController extends Controller
         ->where('batch_id', $request->batchId)
         ->where('status', 'On Queue')
         ->first();
+
+        if ($transactions->isEmpty()) {
+            return response()->json(['success' => false, 'message' => 'No transactions found with status Processing']);
+        }
 
         foreach ($transactions as $transaction) {
             $logs = new Activity_logs();
@@ -186,13 +189,14 @@ class OpenAcknowledgementController extends Controller
         }
 
         if (!empty($getCreateBy->createdBy->email)) {
-
             $emailData = [
                 'user_id' => $getCreateBy->createdBy->employee_id,
-                'employee_fname' => $getCreateBy->createdBy->first_name,
+                'employee_fname' => $getCreateBy->createdBy->first_name, //user who you will send an email to
                 'subject' => 'Batch Transaction was Acknowledged by' . Auth::user()->office->name,
-                // 'action_by' => Auth::user()->users->first_name,
-                'message' => 'Transaction was Acknowledge by ' . Auth::user()->office->name. ' w/ Tracking No.' . $ack->batch_id,
+                'batch_id' => $ack->batch_id,
+                'office' => Auth::user()->office->name,
+                'action_by' => Auth::user()->first_name .  ' ' . Auth::user()->last_name, // user who is sending an email
+                'message' => 'Transaction was Acknowledge',
                 'sender_email' => Auth::user()->email, // Add sender email
             ];
 

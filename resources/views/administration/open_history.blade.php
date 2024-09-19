@@ -163,7 +163,7 @@
             <div class="card-body">
                 <div class="row mb-3"><a class=""><i class='bx bx-left-arrow-alt text-primary' id="navigatePrevious" style="font-size: 2em; cursor: pointer;"></i></a></div>
 
-                <h4 class="d-flex align-items-center">In-Queue Transaction Details</h4>
+                <h4 class="d-flex align-items-center">History Transaction Details</h4>
                 <div class="row">
                     <div class="col-md">
                         <div class="alert alert-secondary">
