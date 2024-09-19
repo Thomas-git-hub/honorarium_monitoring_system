@@ -31,7 +31,7 @@ class TransactionStatusChanged extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Transaction Status Changed',
+            subject: 'New Update on Your Honorarium Transaction',
         );
     }
 
