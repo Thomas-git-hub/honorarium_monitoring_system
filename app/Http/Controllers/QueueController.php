@@ -88,12 +88,12 @@ class QueueController extends Controller
         }
 
 
-            $ack = new Acknowledgement();
-            $ack->trans_id = $transaction->id;
-            $ack->batch_id= $transaction->batch_id;
-            $ack->office_id = Auth::user()->office_id;
-            $ack->user_id = Auth::user()->id;
-            $ack->save();
+            // $ack = new Acknowledgement();
+            // $ack->trans_id = $transaction->id;
+            // $ack->batch_id= $transaction->batch_id;
+            // $ack->office_id = Auth::user()->office_id;
+            // $ack->user_id = Auth::user()->id;
+            // $ack->save();
 
             // Update the status to 'On Queue'
             Transaction::where('status', 'Processing')
@@ -178,6 +178,7 @@ class QueueController extends Controller
         }
         elseif($usertype === 'Dean' ){
             $office = Office::where('name', 'Accounting')->first();
+
         }elseif($usertype === 'Cashiers'){
             $office = Office::where('name', 'Faculty')->first();
         }else{
@@ -482,12 +483,22 @@ class QueueController extends Controller
         $acknowledgements = collect(); // Initialize an empty collection
         DB::statement("SET SQL_MODE=''");
 
-        if (Auth::user()->usertype->name === 'Superadmin' || Auth::user()->usertype->name === 'Admin') {
+        if (Auth::user()->usertype->name === 'Superadmin') {
             $acknowledgements = Acknowledgement::with(['user', 'office', 'transaction'])
                 ->select('batch_id', 'trans_id as transaction_id', 'office_id', 'created_at', 'user_id')
                 ->groupBy('batch_id', 'user_id')
                 ->get();
-        } elseif (Auth::user()->usertype->name === 'Budget Office') {
+        }elseif(Auth::user()->usertype->name === 'Admin'){
+            $From_office = Office::where('name', 'BUGS Administration')->first();
+            $acknowledgements = Acknowledgement::with(['user', 'office', 'transaction'])
+                ->select('batch_id', 'trans_id as transaction_id', 'office_id', 'created_at', 'user_id')
+                ->where('office_id', Auth::user()->office_id)
+                ->where('user_id', Auth::user()->id)
+                ->groupBy('batch_id')
+                ->get();
+        }
+
+        elseif (Auth::user()->usertype->name === 'Budget Office') {
             $From_office = Office::where('name', 'BUGS Administration')->first();
             $acknowledgements = Acknowledgement::with(['user', 'office', 'transaction'])
                 ->select('batch_id', 'trans_id as transaction_id', 'office_id', 'created_at', 'user_id')
@@ -524,8 +535,9 @@ class QueueController extends Controller
         if(Auth::user()->usertype->name === 'Admin'){
             $filteredAcknowledgements = $acknowledgements->filter(function ($acknowledgement) {
                 $countTran = Transaction::where('batch_id', $acknowledgement->batch_id)
+                ->where('office', Auth::user()->office_id)
+                ->where('created_by', Auth::user()->id)
                 ->where('status', 'Processing')
-                ->orwhere('status', 'On Queue')
                 ->count();
                 return $countTran > 0;
             });

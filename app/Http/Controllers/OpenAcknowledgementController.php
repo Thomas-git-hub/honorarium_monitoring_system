@@ -22,6 +22,7 @@ class OpenAcknowledgementController extends Controller
         $acknowledgements = Acknowledgement::with(['user', 'office', 'transaction'])
         ->select('id','batch_id', 'trans_id as transaction_id', 'office_id', 'created_at', 'user_id')
         ->where('batch_id', $batch_id)
+        
         ->first();
 
         $TransCount = Transaction::with(['honorarium', 'createdBy'])

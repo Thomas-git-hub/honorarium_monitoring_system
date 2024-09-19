@@ -6,6 +6,7 @@ use App\Models\Activity_logs;
 use App\Models\Emailing;
 use App\Models\Office;
 use App\Models\Transaction;
+use App\Models\Acknowledgement;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -39,6 +40,7 @@ class AdminController extends Controller
         $OnHold = Transaction::where('status', 'On-hold')
         ->where('batch_id', '!=', NULL)
         ->where('office', Auth::user()->office_id)
+        ->where('created_by', Auth::user()->id)
         ->count();
 
         return view('administration.admin_dashboard', compact('EmailCount', 'OnQueue', 'OnHold'));
@@ -397,6 +399,7 @@ class AdminController extends Controller
                 $onHoldTransactions = Transaction::where('batch_id', $lastBatch->batch_id)
                 ->where('status', 'On-hold') // Adjust the 'status' value based on your actual column values
                 ->count();
+
                 return response()->json([
                     'success' => false,
                     'message' => 'No transactions found',
@@ -438,6 +441,14 @@ class AdminController extends Controller
             $transaction->batch_id = $newBatchId;
             $transaction->save();
         }
+
+        $ack = new Acknowledgement();
+        $ack->trans_id = $transaction->id;
+        $ack->batch_id= $newBatchId;
+        $ack->office_id = Auth::user()->office_id;
+        $ack->user_id = Auth::user()->id;
+        $ack->save();
+
 
         // Count total transactions for the new batch_id
         $totalTransactions = Transaction::where('batch_id', $newBatchId)->count();

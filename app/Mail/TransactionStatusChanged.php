@@ -38,7 +38,7 @@ class TransactionStatusChanged extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'emails.transaction_status_changed',
+            view: 'emails.transaction_status_changed', //dgd su blade file na piggamit
             with: [
                 'emailData' => $this->emailData,
             ],
