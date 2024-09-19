@@ -22,7 +22,7 @@ class OpenAcknowledgementController extends Controller
         $acknowledgements = Acknowledgement::with(['user', 'office', 'transaction'])
         ->select('id','batch_id', 'trans_id as transaction_id', 'office_id', 'created_at', 'user_id')
         ->where('batch_id', $batch_id)
-        
+
         ->first();
 
         $TransCount = Transaction::with(['honorarium', 'createdBy'])
@@ -191,6 +191,7 @@ class OpenAcknowledgementController extends Controller
                 'user_id' => $getCreateBy->createdBy->employee_id,
                 'employee_fname' => $getCreateBy->createdBy->first_name,
                 'subject' => 'Batch Transaction was Acknowledged by' . Auth::user()->office->name,
+                // 'action_by' => Auth::user()->users->first_name,
                 'message' => 'Transaction was Acknowledge by ' . Auth::user()->office->name. ' w/ Tracking No.' . $ack->batch_id,
                 'sender_email' => Auth::user()->email, // Add sender email
             ];

@@ -156,27 +156,33 @@
   </div>
 {{-- MESSAGE MODAL END --}}
 
-<div class="row">
+
+<div class="row mt-2 gap-3">
     <div class="col-md">
         <div class="card shadow-none">
             <div class="card-body">
                 <div class="row mb-3"><a class=""><i class='bx bx-left-arrow-alt text-primary' id="navigatePrevious" style="font-size: 2em; cursor: pointer;"></i></a></div>
 
-                <h4 class="d-flex align-items-center"><i class='bx bx-list-ul'  style="font-size: 32px;"></i>Batch Transaction Details</h4>
+                <h4 class="d-flex align-items-center">In-Queue Transaction Details</h4>
                 <div class="row">
                     <div class="col-md">
-                        <div class="alert alert-danger">
-                            Batch ID Number: <b>{{$batch_id}}</b>
+                        <div class="alert alert-secondary">
+                            Total Transactions: <b>{{$TransCount}}</b>
                         </div>
                     </div>
+                    {{-- <div class="col-md">
+                        <div class="alert alert-warning">
+                            Received Date: <b>September 16, 2024</b>
+                        </div>
+                    </div> --}}
                 </div>
 
 
-                <div class="card shadow-none bg-label-secondary">
+                <div class="card shadow-none bg-label-primary">
                     <div class="card-body">
-                        <h5 class="card-title text-secondary">Total Number of Transactions</h5>
+                        <h5 class="card-title text-primary">Tracking Number:</h5>
                         {{-- <h1 class="text-primary">{{$onQueue}}</h1> --}}
-                        <h1 class="text-secondary">{{$TransCount}}</h1>
+                        <h1 class="text-primary">{{$batch_id}}</h1>
                     </div>
                 </div>
             </div>
