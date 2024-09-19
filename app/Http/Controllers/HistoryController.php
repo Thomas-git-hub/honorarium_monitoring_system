@@ -65,14 +65,14 @@ class HistoryController extends Controller
             $From_office = Office::where('name', 'Budget Office')->first();
             $acknowledgements = Acknowledgement::with(['user', 'office', 'transaction'])
                 ->select('batch_id', 'trans_id as transaction_id', 'office_id', 'created_at', 'user_id')
-                ->where('office_id', $From_office->id)
+                ->where('office_id', Auth::user()->office_id)
                 ->groupBy('batch_id')
                 ->get();
         } elseif (Auth::user()->usertype->name === 'Accounting' || Auth::user()->usertype->name === 'Cashiers') {
             $From_office = Office::where('name', 'Dean')->first();
             $acknowledgements = Acknowledgement::with(['user', 'office', 'transaction'])
                 ->select('batch_id', 'trans_id as transaction_id', 'office_id', 'created_at', 'user_id')
-                ->where('office_id', $From_office->id)
+                ->where('office_id', Auth::user()->office_id)
                 ->groupBy('batch_id')
                 ->get();
         } elseif (Auth::user()->usertype->name === 'Dean') {
@@ -80,8 +80,7 @@ class HistoryController extends Controller
             $From_office_BO = Office::where('name', 'Budget Office')->first();
             $acknowledgements = Acknowledgement::with(['user', 'office', 'transaction'])
                 ->select('batch_id', 'trans_id as transaction_id', 'office_id', 'created_at', 'user_id')
-                ->where('office_id', $From_office_acc->id)
-                ->orWhere('office_id', $From_office_BO->id)
+                ->whereIn('office_id', [$From_office_acc->id, $From_office_BO->id])
                 ->groupBy('batch_id')
                 ->get();
         }else{
@@ -91,9 +90,9 @@ class HistoryController extends Controller
         if(Auth::user()->usertype->name === 'Admin'){
 
             $filteredAcknowledgements = $acknowledgements->filter(function ($acknowledgement) {
-                $office = Office::where('name', 'Budget Office')->first();
                 $countTran = Transaction::where('batch_id', $acknowledgement->batch_id)
-                ->where('office', $office->id)
+                ->whereNot('status', 'On-hold')
+                ->whereNot('office', Auth::user()->office_id)
                 ->count();
                 return $countTran > 0;
             });
@@ -101,6 +100,7 @@ class HistoryController extends Controller
         }elseif(Auth::user()->usertype->name === 'Superadmin'){
             $filteredAcknowledgements = $acknowledgements->filter(function ($acknowledgement) {
                 $countTran = Transaction::where('batch_id', $acknowledgement->batch_id)
+                ->whereNot('status', 'On-hold')
                 ->count();
                 return $countTran > 0;
             });
@@ -109,8 +109,8 @@ class HistoryController extends Controller
             $filteredAcknowledgements = $acknowledgements->filter(function ($acknowledgement) {
                 $office = Office::where('name', 'BUGS Administration')->first();
                 $countTran = Transaction::where('batch_id', $acknowledgement->batch_id)
-                ->where('status', 'On Queue')
                 ->whereNotIn('office', [Auth::user()->office_id, $office])
+                ->whereNot('status', 'On-hold')
                 ->count();
                 return $countTran > 0;
             });
