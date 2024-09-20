@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+{{-- <!DOCTYPE html>
 <html>
 <head>
     <title>{{ $emailData['subject'] }}</title>
@@ -10,7 +10,7 @@
         <p><strong>Sent to:</strong> {{ $emailData['employee_fname'] }}</p>
     </div>
 </body>
-</html>
+</html> --}}
 
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional //EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -252,13 +252,16 @@
                             <td style="overflow-wrap:break-word;word-break:break-word;padding:10px;font-family:arial,helvetica,sans-serif;" align="left">
 
                               <div style="font-size: 14px; line-height: 140%; text-align: left; word-wrap: break-word;">
-                                <p style="line-height: 140%;">Hi, Good Day, 🖐</p>
-                                <p style="line-height: 140%;"><span style="color: #2dc26b; line-height: 19.6px;"><span style="color: #0000ee; line-height: 19.6px;"><strong>{{ $emailData['message'] }}<br></strong></span></span>
+                                <p style="line-height: 140%;">Acknowledge by: <span style="color: #0000ee; line-height: 19.6px;"><strong>{{ $emailData['action_by'] }}<br></strong></span></p>
+                                <p style="line-height: 140%;">Office of: <span style="color: #0000ee; line-height: 19.6px;"><strong>{{ $emailData['office']}}<br></strong></span></p>
+                                <p style="line-height: 140%;">Tracking Number: <span style="color: #0000ee; line-height: 19.6px;"><strong>{{$emailData['batch_id']}}<br></strong></span></p>
+                                <p style="line-height: 140%;">Message: <span style="color: #0000ee; line-height: 19.6px;"><strong>{{ $emailData['message'] }}<br></strong></span></p>
+                                {{-- <p style="line-height: 140%;"><span style="color: #2dc26b; line-height: 19.6px;"><span style="color: #0000ee; line-height: 19.6px;"><strong>Tracking Number with {{$emailData['batch_id']}}<br></strong></span></span>
                                 </p>
                                 <p style="line-height: 140%;">&nbsp;</p>
                                 <p style="line-height: 140%;"><span style="color: #2dc26b; line-height: 19.6px;"><span style="color: #0000ee; line-height: 19.6px;"><span style="color: #000000; line-height: 19.6px;">Acknowledge By: {{ $emailData['action_by'] }}</span><strong><br></strong><span style="color: #000000; line-height: 19.6px;">Date:</span></span>
                                   </span>
-                                </p>
+                                </p> --}}
                               </div>
 
                             </td>

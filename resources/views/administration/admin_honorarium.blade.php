@@ -109,18 +109,50 @@
             updateNumbering();
         });
 
+        // Function to check for duplicate values in all honorarium fields
+        function hasDuplicates() {
+            let values = [];
+            let hasDuplicates = false;
+
+            $('input[name="honorarium[]"]').each(function() {
+                let val = $(this).val().trim(); // Get the value and trim spaces
+                if (val !== "") {
+                    if (values.includes(val)) {
+                        hasDuplicates = true;
+                        return false; // Exit loop early if duplicate is found
+                    }
+                    values.push(val);
+                }
+            });
+
+            return hasDuplicates;
+        }
+
         // Initialize numbering for existing fields on page load
         updateNumbering();
 
+        // Form submission with duplicate check
         $('#honorariumForm').on('submit', function(e) {
             e.preventDefault();
 
+            // Check for duplicate values before submitting the form
+            if (hasDuplicates()) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Duplicate Error',
+                    text: 'You have entered duplicate values. Please ensure all values are unique.',
+                    showConfirmButton: true,
+                });
+                return; // Prevent form submission
+            }
+
+            // Proceed with AJAX submission if no duplicates
             $.ajax({
                 url: '{{ route('admin_honorarium.store') }}',
                 type: 'POST',
                 data: $(this).serialize(),
                 success: function(response) {
-                    if(response.success){
+                    if (response.success) {
                         Swal.fire({
                             icon: 'success',
                             title: 'Success!',

@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('status');
             $table->string('created_by');
             $table->string('deleted_by')->nullable();
+            $table->json('documentation')->nullable();
             $table->timestamps();
 
             $table->foreign('transaction_id')->references('id')->on('transaction');

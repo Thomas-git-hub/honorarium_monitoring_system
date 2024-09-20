@@ -182,6 +182,8 @@ class UserController extends Controller
     public function getUser(Request $request) {
         $searchTerm = $request->input('search'); // Capture search term
 
+        $searchTerm = ucfirst($searchTerm);
+
         // Join the 'employee' and 'employee_user' tables to get the email
         $faculties = DB::connection('ors_pgsql')
                         ->table('employee')

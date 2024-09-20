@@ -192,11 +192,11 @@ class OpenAcknowledgementController extends Controller
             $emailData = [
                 'user_id' => $getCreateBy->createdBy->employee_id,
                 'employee_fname' => $getCreateBy->createdBy->first_name, //user who you will send an email to
-                'subject' => 'Batch Transaction was Acknowledged by' . Auth::user()->office->name,
+                'subject' => 'Batch Transaction was Acknowledged by ' . Auth::user()->office->name,
                 'batch_id' => $ack->batch_id,
                 'office' => Auth::user()->office->name,
                 'action_by' => Auth::user()->first_name .  ' ' . Auth::user()->last_name, // user who is sending an email
-                'message' => 'Transaction was Acknowledge',
+                'message' => 'Transaction was Acknowledged',
                 'sender_email' => Auth::user()->email, // Add sender email
             ];
 
