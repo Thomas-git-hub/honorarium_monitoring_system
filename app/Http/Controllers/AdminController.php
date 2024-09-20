@@ -430,17 +430,18 @@ class AdminController extends Controller
         if ($lastBatch) {
             // Extract the number before the dash
             $batchParts = explode(' - ', $lastBatch->batch_id);
-            $lastNumber = intval(substr($batchParts[0], 2)); // Extract and convert to integer, skipping the "00" prefix
+            $lastNumber = intval($batchParts[0]);
         }
 
         // Increment the batch number
-        $newNumber = str_pad($lastNumber + 1, 3, '0', STR_PAD_LEFT);
+        $newNumber = $lastNumber + 1;
+
 
         // Format the current date as 'mdy'
         $date = now()->format('mdy');
 
         // Generate the new batch_id
-        $newBatchId = "{$newNumber} - {$date}";
+        $newBatchId = "00{$newNumber} - {$date}";
 
         foreach ($transactions as $transaction) {
             $transaction->batch_id = $newBatchId;

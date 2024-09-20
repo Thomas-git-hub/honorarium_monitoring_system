@@ -22,10 +22,11 @@ class QueueController extends Controller
 
     public function proceedToBudgetOffice(Request $request)
     {
-        $ibu_dbcon = DB::connection('ors_pgsql');
+        $ibu_dbcon = DB::connection('ibu_test');
 
         // Fetch all transactions with status 'Processing'
-        $transactions = Transaction::where('status', 'Processing')
+        $transactions = Transaction::with(['honorarium', 'office'])
+        ->where('status', 'Processing')
         ->orwhere('status', 'On-hold')
         ->where('batch_id', '!=', NULL)
         ->where('office', Auth::user()->office_id)
@@ -56,12 +57,15 @@ class QueueController extends Controller
                         'employee_fname' => $employeedetails->employee_fname,
                         'employee_lname' => $employeedetails->employee_lname,
                         'status' => $transaction->status,
+                        'date_of_transaction' => $transaction->date_of_trans,
+                        'created_at' => now()->format('F j, Y'),
+                        // 'honorarium' => $transaction->honorarium->name,
+                        // 'office' => $transaction->office->name,
                     ];
 
                     Mail::to($employee->email)->send(new TransactionStatusChanged($emailData));
                     sleep(1);
                 }
-
 
                 $email = new Emailing();
                 $email->transaction_id = $transaction->id;

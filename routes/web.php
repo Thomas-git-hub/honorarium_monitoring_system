@@ -66,6 +66,7 @@ Route::middleware(['auth_check'])->group(function () {
         Route::get('/admin_faculty/list', [UserController::class, 'list'])->name("admin_faculty.list");
 
         Route::get('/user_management', [UserManagementController::class, 'user_management'])->name("user_management");
+        Route::get('/user_management/list', [UserManagementController::class, 'list'])->name("user_management.list");
 
         Route::get('/admin_honorarium', [AdminController::class, 'admin_honorarium'])->name("admin_honorarium");
         Route::get('/admin_honorarium/list', [HonorariumController::class, 'list'])->name("admin_honorarium.list");

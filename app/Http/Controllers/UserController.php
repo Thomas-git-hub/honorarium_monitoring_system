@@ -269,6 +269,7 @@ class UserController extends Controller
         return response()->json($faculties);
     }
 
+
     public function AdminList(Request $request)
     {
 
