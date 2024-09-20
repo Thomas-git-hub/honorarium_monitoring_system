@@ -1,4 +1,4 @@
-<html>
+{{-- <html>
 <head>
     <title>New Transaction Update</title>
 </head>
@@ -8,7 +8,7 @@
     <p>Your transaction with ID {{ $emailData['transaction_id'] }} has been updated to <strong>{{ $emailData['status'] }}</strong>.</p>
     <p>Thank you.</p>
 </body>
-</html>
+</html> --}}
 
 
 
@@ -300,13 +300,16 @@
 
                               <div style="font-size: 14px; line-height: 140%; text-align: left; word-wrap: break-word;">
                                 <p style="line-height: 140%;">Hi {{ $emailData['employee_fname'] }}, 🖐</p>
-                                <p style="line-height: 140%;"><span style="color: #2dc26b; line-height: 19.6px;"><strong>Your transaction has been updated</strong><br><br><span style="color: #000000; line-height: 19.6px;"><span style="color: #95a5a6; line-height: 19.6px;">Your Honorarium is now on:</span>                                  <strong>Budget Office<br></strong><span style="color: #95a5a6; line-height: 19.6px;">Received last: <span style="color: #000000; line-height: 19.6px;"><strong>Sept 18, 2024</strong></span></span>
+                                <p style="line-height: 140%;"><span style="color: #2dc26b; line-height: 19.6px;"><strong>Your transaction has been updated</strong><br><br><span style="color: #000000; line-height: 19.6px;"><span style="color: #95a5a6; line-height: 19.6px;">Your Honorarium is now on:</span><strong>Budget Office<br></strong><span style="color: #95a5a6; line-height: 19.6px;">Received last: <span style="color: #000000; line-height: 19.6px;"><strong>Sept 18, 2024</strong></span></span>
                                   </span>
                                   </span>
                                 </p>
                                 <p style="line-height: 140%;"><span style="color: #2dc26b; line-height: 19.6px;"><span style="color: #000000; line-height: 19.6px;"><span style="line-height: 19.6px; color: #95a5a6;">Transaction Status:</span> <strong><span style="line-height: 19.6px;">Processing</span></strong></span>
                                   </span>
                                 </p>
+                                <p style="line-height: 140%;"><span style="color: #2dc26b; line-height: 19.6px;"><span style="color: #000000; line-height: 19.6px;"><span style="line-height: 19.6px; color: #95a5a6;">Honorarium:</span> <strong><span style="line-height: 19.6px;">Test Honorarium</span></strong></span>
+                                </span>
+                              </p>
                               </div>
 
                             </td>

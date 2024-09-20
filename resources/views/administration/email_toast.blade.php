@@ -57,6 +57,7 @@
                 <label for="floatingInput">Subject</label>
             </div>
             <div >
+                <label for="floatingInput">Subject</label>
                 <textarea class="form-control" id="emailTextArea" name="message" rows="3" placeholder="Message" style="border: none;"></textarea>
             </div>
             {{-- <div class="border-bottom">

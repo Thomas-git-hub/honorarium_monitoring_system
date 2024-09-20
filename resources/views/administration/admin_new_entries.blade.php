@@ -154,31 +154,36 @@
 
         <div class="card border border-primary trackingNumDisplay d-none" id="trackingNumDisplay">
             <div class="card-body">
-                <div class="row d-flex align-items-center mb-3">
+                <div class="row d-flex align-items-center mb-5">
                     <label for="html5-text-input" class="col-md-4 col-form-label fs-6">Tracking Number:</label>
                     <div class="col-md-8">
-                      <b class="text-success" id="batchID">000-000000</b>
+                      <b class="text-success" id="batchID">-</b>
                     </div>
+                    <small class="text-danger"><b>Note:&nbsp;</b>Always attach the tracking number on the documents.</small>
                 </div>
                 <div class="row d-flex align-items-center">
                     <label for="html5-text-input" class="col-md-4 col-form-label">Total Transactions:</label>
                     <div class="col-md-8">
-                      <b class="text-dark" id="transCount">0</b>
+                      <b class="text-dark" id="transCount">-</b>
                     </div>
                 </div>
                 <div class="row d-flex align-items-center">
                     <label for="html5-text-input" class="col-md-4 col-form-label">On-Hold Transactions:</label>
                     <div class="col-md-8">
-                      <b class="text-danger" id="holdCount">0</b>
+                      <b class="text-danger" id="holdCount">-</b>
                     </div>
                 </div>
-                <div class="row d-flex align-items-center">
+                <div class="row d-flex align-items-center mb-3">
                     <label for="html5-text-input" class="col-md-4 col-form-label">Transaction Date:</label>
                     <div class="col-md-8">
                       <small class="text-dark" id="date"><?php echo date('F j, Y'); ?></small>
                     </div>
                 </div>
-                <button class="btn btn-primary mt-3 w-100" id="proceedTransactionButton">Proceed to next office</button>
+                <div class="border-top">
+                    <small class="text-danger">Proceeding with this transaction indicates that every individual has submitted all necessary requirements for their honorarium.</small>
+                    <button class="btn btn-primary w-100" id="proceedTransactionButton">Proceed to next office</button>
+                </div>
+
             </div>
         </div>
     </div>
@@ -533,7 +538,7 @@
         });
 
         $('#floatingInput').val('Transaction On-Hold');
-        $('#emailTextArea').val('Please come to the Administration Office for compliance.');
+        $('#emailTextArea').val('Kindly visit the Administration Office to submit the missing documents for compliance.');
 
         $('#facultySelect').on('select2:select', function(e) {
             var selectedOption = $(this).select2('data')[0]; // Get the selected option data
@@ -545,7 +550,7 @@
             $('#user_id').val(facultyId);
             $('.card-body .send_to').html(`<b>To:&nbsp;</b> ${facultyName}&nbsp;<small class="text-secondary" style="font-style: italic;">${facultyEmail}</small>`);
             $('#floatingInput').val('Transaction On-Hold');
-            $('#emailTextArea').val('Please come to the Administration Office for compliance.');
+            $('#emailTextArea').val('Please come to the Administration Office for compliance');
         });
 
         $('#facultySelect').select2({

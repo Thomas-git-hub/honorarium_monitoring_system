@@ -183,7 +183,7 @@
             <div class="card-body">
                 <div class="row mb-3"><a class=""><i class='bx bx-left-arrow-alt text-primary' id="navigatePrevious" style="font-size: 2em; cursor: pointer;"></i></a></div>
 
-                <h4 class="d-flex align-items-center">In-Queue Transaction Details</h4>
+                <h4 class="d-flex align-items-center">Transaction Details</h4>
                 <div class="row">
                     <div class="col-md">
                         <div class="alert alert-secondary">
@@ -563,24 +563,48 @@
                             });
                         },
 
+                        // success: function(response) {
+                        //     if(response.success) {
+                        //         Swal.fire({
+                        //             icon: 'success',
+                        //             title: 'Transaction forwarded succesfully',
+                        //             html: `<h4 class="text-success">Tracking Number:<b>${response.batch_id}</b></h4><small class="text-danger">Note: Always attach the tracking number on the documents.</small>`,
+                        //             text: response.message,
+                        //         });
+                        //     } else {
+                        //         Swal.fire({
+                        //             icon: 'error',
+                        //             title: 'Something went wrong',
+                        //             text: response.message,
+                        //         });
+                        //     }
+                        //     // Reload DataTable
+                        //     $('#facultyTable').DataTable().ajax.reload();
+                        // },
                         success: function(response) {
-                            if(response.success) {
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: 'Transaction forwarded succesfully',
-                                    html: `<h4 class="text-success">Tracking Number:<b>${response.batch_id}</b></h4><small class="text-danger">Note: Always attach the tracking number on the documents.</small>`,
-                                    text: response.message,
-                                });
-                            } else {
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Something went wrong',
-                                    text: response.message,
-                                });
-                            }
-                            // Reload DataTable
-                            $('#facultyTable').DataTable().ajax.reload();
-                        },
+                        if(response.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Transaction forwarded successfully',
+                                html: `<h4 class="text-success">Tracking Number:<b>${response.batch_id}</b></h4><small class="text-danger">Note: Always attach the tracking number on the documents.</small>`,
+                                text: response.message,
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    // Redirect to /history when OK is clicked
+                                    window.location.href = '/history';
+                                }
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Something went wrong',
+                                text: response.message,
+                            });
+                        }
+                        // Reload DataTable
+                        $('#facultyTable').DataTable().ajax.reload();
+                    },
+
                         error: function(xhr) {
                             Swal.fire({
                                 icon: 'error',
