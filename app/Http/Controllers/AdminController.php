@@ -62,14 +62,16 @@ class AdminController extends Controller
         $id = $request->input('id');
         $data = Emailing::with('employee')->where('id', $id)->first();
 
+        $docuJson = json_decode($data->documentation);
 
-        return view('administration.admin_open_email', compact('data'));
+
+        return view('administration.admin_open_email', compact('data', 'docuJson'));
     }
 
     public function admin_faculty(){
         if(Auth::user()->usertype->name === 'Faculties'){
             $user = Auth::user();
-            $collegeDetails = DB::connection('ors_pgsql')->table('college')
+            $collegeDetails = DB::connection('ibu_test')->table('college')
             ->where('id', $user->college_id)
             ->first();
 
@@ -83,7 +85,7 @@ class AdminController extends Controller
         }
 
         $today = Carbon::today();
-        $employeeIds = DB::connection('ors_pgsql')->table('employee_user')->pluck('id');
+        $employeeIds = DB::connection('ibu_test')->table('employee_user')->pluck('id');
         $newAccountsToday = DB::connection('mysql')->table('users')
             ->whereDate('created_at', $today)
             ->whereNull('deleted_at')
@@ -94,10 +96,11 @@ class AdminController extends Controller
 
     public function admin_view_faculty(Request $request){
         $id = $request->query('id');
-        $user = User::findOrFail($id);
+        $ibu_dbcon = DB::connection('ibu_test');
+        $user = $ibu_dbcon->table('employee')->where('id', $id )->first();
+        // Transaction::findOrFail($id);
 
-
-        $collegeDetails = DB::connection('ors_pgsql')->table('college')
+        $collegeDetails = DB::connection('ibu_test')->table('college')
                 ->where('id', $user->college_id)
                 ->first();
 
@@ -110,6 +113,7 @@ class AdminController extends Controller
 
         return view('administration.admin_view_faculty', compact('user', 'college'));
     }
+
 
     public function admin_honorarium(){
         return view('administration.admin_honorarium');
@@ -287,7 +291,7 @@ class AdminController extends Controller
         // }
 
         $transactions = $query->get();
-        $ibu_dbcon = DB::connection('ors_pgsql');
+        $ibu_dbcon = DB::connection('ibu_test');
 
         $months = [
             1 => 'January',
@@ -363,8 +367,9 @@ class AdminController extends Controller
             ->addColumn('action', function($data) {
                 $editButton = '<button type="button" class="btn btn-icon me-2 btn-label-success edit-btn"><span class="tf-icons bx bx-pencil bx-18px"></span></button>';
                 $on_holdButton = '<button type="button" class="btn btn-icon me-2 btn-label-danger on-hold-btn"><span class="tf-icons bx bxs-hand bx-18px"></span></button>';
+                $deleteButton = '<button type="button" class="btn btn-icon me-2 btn-label-danger delete-btn"><span class="tf-icons bx bxs-trash bx-18px"></span></button>';
 
-                return '<div class="d-flex flex-row" data-id="' . $data->id . '">' . $editButton . $on_holdButton . '</div>';
+                return '<div class="d-flex flex-row" data-id="' . $data->id . '">' . $deleteButton . '</div>';
             })
 
             ->make(true);
@@ -501,6 +506,33 @@ class AdminController extends Controller
             'UnreadCount' => $UnreadCount,
 
         ]);
+    }
+
+    public function destroy(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            // 'id' => 'required|exists:org_otc,id',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['success' => false, 'errors' => $validator->errors()], 200);
+        }
+
+        $ifExist = Transaction::whereNull('deleted_at')->where('id', $request->id)->exists();
+
+        if($ifExist){
+            $trans = Transaction::findOrFail($request->id);
+            $trans->created_by = Auth::user()->id;
+            $trans->updated_at = now();
+            $trans->delete();
+
+        }else{
+            return response()->json(['success' => false, 'errors' => 'The transaction does not exist']);
+        }
+
+
+
+        return response()->json(['success' => true, 'message' => 'Transaction deleted successfully']);
     }
 
 }

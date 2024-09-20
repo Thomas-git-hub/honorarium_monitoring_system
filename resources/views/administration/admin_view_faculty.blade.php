@@ -7,9 +7,9 @@
             <div class="card">
                 <div class="card-body">
                     <div class="row mb-4"><a class=""><i class='bx bx-left-arrow-alt text-primary' id="navigatePrevious" style="font-size: 2em; cursor: pointer;"></i></a></div>
-                    <div class="text">Faculty:&nbsp;<small class="fw-bold">{{$user->first_name . ' ' . $user->last_name}}</small></div>
-                    <div class="text">ID Number:&nbsp;<small class="fw-bold">{{$user->ee_number}}</small></div>
-                    <div class="text">Academic Rank:&nbsp;<small class="fw-bold">{{$user->position}}</small></div>
+                    <div class="text">Faculty:&nbsp;<small class="fw-bold">{{$user->employee_fname . ' ' . $user->employee_lname}}</small></div>
+                    <div class="text">ID Number:&nbsp;<small class="fw-bold">{{$user->employee_no}}</small></div>
+                    <div class="text">Academic Rank:&nbsp;<small class="fw-bold">{{$user->employee_academic_rank}}</small></div>
                     <div class="text">College:&nbsp;<small class="fw-bold">{{$college}}</small></div>
                 </div>
             </div>
@@ -69,7 +69,7 @@
 <script>
 
     $(function () {
-            var user_id = {!! json_encode($user->employee_id) !!}; // Retrieve user ID
+            var user_id = {!! json_encode($user->id) !!}; // Retrieve user ID
             console.log(user_id);
             var table = $('#transactionStatusTable').DataTable({
                 processing: true,

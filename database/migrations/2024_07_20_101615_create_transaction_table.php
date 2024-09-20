@@ -25,6 +25,7 @@ return new class extends Migration
             $table->string('created_by');
             $table->boolean('is_complete')->default(0);
             $table->timestamps();
+            $table->softDeletes();
 
             $table->foreign('honorarium_id')->references('id')->on('honorarium');
         });

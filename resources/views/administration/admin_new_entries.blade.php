@@ -483,7 +483,7 @@
                 // { data: 'status', name: 'status', title: 'Status' },
                 { data: 'created_by', name: 'created_by', title: 'Created By' },
                 { data: 'status', name: 'status', title: 'Status' },
-                // { data: 'action', name: 'action', title: 'Action' }
+                { data: 'action', name: 'action', title: 'Action' }
             ],
             order: [[0, 'desc']], // Sort by date_received column by default
             columnDefs: [
@@ -585,21 +585,77 @@
 
         //Get Honorarium
         $.ajax({
-                url: '{{ route('getHonorarium') }}',
-                type: 'GET',
-                success: function(data) {
-                    var select = $('#HonoSelect');
-                    data.forEach(function(hono) {
-                        var option = $('<option></option>')
-                            .val(hono.id)
-                            .text(hono.name);
-                        select.append(option);
+            url: '{{ route('getHonorarium') }}',
+            type: 'GET',
+            success: function(data) {
+                var select = $('#HonoSelect');
+                data.forEach(function(hono) {
+                    var option = $('<option></option>')
+                        .val(hono.id)
+                        .text(hono.name);
+                    select.append(option);
+                });
+            },
+            error: function(xhr, status, error) {
+                console.error('Error fetching Honorarium:', error);
+            }
+        });
+
+          // Handle Delete button click
+          $('#facultyTable').on('click', '.delete-btn', function(e) {
+            e.preventDefault();
+            var row = $(this).closest('tr');
+            var rowData = table.row(row).data();
+
+            // var transactionId = rowData.id; // Adjust if necessary
+
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: '{{ route('admin_new_entries.destroy') }}',
+                        type: 'POST',
+                        data: {
+                            id: rowData.id,
+                            _token: $('meta[name="csrf-token"]').attr('content') // Include CSRF token
+                        },
+                        success: function(response) {
+                            if (response.success) {
+                                Swal.fire(
+                                    'Deleted!',
+                                    response.message,
+                                    'success'
+                                );
+                                // Refresh the DataTable to reflect changes
+                                getNewEntries();
+                                table.ajax.reload(null, false);
+                            } else {
+                                Swal.fire(
+                                    'Error!',
+                                    response.message,
+                                    'error'
+                                );
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            Swal.fire(
+                                'Error!',
+                                'An error occurred while updating the transaction.',
+                                'error'
+                            );
+                        }
                     });
-                },
-                error: function(xhr, status, error) {
-                    console.error('Error fetching Honorarium:', error);
                 }
             });
+        });
 
 
 
@@ -703,6 +759,9 @@
                 year: $('#year').val(),
                 month: $('#month').val(),
                 is_complete: $('#radioIncomplete').val(),
+                documentation: $('input[name="documentation[]"]:checked').map(function() {
+                    return $(this).val();
+                }).get(),
             };
 
             $.ajax({

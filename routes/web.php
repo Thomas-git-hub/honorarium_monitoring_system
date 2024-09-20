@@ -80,6 +80,7 @@ Route::middleware(['auth_check'])->group(function () {
         Route::post('/form/submit', [AdminController::class, 'submitForm'])->name('form.submit');
         Route::post('/submit/onHold', [AdminController::class, 'submitOnHold'])->name('submit.onHold');
         Route::post('insertFormData', [SendEmailController::class, 'reply_send'])->name('insertFormData');
+        Route::post('/admin_new_entries/destroy', [AdminController::class, 'destroy'])->name('admin_new_entries.destroy');
 
         Route::get('/admin_on_queue', [AdminController::class, 'admin_on_queue'])->name('admin_on_queue');
         Route::get('/open_on_queue', [QueueController::class, 'OpenOnQueue'])->name('open_on_queue');

@@ -33,7 +33,7 @@ class SendEmailController extends Controller
             return response()->json(['success' => false,'errors' => $validator->errors()], 422);
         }
 
-        $ibu_dbcon = DB::connection('ors_pgsql');
+        $ibu_dbcon = DB::connection('ibu_test');
 
         $employee = $ibu_dbcon->table('employee_user')
                 ->where('id', $request->user_id)
@@ -51,10 +51,13 @@ class SendEmailController extends Controller
                 'subject' => $request->subject,
                 'message' => $request->message,
                 'sender_email' => Auth::user()->email, // Add sender email
+                'documents' => $request->input('documentation', []),
             ];
 
             Mail::to($employee->email)->send(new SendEmail($emailData));
         }
+
+        $documentationJson = json_encode($request->input('documentation', []));
 
         // Process form data
         $email = new Emailing();
@@ -63,11 +66,13 @@ class SendEmailController extends Controller
         $email->message = $request->message;
         $email->status = 'Unread';
         $email->created_by = Auth::user()->id;
+        $email->documentation = $documentationJson;
         $email->save();
 
         // Check for duplicate transaction
         $office = Office::where('name', 'Bugs Administration')->first();
-        $existingTransaction = Transaction::where('date_of_trans', $request->date_of_trans)
+        $existingTransaction = Transaction::whereNull('deleted_at')
+            ->where('date_of_trans', $request->date_of_trans)
             ->where('employee_id', $request->employee_id)
             ->where('office', $office->id)
             ->where('honorarium_id', $request->honorarium_id)
@@ -101,7 +106,7 @@ class SendEmailController extends Controller
             $logs->save();
         }
 
-        if ($email && $transaction) {
+        if ($email) {
             $email->transaction_id = $transaction->id;
             $email->save();
         }
@@ -121,7 +126,7 @@ class SendEmailController extends Controller
                   ->orWhere('deleted_by', '!=', Auth::user()->employee_id); // Show only emails not deleted by the user
         })
         ->get();
-        $ibu_dbcon = DB::connection('ors_pgsql');
+        $ibu_dbcon = DB::connection('ibu_test');
 
         $months = [
             1 => 'January',

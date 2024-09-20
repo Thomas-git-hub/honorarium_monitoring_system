@@ -68,25 +68,25 @@
                     <small class="text-danger">Check the missing document that needs for compliance</small>
                 </div>
                 <div class="form-check mt-2">
-                    <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
+                    <input class="form-check-input" type="checkbox" name="documentation[]" value="Daily Time Record (DTR)" id="defaultCheck1" />
                     <label class="form-check-label" for="defaultCheck1">
                       Daily Time Record (DTR)
                     </label>
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
+                    <input class="form-check-input" type="checkbox" name="documentation[]" value="Teaching Appointment" id="defaultCheck1" />
                     <label class="form-check-label" for="defaultCheck1">
                       Teaching Appointment
                     </label>
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
+                    <input class="form-check-input" type="checkbox" name="documentation[]" value="Manual Entry" id="defaultCheck1" />
                     <label class="form-check-label" for="defaultCheck1">
                       Manual Entry
                     </label>
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
+                    <input class="form-check-input" type="checkbox" name="documentation[]" value="Others" id="defaultCheck1" />
                     <label class="form-check-label" for="defaultCheck1">
                       Others
                     </label>

@@ -54,7 +54,7 @@ class UserController extends Controller
             return response()->json(['success' => false, 'message' => 'User already has an account'], 200);
         }
 
-        $user = DB::connection('ors_pgsql')->table('employee_user')->where('email', $request->email)->first();
+        $user = DB::connection('ibu_test')->table('employee_user')->where('email', $request->email)->first();
 
         if ($user) {
             $mysqlUserId = DB::connection('mysql')->table('users')->insertGetId([
@@ -64,7 +64,7 @@ class UserController extends Controller
 
             ]);
 
-            $employeeDetails = DB::connection('ors_pgsql')->table('employee')
+            $employeeDetails = DB::connection('ibu_test')->table('employee')
             ->where('id', $user->id)
             ->first();
 
@@ -140,12 +140,16 @@ class UserController extends Controller
     public function list(Request $request)
     {
 
-        $employeeIds = DB::connection('ors_pgsql')->table('employee_user')->pluck('id');
+        $ibu_dbcon = DB::connection('ibu_test');
+
+        $employeeIds =  $ibu_dbcon->table('employee')->pluck('id');
 
         // Modify the query to only include users whose id matches an employee_id from the employee_user table
-        $query = User::with('usertype')
-        ->whereNull('deleted_at')
-        ->whereIn('employee_id', $employeeIds);
+        // $query = User::with('usertype')
+        // ->whereNull('deleted_at')
+        // ->whereIn('employee_id', $employeeIds);
+
+        $query = Transaction::whereIn('employee_id', $employeeIds);
 
         $users = $query->get();
 
@@ -153,15 +157,80 @@ class UserController extends Controller
             ->addColumn('id', function($user) {
                 return $user->id;
             })
-            ->addColumn('faculty', function($user) {
-                return ucfirst($user->first_name) . ' ' . ucfirst($user->last_name);
+            ->addColumn('ee_number', function($user) use($ibu_dbcon){
+                $employee = $ibu_dbcon->table('employee_user')
+                ->where('id', $user->employee_id)
+                ->first();
+
+                $employeedetails = $ibu_dbcon->table('employee')
+                ->where('id', $user->employee_id)
+                ->first();
+
+                return  $employeedetails->employee_no;
             })
-            ->editColumn('created_at', function($user) {
+            ->addColumn('position', function($user) use($ibu_dbcon){
+                $employee = $ibu_dbcon->table('employee_user')
+                ->where('id', $user->employee_id)
+                ->first();
+
+                $employeedetails = $ibu_dbcon->table('employee')
+                ->where('id', $user->employee_id)
+                ->first();
+
+                return  $employeedetails->employee_academic_rank;
+            })
+            ->addColumn('faculty', function($user) use($ibu_dbcon){
+                $employee = $ibu_dbcon->table('employee_user')
+                ->where('id', $user->employee_id)
+                ->first();
+
+                $employeedetails = $ibu_dbcon->table('employee')
+                ->where('id', $user->employee_id)
+                ->first();
+
+                return  ucfirst($employeedetails->employee_fname) . ' ' . ucfirst($employeedetails->employee_lname);
+            })
+            ->addColumn('ee_number', function($user) use($ibu_dbcon){
+                $employee = $ibu_dbcon->table('employee_user')
+                ->where('id', $user->employee_id)
+                ->first();
+
+                $employeedetails = $ibu_dbcon->table('employee')
+                ->where('id', $user->employee_id)
+                ->first();
+
+                return  $employeedetails->employee_no;
+            })
+            ->addColumn('position', function($user) use($ibu_dbcon){
+                $employee = $ibu_dbcon->table('employee_user')
+                ->where('id', $user->employee_id)
+                ->first();
+
+                $employeedetails = $ibu_dbcon->table('employee')
+                ->where('id', $user->employee_id)
+                ->first();
+
+                return  $employeedetails->employee_academic_rank;
+            })
+            ->addColumn('faculty', function($user) use($ibu_dbcon){
+                $employee = $ibu_dbcon->table('employee_user')
+                ->where('id', $user->employee_id)
+                ->first();
+
+                $employeedetails = $ibu_dbcon->table('employee')
+                ->where('id', $user->employee_id)
+                ->first();
+
+                return  ucfirst($employeedetails->employee_fname) . ' ' . ucfirst($employeedetails->employee_lname);
+            })
+
+            ->editColumn('created_at', function($user) use($ibu_dbcon) {
                 return $user->created_at? $user->created_at->format('m/d/Y') : now();
             })
+
             ->editColumn('college', function($user) {
                 if($user->college_id){
-                    $collegeDetails = DB::connection('ors_pgsql')->table('college')
+                    $collegeDetails = DB::connection('ibu_test')->table('college')
                     ->where('id', $user->college_id)
                     ->first();
                     return $collegeDetails->college_shortname;
@@ -179,13 +248,14 @@ class UserController extends Controller
     }
 
 
+
     public function getUser(Request $request) {
         $searchTerm = $request->input('search'); // Capture search term
 
         $searchTerm = ucfirst($searchTerm);
 
         // Join the 'employee' and 'employee_user' tables to get the email
-        $faculties = DB::connection('ors_pgsql')
+        $faculties = DB::connection('ibu_test')
                         ->table('employee')
                         ->where('active', 'T')
                         ->where(function($query) use ($searchTerm) {
@@ -206,11 +276,11 @@ class UserController extends Controller
         $query = Transaction::with(['honorarium', 'createdBy'])
         ->where('employee_id', $request->user_id)
         ->where('office', $bugs_office->id)
-        ->where('status', 'Processing')
-        ->orWhere('status', 'On-hold');
+        ->whereIn('status', ['Processing', 'On Queue']);
+        // ->orWhere('status', 'On-hold');
 
         $transactions = $query->get();
-        $ibu_dbcon = DB::connection('ors_pgsql');
+        $ibu_dbcon = DB::connection('ibu_test');
 
         $months = [
             1 => 'January',
@@ -277,11 +347,11 @@ class UserController extends Controller
         $query = Transaction::with(['honorarium', 'createdBy'])
         ->where('employee_id', $request->user_id)
         ->where('office', $bugt_office->id)
-        ->where('status', 'Processing')
-        ->orWhere('status', 'On-hold');
+        ->whereIn('status', ['Processing', 'On Queue']);
+        // ->orWhere('status', 'On-hold');
 
         $transactions = $query->get();
-        $ibu_dbcon = DB::connection('ors_pgsql');
+        $ibu_dbcon = DB::connection('ibu_test');
 
         $months = [
             1 => 'January',
@@ -348,11 +418,11 @@ class UserController extends Controller
         $query = Transaction::with(['honorarium', 'createdBy'])
         ->where('employee_id', $request->user_id)
         ->where('office', $dean_office->id)
-        ->where('status', 'Processing')
-        ->orWhere('status', 'On-hold');
+        ->whereIn('status', ['Processing', 'On Queue']);
+        // ->orWhere('status', 'On-hold');
 
         $transactions = $query->get();
-        $ibu_dbcon = DB::connection('ors_pgsql');
+        $ibu_dbcon = DB::connection('ibu_test');
 
         $months = [
             1 => 'January',
@@ -419,11 +489,11 @@ class UserController extends Controller
         $query = Transaction::with(['honorarium', 'createdBy'])
         ->where('employee_id', $request->user_id)
         ->where('office', $Accounting_office->id)
-        ->where('status', 'Processing')
-        ->orWhere('status', 'On-hold');
+        ->whereIn('status', ['Processing', 'On Queue']);
+        // ->orWhere('status', 'On-hold');
 
         $transactions = $query->get();
-        $ibu_dbcon = DB::connection('ors_pgsql');
+        $ibu_dbcon = DB::connection('ibu_test');
 
         $months = [
             1 => 'January',
@@ -490,11 +560,11 @@ class UserController extends Controller
         $query = Transaction::with(['honorarium', 'createdBy'])
         ->where('employee_id', $request->user_id)
         ->where('office', $Cashiers->id)
-        ->where('status', 'Processing')
-        ->orWhere('status', 'On-hold');
+        ->whereIn('status', ['Processing', 'On Queue']);
+        // ->orWhere('status', 'On-hold');
 
         $transactions = $query->get();
-        $ibu_dbcon = DB::connection('ors_pgsql');
+        $ibu_dbcon = DB::connection('ibu_test');
 
         $months = [
             1 => 'January',
@@ -564,7 +634,7 @@ class UserController extends Controller
         ->where('status', 'Completed');
 
         $transactions = $query->get();
-        $ibu_dbcon = DB::connection('ors_pgsql');
+        $ibu_dbcon = DB::connection('ibu_test');
 
         $months = [
             1 => 'January',
@@ -622,7 +692,4 @@ class UserController extends Controller
 
             ->make(true);
     }
-
-
-
 }

@@ -78,7 +78,6 @@
                 { data: 'ee_number', name: 'ee_number', title: 'ID Number' },
                 { data: 'position', name: 'position', title: 'academic_rank' },
                 { data: 'college', name: 'college', title: 'College' },
-                { data: 'status', name: 'status', title: 'Account Status' },
                 { data: 'created_at', name: 'created_at', title: 'Created At' },
             ],
             createdRow: function(row, data) {
@@ -97,7 +96,7 @@
             }
 
             // Redirect to another page with full details (example)
-            window.location.href = `/admin_view_faculty?id=${rowData.id}`;
+            window.location.href = `/admin_view_faculty?id=${rowData.employee_id}`;
         });
     });
 </script>

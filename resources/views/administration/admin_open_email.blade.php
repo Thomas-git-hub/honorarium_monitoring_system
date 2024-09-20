@@ -15,6 +15,17 @@
                     </div>
                     <div class="card-body">
                         <p class="border-bottom">{{$data->message}}</p>
+
+                        @if(count($docuJson) > 0)
+
+                        <p><strong>Missing Documents:</strong></p>
+                        <ul>
+                            @foreach($docuJson as $document)
+                                <li>{{ $document }}</li>
+                            @endforeach
+                        </ul>
+
+                        @endif
                         <!-- End Offcanvas -->
                         <button class="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasEnd" aria-controls="offcanvasEnd"><i class='bx bx-reply' >&nbsp;</i>Reply</button>
                     </div>
