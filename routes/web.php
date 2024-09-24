@@ -18,6 +18,7 @@ use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
 use App\Http\Controllers\UserManagementController;
 use App\Http\Controllers\CashierQueueController;
 use App\Http\Controllers\FacultyDashboardController;
+use App\Http\Controllers\FacultyTrackingController;
 
 //START NO AUTHENTICATED ACCESS
 Route::middleware(['guest'])->group(function () {
@@ -124,7 +125,7 @@ Route::middleware(['auth_check'])->group(function () {
         Route::get('/faculty/honorarium_released', [UserController::class, 'honorarium_released'])->name('faculty.honorarium_released');
 
         Route::get('/faculty_dashboard', [FacultyDashboardController::class, 'faculty_dashboard'])->name('faculty_dashboard');
-        Route::get('/faculty_tracking', [FacultyDashboardController::class, 'faculty_tracking'])->name('faculty_tracking');
+        Route::get('/faculty_tracking', [FacultyTrackingController::class, 'faculty_tracking'])->name('faculty_tracking');
     // });
 
     //END SUPERADMIN ACCESS
