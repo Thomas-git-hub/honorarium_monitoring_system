@@ -170,7 +170,7 @@ class OnHoldController extends Controller
             $office = Office::where('name', 'Faculty')->first();
         }
 
-        $transaction = Transaction::where('status', 'On-hold')
+        $transactionQuery = Transaction::where('status', 'On-hold')
             // ->where('office', Auth::user()->office_id)
             ->where('id', $request->id)
             ->where('created_by', Auth::user()->id)
@@ -200,7 +200,11 @@ class OnHoldController extends Controller
             $emailData = [
                 'transaction_id' => $transaction->id,
                 'employee_fname' => $employeedetails->employee_fname,
-                'status' => $transaction->status,
+                'employee_lname' => $employeedetails->employee_lname,
+                'status' => 'On Hold',
+                'created_at' => now()->format('F j, Y'),
+                'honorarium' => $transaction->honorarium->name,
+                'office' => $office->name,
             ];
 
             Mail::to($employee->email)->send(new TransactionStatusChanged($emailData));

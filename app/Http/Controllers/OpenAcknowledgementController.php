@@ -20,7 +20,7 @@ class OpenAcknowledgementController extends Controller
         $batch_id = $request->input('id');
 
         $acknowledgements = Acknowledgement::with(['user', 'office', 'transaction'])
-        ->select('id','batch_id', 'trans_id as transaction_id', 'office_id', 'created_at', 'user_id')
+        ->select('id','batch_id', 'office_id', 'created_at', 'user_id')
         ->where('batch_id', $batch_id)
 
         ->first();
@@ -171,7 +171,6 @@ class OpenAcknowledgementController extends Controller
         $acknowledgement = Acknowledgement::where('batch_id', $request->batchId)->first();
 
         $ack = new Acknowledgement();
-        $ack->trans_id = $transaction->id;
         $ack->office_id = Auth::user()->office_id;
         $ack->user_id = Auth::user()->id;
         $ack->batch_id = $acknowledgement->batch_id;

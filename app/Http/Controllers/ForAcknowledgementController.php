@@ -48,26 +48,26 @@ class ForAcknowledgementController extends Controller
 
         if (Auth::user()->usertype->name === 'Superadmin') {
             $acknowledgements = Acknowledgement::with(['user', 'office', 'transaction'])
-                ->select('batch_id', 'trans_id as transaction_id', 'office_id', 'created_at', 'user_id')
+                ->select('batch_id', 'office_id', 'created_at', 'user_id')
                 ->get();
         } elseif (Auth::user()->usertype->name === 'Budget Office') {
             $From_office = Office::where('name', 'BUGS Administration')->first();
             $acknowledgements = Acknowledgement::with(['user', 'office', 'transaction'])
-                ->select('batch_id', 'trans_id as transaction_id', 'office_id', 'created_at', 'user_id')
+                ->select('batch_id', 'office_id', 'created_at', 'user_id')
                 ->where('office_id', $From_office->id)
                 ->groupBy('batch_id')
                 ->get();
         } elseif (Auth::user()->usertype->name === 'Dean') {
             $From_office = Office::where('name', 'Budget Office')->first();
             $acknowledgements = Acknowledgement::with(['user', 'office', 'transaction'])
-                ->select('batch_id', 'trans_id as transaction_id', 'office_id', 'created_at', 'user_id')
+                ->select('batch_id', 'office_id', 'created_at', 'user_id')
                 ->where('office_id', $From_office->id)
                 ->groupBy('batch_id')
                 ->get();
         } elseif (Auth::user()->usertype->name === 'Accounting' || Auth::user()->usertype->name === 'Cashiers') {
             $From_office = Office::where('name', 'Dean')->first();
             $acknowledgements = Acknowledgement::with(['user', 'office', 'transaction'])
-                ->select('batch_id', 'trans_id as transaction_id', 'office_id', 'created_at', 'user_id')
+                ->select('batch_id', 'office_id', 'created_at', 'user_id')
                 ->where('office_id', $From_office->id)
                 ->groupBy('batch_id')
                 ->get();
@@ -75,7 +75,7 @@ class ForAcknowledgementController extends Controller
             $From_office_acc = Office::where('name', 'Accounting')->first();
             $From_office_BO = Office::where('name', 'Budget Office')->first();
             $acknowledgements = Acknowledgement::with(['user', 'office', 'transaction'])
-                ->select('batch_id', 'trans_id as transaction_id', 'office_id', 'created_at', 'user_id')
+                ->select('batch_id', 'office_id', 'created_at', 'user_id')
                 ->where('office_id', $From_office_acc->id)
                 ->orWhere('office_id', $From_office_BO->id)
                 ->groupBy('batch_id')

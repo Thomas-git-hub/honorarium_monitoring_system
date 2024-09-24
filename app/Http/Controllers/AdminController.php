@@ -449,7 +449,6 @@ class AdminController extends Controller
         }
 
         $ack = new Acknowledgement();
-        $ack->trans_id = $transaction->id;
         $ack->batch_id= $newBatchId;
         $ack->office_id = Auth::user()->office_id;
         $ack->user_id = Auth::user()->id;

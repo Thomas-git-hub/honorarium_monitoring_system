@@ -75,10 +75,13 @@
             Budget Office &nbsp; <b style="font-size: 24px;">(05)</b>
         </a>
         <a href="javascript:void(0)" class="btn btn-label-success btn-lg p-4 mb-2 w-100 shadow-sm office-btn">
-            Dean Office &nbsp; <b style="font-size: 24px;">(05)</b>
+            Deans Office &nbsp; <b style="font-size: 24px;">(05)</b>
         </a>
         <a href="javascript:void(0)" class="btn btn-label-danger btn-lg p-4 mb-2 w-100 shadow-sm office-btn">
             Accounting &nbsp; <b style="font-size: 24px;">(05)</b>
+        </a>
+        <a href="javascript:void(0)" class="btn btn-label-warning btn-lg p-4 mb-2 w-100 shadow-sm office-btn">
+            Deans Office &nbsp; <b style="font-size: 24px;">(05)</b>
         </a>
         <a href="javascript:void(0)" class="btn btn-label-info btn-lg p-4 mb-2 w-100 shadow-sm office-btn">
             Cashier &nbsp; <b style="font-size: 24px;">(05)</b>

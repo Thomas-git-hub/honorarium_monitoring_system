@@ -14,8 +14,6 @@ return new class extends Migration
         Schema::create('acknowledgement', function (Blueprint $table) {
             $table->id();
             $table->string('batch_id')->nullable();
-            $table->unsignedBigInteger('trans_id')->nullable();
-            $table->foreign('trans_id')->references('id')->on('transaction');
             $table->unsignedBigInteger('office_id')->nullable();
             $table->foreign('office_id')->references('id')->on('office');
             $table->unsignedBigInteger('user_id')->nullable();
