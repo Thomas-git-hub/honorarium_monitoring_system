@@ -100,7 +100,7 @@
         <li class="menu-item {{ request()->is('faculty_tracking') ? 'active' : '' }}">
           <a href="/faculty_tracking" class="menu-link">
             <i class='menu-icon tf-icons bx bx-tag-alt'></i>
-            <div class="text-truncate" data-i18n="Page 2">On Hold</div>
+            <div class="text-truncate" data-i18n="Page 2">Track & Monitor</div>
           </a>
         </li>
         @endif

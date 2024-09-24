@@ -42,7 +42,7 @@
             <div class="card">
                 <div class="card custom-card">
                     <div class="card-body">
-                        <p class="text-secondary" id = "office-title">Title of Clicked Office Here</p>
+                        <p class="text-secondary" id = "office-title">Office</p>
                         {{-- <div class="row d-flex flex-column justify-content-start">
                             <h4 class="card-title">BUGS Administration</h4>
                         </div> --}}
@@ -69,7 +69,7 @@
 <script>
 
     $(function () {
-            var user_id = {!! json_encode($user->id) !!}; // Retrieve user ID
+        var user_id = {!! json_encode($user->id) !!}; // Retrieve user ID
             console.log(user_id);
             var table = $('#transactionStatusTable').DataTable({
                 processing: true,
@@ -90,9 +90,9 @@
                 },
                 columns: [
                     { data: 'id', name: 'id', title: 'ID', visible: false },
-                    { data: 'batch_id', name: 'batch_id', title: 'Trans Batch ID No.' },
-                    { data: 'date_received', name: 'date_received', title: 'Date Received' },
-                    { data: 'transaction_date', name: 'transaction_date', title: 'transaction_date' },
+                    { data: 'batch_id', name: 'batch_id', title: 'TN' },
+                    { data: 'date_received', name: 'date_received', title: 'Recieved last' },
+                    { data: 'transaction_date', name: 'transaction_date', title: 'transaction date' },
                     {
                         data: 'honorarium',
                         name: 'honorarium',

@@ -46,12 +46,6 @@
         <div class="card custom-card mt-1">
             <div class="card-body">
                 <div class="table-responsive">
-                    <div class="d-flex align-items-center" style="margin-left: 1.8%;">
-                        <div class="form-check form-check-primary check-buttons d-flex align-items-center">
-                            <label><input class="form-check-input" type="checkbox" id="toggleCheck">&nbsp;&nbsp;</label>
-                            <label class="text-danger" id="deleteSelected">Move to Trash</label>
-                        </div>
-                    </div>
                     <table id="complianceTable" class="table table-borderless table-hover" style="width:100%">
                         <tbody>
                         </tbody>
