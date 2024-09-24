@@ -179,8 +179,8 @@
                       <small class="text-dark" id="date"><?php echo date('F j, Y'); ?></small>
                     </div>
                 </div>
-                <div class="border-top">
-                    <small class="text-danger">Proceeding with this transaction indicates that every individual has submitted all necessary requirements for their honorarium.</small>
+                <div class="">
+                    {{-- <small class="text-danger">Proceeding with this transaction indicates that every individual has submitted all necessary requirements for their honorarium.</small> --}}
                     <button class="btn btn-primary w-100" id="proceedTransactionButton">Proceed to next office</button>
                 </div>
 

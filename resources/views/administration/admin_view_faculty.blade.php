@@ -34,7 +34,7 @@
                 Cashier
             </a>
             <a href="javascript:void(0)" class="btn btn-label-dark btn-lg p-4 mb-2 w-100 shadow-sm office-btn" data-route="{{ route('faculty.honorarium_released') }}">
-                Honorarium Released
+                Honorarium for Releasing
             </a>
         </div>
 

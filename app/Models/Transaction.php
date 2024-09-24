@@ -29,6 +29,6 @@ class Transaction extends Model
 
     public function office()
     {
-        return $this->belongsTo(Honorarium::class, 'office', 'id');
+        return $this->belongsTo(Office::class);
     }
 }

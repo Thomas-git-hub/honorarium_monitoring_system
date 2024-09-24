@@ -58,7 +58,7 @@
             <div class="card custom-card">
                 <div class="card-body">
                     <div class="row d-flex flex-column justify-content-start">
-                        <h2 class="card-title">Recent Emails</h2>
+                        <h2 class="card-title">Emails</h2>
                     </div>
                     <div class="table-responsive">
                         <div class="d-flex align-items-center" style="margin-left: 1.8%;">

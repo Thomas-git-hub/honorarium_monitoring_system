@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('batch_id')->nullable();
             $table->unsignedBigInteger('honorarium_id');
-            $table->string('office');
+            $table->unsignedBigInteger('office');
             $table->unsignedBigInteger('employee_id');
             $table->string('month');
             $table->string('sem');
@@ -28,6 +28,7 @@ return new class extends Migration
             $table->softDeletes();
 
             $table->foreign('honorarium_id')->references('id')->on('honorarium');
+            $table->foreign('office')->references('id')->on('office');
         });
     }
 

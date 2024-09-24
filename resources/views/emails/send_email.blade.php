@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+{{-- <!DOCTYPE html>
 <html>
 <head>
     <title>{{ $emailData['subject'] }}</title>
@@ -17,7 +17,7 @@
         </ul>
     </div>
 </body>
-</html>
+</html> --}}
 
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional //EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -263,7 +263,7 @@
                                 <p style="line-height: 140%;"><span style="color: #2dc26b; line-height: 19.6px;"><span style="color: #0000ee; line-height: 19.6px;"><strong>{{ $emailData['message'] }}<br></strong></span></span>
                                 </p>
                                 <p style="line-height: 140%;">&nbsp;</p>
-                                <p style="line-height: 140%;"><span style="color: #000000; line-height: 19.6px;">Submit the following to BUGS Administration Office:</span></p>
+                                <p style="line-height: 140%;"><span style="color: #000000; line-height: 19.6px;">Submit the following requirement/s to BUGS Administration Office:</span></p>
                                 <ul>
                                     @foreach($emailData['documents'] as $document)
                                         <li class="" style="color: #0000ee; line-height: 19.6px;">{{ $document }}</li>

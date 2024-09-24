@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\SendTransactionEmailsJob;
 use App\Mail\TransactionStatusChanged;
 use App\Models\Acknowledgement;
 use App\Models\Activity_logs;
@@ -11,6 +12,7 @@ use App\Models\Transaction;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
@@ -22,7 +24,7 @@ class QueueController extends Controller
 
     public function proceedToBudgetOffice(Request $request)
     {
-        $ibu_dbcon = DB::connection('ibu_test');
+        $ibu_dbcon = DB::connection('ors_pgsql');
 
         // Fetch all transactions with status 'Processing'
         $transactions = Transaction::with(['honorarium', 'office'])
@@ -36,6 +38,50 @@ class QueueController extends Controller
         if ($transactions->isEmpty()) {
             return response()->json(['success' => false, 'message' => 'No transactions found with status Processing']);
         }
+
+        $usertype = Auth::user()->usertype->name;
+
+        if($usertype === 'Admin' || $usertype === 'Superadmin'){
+            $office = Office::where('name', 'Budget Office')->first();
+        }
+        elseif($usertype === 'Budget Office' || $usertype === 'Accounting' ){
+            $office = Office::where('name', 'Dean')->first();
+        }
+        elseif($usertype === 'Dean' ){
+            $office = Office::where('name', 'Accounting')->first();
+        }elseif($usertype === 'Cashiers'){
+            $office = Office::where('name', 'Faculty')->first();
+        }else{
+            return response()->json(['success' => false, 'message' => 'No office Found']);
+        }
+
+
+        // $ack = new Acknowledgement();
+        // $ack->trans_id = $transaction->id;
+        // $ack->batch_id= $transaction->batch_id;
+        // $ack->office_id = Auth::user()->office_id;
+        // $ack->user_id = Auth::user()->id;
+        // $ack->save();
+
+        // Update the status to 'On Queue'
+        $transaction_update = Transaction::where('status', 'Processing')
+        ->where('office', Auth::user()->office_id)
+        ->where('created_by', Auth::user()->id)
+        ->update([
+            'status' => 'On Queue',
+            'office' => $office->id,
+            'created_by' => Auth::user()->id,
+        ]);
+
+        $transaction_update = Transaction::where('status', 'On-hold')
+        ->where('office', Auth::user()->office_id)
+        ->where('created_by', Auth::user()->id)
+        ->update([
+            'office' => $office->id,
+            'created_by' => Auth::user()->id,
+        ]);
+
+
         foreach ($transactions as $transaction) {
             if ($transaction->status === 'Processing'){
                 $logs = new Activity_logs();
@@ -56,11 +102,10 @@ class QueueController extends Controller
                         'transaction_id' => $transaction->id,
                         'employee_fname' => $employeedetails->employee_fname,
                         'employee_lname' => $employeedetails->employee_lname,
-                        'status' => $transaction->status,
-                        'date_of_transaction' => $transaction->date_of_trans,
+                        'status' => 'Pending',
                         'created_at' => now()->format('F j, Y'),
-                        // 'honorarium' => $transaction->honorarium->name,
-                        // 'office' => $transaction->office->name,
+                        'honorarium' => $transaction->honorarium->name,
+                        'office' => $office->name,
                     ];
 
                     Mail::to($employee->email)->send(new TransactionStatusChanged($emailData));
@@ -81,52 +126,259 @@ class QueueController extends Controller
 
         }
 
-        $usertype = Auth::user()->usertype->name;
-
-        if($usertype === 'Admin' || $usertype === 'Superadmin'){
-            $office = Office::where('name', 'Budget Office')->first();
-        }
-        elseif($usertype === 'Budget Office' || $usertype === 'Accounting' ){
-            $office = Office::where('name', 'Dean')->first();
-        }
-        elseif($usertype === 'Dean' ){
-            $office = Office::where('name', 'Accounting')->first();
-        }elseif($usertype === 'Cashiers'){
-            $office = Office::where('name', 'Faculty')->first();
-        }else{
-            return response()->json(['success' => false, 'message' => 'No office Found']);
-        }
-
-
-            // $ack = new Acknowledgement();
-            // $ack->trans_id = $transaction->id;
-            // $ack->batch_id= $transaction->batch_id;
-            // $ack->office_id = Auth::user()->office_id;
-            // $ack->user_id = Auth::user()->id;
-            // $ack->save();
-
-            // Update the status to 'On Queue'
-            Transaction::where('status', 'Processing')
-            ->where('office', Auth::user()->office_id)
-            ->where('created_by', Auth::user()->id)
-            ->update([
-                'status' => 'On Queue',
-                'office' => $office->id,
-                'created_by' => Auth::user()->id,
-            ]);
-
-            Transaction::where('status', 'On-hold')
-            ->where('office', Auth::user()->office_id)
-            ->where('created_by', Auth::user()->id)
-            ->update([
-                'office' => $office->id,
-                'created_by' => Auth::user()->id,
-            ]);
-
-            $batchId = $transaction->batch_id;
+        $batchId = $transaction->batch_id;
 
         return response()->json(['success' => true, 'batch_id'=> $batchId, 'message' => 'Emails sent and transactions updated.']);
     }
+
+
+    // public function proceedToBudgetOffice(Request $request)
+    // {
+    //     $ibu_dbcon = DB::connection('ors_pgsql');
+
+    //     // Fetch all transactions with status 'Processing'
+    //     $transactions = Transaction::with(['honorarium', 'office'])
+    //         ->where('status', 'Processing')
+    //         ->orwhere('status', 'On-hold')
+    //         ->where('batch_id', '!=', NULL)
+    //         ->where('office', Auth::user()->office_id)
+    //         ->where('created_by', Auth::user()->id)
+    //         ->get();
+
+    //     if ($transactions->isEmpty()) {
+    //         return response()->json(['success' => false, 'message' => 'No transactions found with status Processing']);
+    //     }
+
+    //     $usertype = Auth::user()->usertype->name;
+
+    //     if ($usertype === 'Admin' || $usertype === 'Superadmin') {
+    //         $office = Office::where('name', 'Budget Office')->first();
+    //     } elseif ($usertype === 'Budget Office' || $usertype === 'Accounting') {
+    //         $office = Office::where('name', 'Dean')->first();
+    //     } elseif ($usertype === 'Dean') {
+    //         $office = Office::where('name', 'Accounting')->first();
+    //     } elseif ($usertype === 'Cashiers') {
+    //         $office = Office::where('name', 'Faculty')->first();
+    //     } else {
+    //         return response()->json(['success' => false, 'message' => 'No office Found']);
+    //     }
+
+    //     // Update the status to 'On Queue'
+    //     $transaction_update = Transaction::where('status', 'Processing')
+    //         ->where('office', Auth::user()->office_id)
+    //         ->where('created_by', Auth::user()->id)
+    //         ->update([
+    //             'status' => 'On Queue',
+    //             'office' => $office->id,
+    //             'created_by' => Auth::user()->id,
+    //         ]);
+
+    //     $transaction_update = Transaction::where('status', 'On-hold')
+    //         ->where('office', Auth::user()->office_id)
+    //         ->where('created_by', Auth::user()->id)
+    //         ->update([
+    //             'office' => $office->id,
+    //             'created_by' => Auth::user()->id,
+    //         ]);
+
+    //     foreach ($transactions as $transaction) {
+    //         if ($transaction->status === 'Processing') {
+    //             $logs = new Activity_logs();
+    //             $logs->trans_id = $transaction->id;
+    //             $logs->office_id = Auth::user()->office_id;
+    //             $logs->user_id = Auth::user()->id;
+    //             $logs->save();
+    //         }
+    //     }
+
+    //     // Trigger email sending via the command
+    //     $transactionIds = $transactions->pluck('id')->toArray();
+    //     Artisan::queue('app:send-transaction-emails', ['transaction_ids' => $transactionIds]);
+
+    //     $batchId = $transactions->first()->batch_id;
+
+    //     return response()->json(['success' => true, 'batch_id' => $batchId, 'message' => 'Transactions updated and emails sent.']);
+    // }
+
+    // public function proceedToBudgetOffice(Request $request)
+    // {
+    //     $ibu_dbcon = DB::connection('ors_pgsql');
+
+    //     // Fetch all transactions with status 'Processing'
+    //     $transactions = Transaction::with(['honorarium', 'office'])
+    //         ->where('status', 'Processing')
+    //         ->orwhere('status', 'On-hold')
+    //         ->where('batch_id', '!=', NULL)
+    //         ->where('office', Auth::user()->office_id)
+    //         ->where('created_by', Auth::user()->id)
+    //         ->get();
+
+    //     if ($transactions->isEmpty()) {
+    //         return response()->json(['success' => false, 'message' => 'No transactions found with status Processing']);
+    //     }
+
+    //     $usertype = Auth::user()->usertype->name;
+
+    //     if($usertype === 'Admin' || $usertype === 'Superadmin'){
+    //         $office = Office::where('name', 'Budget Office')->first();
+    //     }
+    //     elseif($usertype === 'Budget Office' || $usertype === 'Accounting' ){
+    //         $office = Office::where('name', 'Dean')->first();
+    //     }
+    //     elseif($usertype === 'Dean' ){
+    //         $office = Office::where('name', 'Accounting')->first();
+    //     }elseif($usertype === 'Cashiers'){
+    //         $office = Office::where('name', 'Faculty')->first();
+    //     }else{
+    //         return response()->json(['success' => false, 'message' => 'No office Found']);
+    //     }
+
+    //     // Update the status to 'On Queue'
+    //     $transaction_update = Transaction::where('status', 'Processing')
+    //         ->where('office', Auth::user()->office_id)
+    //         ->where('created_by', Auth::user()->id)
+    //         ->update([
+    //             'status' => 'On Queue',
+    //             'office' => $office->id,
+    //             'created_by' => Auth::user()->id,
+    //         ]);
+
+    //     $transaction_update = Transaction::where('status', 'On-hold')
+    //         ->where('office', Auth::user()->office_id)
+    //         ->where('created_by', Auth::user()->id)
+    //         ->update([
+    //             'office' => $office->id,
+    //             'created_by' => Auth::user()->id,
+    //         ]);
+
+    //     foreach ($transactions as $transaction) {
+    //         if ($transaction->status === 'Processing'){
+    //             $logs = new Activity_logs();
+    //             $logs->trans_id = $transaction->id;
+    //             $logs->office_id = Auth::user()->office_id;
+    //             $logs->user_id = Auth::user()->id;
+    //             $logs->save();
+    //         }
+    //     }
+
+    //     $batchId = $transaction->batch_id;
+
+    //     return response()->json(['success' => true, 'batch_id'=> $batchId, 'message' => 'Emails sent and transactions updated.']);
+    // }
+
+    // public function proceedToBudgetOffice(Request $request)
+    // {
+    //     $ibu_dbcon = DB::connection('ors_pgsql');
+
+    //     // Fetch all transactions with status 'Processing'
+    //     $transactions = Transaction::with(['honorarium', 'office'])
+    //         ->where('status', 'Processing')
+    //         ->orwhere('status', 'On-hold')
+    //         ->where('batch_id', '!=', NULL)
+    //         ->where('office', Auth::user()->office_id)
+    //         ->where('created_by', Auth::user()->id)
+    //         ->get();
+
+    //     if ($transactions->isEmpty()) {
+    //         return response()->json(['success' => false, 'message' => 'No transactions found with status Processing']);
+    //     }
+
+    //     $usertype = Auth::user()->usertype->name;
+
+    //     if($usertype === 'Admin' || $usertype === 'Superadmin'){
+    //         $office = Office::where('name', 'Budget Office')->first();
+    //     }
+    //     elseif($usertype === 'Budget Office' || $usertype === 'Accounting' ){
+    //         $office = Office::where('name', 'Dean')->first();
+    //     }
+    //     elseif($usertype === 'Dean' ){
+    //         $office = Office::where('name', 'Accounting')->first();
+    //     }elseif($usertype === 'Cashiers'){
+    //         $office = Office::where('name', 'Faculty')->first();
+    //     }else{
+    //         return response()->json(['success' => false, 'message' => 'No office Found']);
+    //     }
+
+    //     // Update the status to 'On Queue'
+    //     $transaction_update = Transaction::where('status', 'Processing')
+    //         ->where('office', Auth::user()->office_id)
+    //         ->where('created_by', Auth::user()->id)
+    //         ->update([
+    //             'status' => 'On Queue',
+    //             'office' => $office->id,
+    //             'created_by' => Auth::user()->id,
+    //         ]);
+
+    //     $transaction_update = Transaction::where('status', 'On-hold')
+    //         ->where('office', Auth::user()->office_id)
+    //         ->where('created_by', Auth::user()->id)
+    //         ->update([
+    //             'office' => $office->id,
+    //             'created_by' => Auth::user()->id,
+    //         ]);
+
+    //     foreach ($transactions as $transaction) {
+    //         if ($transaction->status === 'Processing'){
+    //             $logs = new Activity_logs();
+    //             $logs->trans_id = $transaction->id;
+    //             $logs->office_id = Auth::user()->office_id;
+    //             $logs->user_id = Auth::user()->id;
+    //             $logs->save();
+    //         }
+    //     }
+
+    //     // Get transaction IDs and the target office for the email command
+    //     $transactionIds = $transactions->pluck('id')->toArray();
+    //     $officeId = $office->name;
+
+    //     // Dispatch the email command as an asynchronous background task
+    //     Artisan::call('send:transaction-emails', [
+    //         'transactions' => $transactionIds,
+    //         'office' => $officeId
+    //     ]);
+
+    //     $batchId = $transactions->first()->batch_id;
+
+    //     return response()->json(['success' => true, 'batch_id' => $batchId, 'message' => 'Emails queued and transactions updated.']);
+    // }
+
+    // public function sendTransactionEmails($transactions, $office)
+    // {
+    //     $ibu_dbcon = DB::connection('ors_pgsql');
+
+    //     foreach ($transactions as $transaction) {
+    //         $employee = $ibu_dbcon->table('employee_user')
+    //             ->where('id', $transaction->employee_id)
+    //             ->first();
+    //         $employeedetails = $ibu_dbcon->table('employee')
+    //             ->where('id', $transaction->employee_id)
+    //             ->first();
+
+    //         if (!empty($employee->email)) {
+    //             $emailData = [
+    //                 'transaction_id' => $transaction->id,
+    //                 'employee_fname' => $employeedetails->employee_fname,
+    //                 'employee_lname' => $employeedetails->employee_lname,
+    //                 'status' => 'Pending',
+    //                 'created_at' => now()->format('F j, Y'),
+    //                 'honorarium' => $transaction->honorarium->name,
+    //                 'office' => $office->name,
+    //             ];
+
+    //             Mail::to($employee->email)->send(new TransactionStatusChanged($emailData));
+    //             sleep(1);
+    //         }
+
+    //         $email = new Emailing();
+    //         $email->transaction_id = $transaction->id;
+    //         $email->subject = 'Transaction Processing';
+    //         $email->to_user = $employeedetails->id;
+    //         $email->message = 'Your transaction is to be acknowledged by budget office. Please wait for further updates.';
+    //         $email->status = 'Unread';
+    //         $email->created_by = Auth::user()->id;
+    //         $email->save();
+    //     }
+    // }
 
     public function proceed(Request $request)
     {
@@ -142,6 +394,43 @@ class QueueController extends Controller
         if ($transactions->isEmpty()) {
             return response()->json(['success' => false, 'message' => 'No transactions found with status Processing']);
         }
+
+        $usertype = Auth::user()->usertype->name;
+
+        if($usertype === 'Admin' || $usertype === 'Superadmin'){
+            $office = Office::where('name', 'Budget Office')->first();
+        }
+        elseif($usertype === 'Budget Office' || $usertype === 'Accounting' ){
+            $office = Office::where('name', 'Dean')->first();
+        }
+        elseif($usertype === 'Dean' ){
+            $office = Office::where('name', 'Accounting')->first();
+
+        }elseif($usertype === 'Cashiers'){
+            $office = Office::where('name', 'Faculty')->first();
+        }else{
+            return response()->json(['success' => false, 'message' => 'No office Found']);
+        }
+
+        $ack = new Acknowledgement();
+        $ack->trans_id = $transactions->id;
+        $ack->batch_id= $request->batch_id;
+        $ack->office_id = Auth::user()->office_id;
+        $ack->user_id = Auth::user()->id;
+        $ack->save();
+
+        // Update the status to 'On Queue'
+        Transaction::where('status', 'Processing')
+        ->where('office', Auth::user()->office_id)
+        ->where('created_by', Auth::user()->id)
+        ->update([
+            'status' => 'On Queue',
+            'office' => $office->id,
+            'created_by' => Auth::user()->id,
+        ]);
+
+        $batchId = $request->batch_id;
+
         foreach ($transactions as $transaction) {
             $logs = new Activity_logs();
             $logs->trans_id = $transaction->id;
@@ -161,7 +450,11 @@ class QueueController extends Controller
                     'transaction_id' => $transaction->id,
                     'employee_fname' => $employeedetails->employee_fname,
                     'employee_lname' => $employeedetails->employee_lname,
-                    'status' => $transaction->status,
+                    'status' => 'Pending',
+                    'created_at' => now()->format('F j, Y'),
+                    'honorarium' => $transaction->honorarium->name,
+                    'office' => $office->name,
+
                 ];
 
                 Mail::to($employee->email)->send(new TransactionStatusChanged($emailData));
@@ -178,42 +471,7 @@ class QueueController extends Controller
 
         }
 
-        $usertype = Auth::user()->usertype->name;
 
-        if($usertype === 'Admin' || $usertype === 'Superadmin'){
-            $office = Office::where('name', 'Budget Office')->first();
-        }
-        elseif($usertype === 'Budget Office' || $usertype === 'Accounting' ){
-            $office = Office::where('name', 'Dean')->first();
-        }
-        elseif($usertype === 'Dean' ){
-            $office = Office::where('name', 'Accounting')->first();
-
-        }elseif($usertype === 'Cashiers'){
-            $office = Office::where('name', 'Faculty')->first();
-        }else{
-            return response()->json(['success' => false, 'message' => 'No office Found']);
-        }
-
-
-            $ack = new Acknowledgement();
-            $ack->trans_id = $transaction->id;
-            $ack->batch_id= $transaction->batch_id;
-            $ack->office_id = Auth::user()->office_id;
-            $ack->user_id = Auth::user()->id;
-            $ack->save();
-
-            // Update the status to 'On Queue'
-            Transaction::where('status', 'Processing')
-            ->where('office', Auth::user()->office_id)
-            ->where('created_by', Auth::user()->id)
-            ->update([
-                'status' => 'On Queue',
-                'office' => $office->id,
-                'created_by' => Auth::user()->id,
-            ]);
-
-            $batchId = $transaction->batch_id;
 
         return response()->json(['success' => true, 'batch_id'=> $batchId, 'message' => 'Emails sent and transactions updated.']);
     }

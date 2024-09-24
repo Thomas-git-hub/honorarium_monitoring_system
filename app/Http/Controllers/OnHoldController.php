@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\TransactionStatusChanged;
 use App\Models\Acknowledgement;
 use App\Models\Activity_logs;
 use App\Models\Office;
@@ -10,6 +11,7 @@ use App\Models\Transaction;
 use Illuminate\Support\Facades\Auth;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 
 class OnHoldController extends Controller
@@ -147,17 +149,11 @@ class OnHoldController extends Controller
         $ibu_dbcon = DB::connection('ors_pgsql');
 
         // Fetch all transactions with status 'On-hold'
-        $transactions = Transaction::where('status', 'On-hold')->where('id', $request->id)->first();
+        $transaction = Transaction::where('status', 'On-hold')->where('id', $request->id)->first();
 
-        if (empty($transactions)) {
+        if (empty($transaction)) {
             return response()->json(['success' => false, 'message' => 'No transactions found with status Processing']);
         }
-
-        $logs = new Activity_logs();
-        $logs->trans_id = $transactions->id;
-        $logs->office_id = Auth::user()->office_id;
-        $logs->user_id = Auth::user()->id;
-        $logs->save();
 
         $usertype = Auth::user()->usertype->name;
 
@@ -174,8 +170,9 @@ class OnHoldController extends Controller
             $office = Office::where('name', 'Faculty')->first();
         }
 
-            Transaction::where('status', 'On-hold')
+        $transaction = Transaction::where('status', 'On-hold')
             // ->where('office', Auth::user()->office_id)
+            ->where('id', $request->id)
             ->where('created_by', Auth::user()->id)
             ->update([
                 'status' => 'On Queue',
@@ -183,7 +180,31 @@ class OnHoldController extends Controller
                 'created_by' => Auth::user()->id,
             ]);
 
-            $batchId = $transactions->batch_id;
+        $logs = new Activity_logs();
+        $logs->trans_id = $transaction->id;
+        $logs->office_id = Auth::user()->office_id;
+        $logs->user_id = Auth::user()->id;
+        $logs->save();
+
+        $batchId = $transaction->batch_id;
+
+        $employee = $ibu_dbcon->table('employee_user')
+        ->where('id', $transaction->employee_id)
+        ->first();
+        $employeedetails = $ibu_dbcon->table('employee')
+                ->where('id', $transaction->employee_id)
+                ->first();
+        // dd($employee->email);
+
+        if (!empty($employee->email)) {
+            $emailData = [
+                'transaction_id' => $transaction->id,
+                'employee_fname' => $employeedetails->employee_fname,
+                'status' => $transaction->status,
+            ];
+
+            Mail::to($employee->email)->send(new TransactionStatusChanged($emailData));
+        }
 
         return response()->json(['success' => true, 'batch_id'=> $batchId, 'message' => 'Emails sent and transactions updated.']);
     }
