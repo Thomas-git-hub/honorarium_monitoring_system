@@ -2,9 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\TempPasswordMail;
+use App\Models\Office;
 use App\Models\User;
+use App\Models\UserType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Yajra\DataTables\Facades\DataTables;
 
 class UserManagementController extends Controller
@@ -18,7 +22,7 @@ class UserManagementController extends Controller
     public function list(Request $request)
     {
 
-        $ibu_dbcon = DB::connection('ors_pgsql');
+        $ibu_dbcon = DB::connection('ibu_test');
 
         $users = User::with('office')->get();
 
@@ -66,7 +70,7 @@ class UserManagementController extends Controller
 
             ->editColumn('college', function($user) {
                 if($user->college_id){
-                    $collegeDetails = DB::connection('ors_pgsql')->table('college')
+                    $collegeDetails = DB::connection('ibu_test')->table('college')
                     ->where('id', $user->college_id)
                     ->first();
                     return $collegeDetails->college_name;
@@ -89,6 +93,88 @@ class UserManagementController extends Controller
 
 
             ->make(true);
+    }
+
+
+    public function store(Request $request){
+
+        if($request->usertype === '1'){
+            $usertype = UserType::where('name', 'Admin')->first();
+            $office = Office::where('name', 'BUGS Administration')->first();
+        }elseif($request->usertype === '2'){
+            $usertype = UserType::where('name', 'Dean')->first();
+            $office = Office::where('name', 'Dean')->first();
+
+        }elseif($request->userytype === '3'){
+            $usertype = UserType::where('name', 'Budget Office')->first();
+            $office = Office::where('name', 'Budget Office')->first();
+
+        }elseif($request->usertype === '4'){
+            $usertype = UserType::where('name', 'Accounting')->first();
+            $office = Office::where('name', 'Accounting')->first();
+
+        }elseif($request->usertype === '5'){
+            $usertype = UserType::where('name', 'Cashiers')->first();
+            $office = Office::where('name', 'Cashiers')->first();
+
+        }elseif($request->usertype === '6'){
+            $usertype = UserType::where('name', 'Faculties')->first();
+            $office = Office::where('name', 'Faculty')->first();
+
+        }
+
+        //  dd($request->usertype);
+
+        $request->validate([
+            'usertype' => ['required', 'in:1,2,3,4,5,6'],
+            'first_name' => ['required', 'string', 'max:255'],
+            'middle_name' => ['nullable','string', 'max:255'],
+            'last_name' => ['required', 'string', 'max:255'],
+            'ee_number' => ['required', 'numeric'],
+            'contact_num' => ['nullable', 'regex:/^(09|\+639)[0-9]{9}$/', 'required_with:contact_num'],
+            'user_email' => ['required', 'email'],
+        ],[
+            'middle_name.string' => 'The Middle Name must be a valid string.',
+            'contact_num.regex' => 'The Contact Number must start with 09 or +639 and contain 9 digits.',
+            'user_email.required' => 'The Email Address is required',
+            'user_email.email' => 'Please provide a valid Email Address.',
+
+        ]);
+
+        $existingUser = User::where('email', $request->user_email)
+        ->Where('first_name', $request->first_name)
+        ->Where('last_name', $request->last_name)
+        ->Where('contact', $request->contact_num)
+        ->first();
+
+        if ($existingUser) {
+            return response()->json(['success' => 'false', 'message' => 'User already exists.'], 409);
+        }
+
+
+        User::create([
+            'employee_id' => $request->employee_id ? $request->employee_id: 0,
+            'first_name' => $request->first_name,
+            'middle_name' => $request->middle_name,
+            'last_name' => $request->last_name,
+            'suffix' => $request->suffix,
+            'ee_number' => $request->ee_number,
+            'position' => $request->position ? $request->position : $request->academicRankValue ,
+            'contact' => $request->contact_num,
+            'email' => $request->user_email,
+            'college_id' => $request->collge_NUM ? $request->collge_NUM: NULL,
+            'usertype_id' => $usertype->id,
+            'office_id' => $office->id,
+            'password' => $request->last_name. '-' .$request->employee_id,
+
+        ]);
+
+        $password ='Bugs'. '-'. $request->last_name. '-' .$request->employee_id;
+
+        Mail::to($request->user_email)->send(new TempPasswordMail($password, $request->first_name));
+
+        return response()->json(['success' => 'true', 'message'=> 'Account added successfully!']);
+
     }
 
 

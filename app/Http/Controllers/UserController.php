@@ -54,7 +54,7 @@ class UserController extends Controller
             return response()->json(['success' => false, 'message' => 'User already has an account'], 200);
         }
 
-        $user = DB::connection('ors_pgsql')->table('employee_user')->where('email', $request->email)->first();
+        $user = DB::connection('ibu_test')->table('employee_user')->where('email', $request->email)->first();
 
         if ($user) {
             $mysqlUserId = DB::connection('mysql')->table('users')->insertGetId([
@@ -64,7 +64,7 @@ class UserController extends Controller
 
             ]);
 
-            $employeeDetails = DB::connection('ors_pgsql')->table('employee')
+            $employeeDetails = DB::connection('ibu_test')->table('employee')
             ->where('id', $user->id)
             ->first();
 
@@ -140,7 +140,7 @@ class UserController extends Controller
     public function list(Request $request)
     {
 
-        $ibu_dbcon = DB::connection('ors_pgsql');
+        $ibu_dbcon = DB::connection('ibu_test');
 
         $employeeIds =  $ibu_dbcon->table('employee')->pluck('id');
 
@@ -230,7 +230,7 @@ class UserController extends Controller
 
             ->editColumn('college', function($user) {
                 if($user->college_id){
-                    $collegeDetails = DB::connection('ors_pgsql')->table('college')
+                    $collegeDetails = DB::connection('ibu_test')->table('college')
                     ->where('id', $user->college_id)
                     ->first();
                     return $collegeDetails->college_shortname;
@@ -255,15 +255,28 @@ class UserController extends Controller
         $searchTerm = ucfirst($searchTerm);
 
         // Join the 'employee' and 'employee_user' tables to get the email
-        $faculties = DB::connection('ors_pgsql')
+        $faculties = DB::connection('ibu_test')
                     ->table('employee')
                     ->join('employee_user', 'employee.id', '=', 'employee_user.id')
+                    ->join('college', 'employee.college_id', '=', 'college.id')
                     ->where('employee.active', 'T')
                     ->where(function($query) use ($searchTerm) {
                         $query->where(DB::raw("CONCAT(employee.employee_fname, ' ', employee.employee_lname)"), 'like', "%{$searchTerm}%")
                             ->orWhere('employee.employee_fname', 'like', "%{$searchTerm}%")
                             ->orWhere('employee.employee_lname', 'like', "%{$searchTerm}%");
                     })
+                    ->select(
+                        'employee.id as id', // Explicitly select employee.id as employee_id
+                        'employee.employee_fname',
+                        'employee.employee_mname',
+                        'employee.employee_lname',
+                        'employee.employee_no',
+                        'employee_user.email',
+                        'employee.employee_academic_rank',
+                        'employee.college_id',
+                        'college.college_name', // Select college name
+                         // Select college name
+                    )
                     ->get();
 
         return response()->json($faculties);
@@ -282,7 +295,7 @@ class UserController extends Controller
         // ->orWhere('status', 'On-hold');
 
         $transactions = $query->get();
-        $ibu_dbcon = DB::connection('ors_pgsql');
+        $ibu_dbcon = DB::connection('ibu_test');
 
         $months = [
             1 => 'January',
@@ -353,7 +366,7 @@ class UserController extends Controller
         // ->orWhere('status', 'On-hold');
 
         $transactions = $query->get();
-        $ibu_dbcon = DB::connection('ors_pgsql');
+        $ibu_dbcon = DB::connection('ibu_test');
 
         $months = [
             1 => 'January',
@@ -424,7 +437,7 @@ class UserController extends Controller
         // ->orWhere('status', 'On-hold');
 
         $transactions = $query->get();
-        $ibu_dbcon = DB::connection('ors_pgsql');
+        $ibu_dbcon = DB::connection('ibu_test');
 
         $months = [
             1 => 'January',
@@ -495,7 +508,7 @@ class UserController extends Controller
         // ->orWhere('status', 'On-hold');
 
         $transactions = $query->get();
-        $ibu_dbcon = DB::connection('ors_pgsql');
+        $ibu_dbcon = DB::connection('ibu_test');
 
         $months = [
             1 => 'January',
@@ -566,7 +579,7 @@ class UserController extends Controller
         // ->orWhere('status', 'On-hold');
 
         $transactions = $query->get();
-        $ibu_dbcon = DB::connection('ors_pgsql');
+        $ibu_dbcon = DB::connection('ibu_test');
 
         $months = [
             1 => 'January',
@@ -636,7 +649,7 @@ class UserController extends Controller
         ->where('status', 'Completed');
 
         $transactions = $query->get();
-        $ibu_dbcon = DB::connection('ors_pgsql');
+        $ibu_dbcon = DB::connection('ibu_test');
 
         $months = [
             1 => 'January',

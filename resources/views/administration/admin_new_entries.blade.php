@@ -371,8 +371,6 @@
                 });
         });
 
-
-
         $('#proceedTransactionButton').off('click').on('click', function() {
             $.ajax({
                 url: '{{ route('admin_on_queue.proceedToBudgetOffice') }}',
@@ -450,8 +448,6 @@
 {{-- DATATABLES --}}
 <script>
     $(function () {
-
-
 
         var table = $('#facultyTable').DataTable({
             processing: true,
