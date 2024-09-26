@@ -13,7 +13,7 @@
         </div>
         <div class="modal-body">
           <h1 class="text-center text-danger">!</h1>
-          <p class="text-center">"Proceeding with this transaction indicates that the individual has submitted all necessary requirements for their honorarium."</p>
+          <p class="text-center">"Proceeding with this transaction indicates that the individual has complied with all necessary requirements for their honorarium."</p>
           {{-- <h5 class="text-center text-danger">Transaction ID No. = <b>002-08122024</b></h5> --}}
         </div>
         <div class="modal-footer">
@@ -123,7 +123,7 @@
             },
             columns: [
                 { data: 'id', name: 'id', title: 'ID', visible: false},
-                { data: 'batch_id', name: 'batch_id', title: 'Transaction Number' },
+                { data: 'batch_id', name: 'batch_id', title: 'TN' },
                 { data: 'date_of_trans', name: 'date_of_trans', title: 'Date Received' },
                 { data: 'faculty', name: 'faculty', title: 'Faculty' },
                 { data: 'id_number', name: 'id_number', title: 'ID Number' },
@@ -234,7 +234,7 @@
     Swal.fire({
         icon: 'question',
         html: `
-            <p class="text-center">"Proceeding with this transaction indicates that the individual has submitted all necessary requirements for their honorarium."</p>
+            <p class="text-center">"Proceeding with this transaction indicates that the individual has complied with all necessary requirements for their honorarium."</p>
         `,
         showCancelButton: true,
         confirmButtonText: 'Proceed to Next Office',

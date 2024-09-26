@@ -31,6 +31,12 @@
 </div>
 
 <div class="row mt-4">
+    <div class="col-md d-flex justify-content-end">
+        <button class="btn btn-label-primary btn-sm" id="refresh"><i class='bx bx-refresh' ></i> Refresh</button>
+    </div>
+</div>
+
+<div class="row mt-2">
     <div class="col-md-4">
         <div class="card mb-5">
             <div class="card-header">
@@ -157,7 +163,7 @@
                 <div class="row d-flex align-items-center mb-5">
                     <label for="html5-text-input" class="col-md-4 col-form-label fs-6">Tracking Number:</label>
                     <div class="col-md-8">
-                      <b class="text-success" id="batchID">-</b>
+                      <b class="text-primary" id="batchID">-</b>
                     </div>
                     <small class="text-danger"><b>Note:&nbsp;</b>Always attach the tracking number on the documents.</small>
                 </div>
@@ -876,6 +882,20 @@
         // Show the addToQueue button
         $('#sendEmailBtn').hide();
         $('#addToQueue').show();
+    });
+</script>
+
+<script>
+    $(document).ready(function() {
+        $('#discard').click(function() {
+            location.reload(); // Reloads the current page
+        });
+    });
+
+    $(document).ready(function() {
+        $('#refresh').click(function() {
+            location.reload(); // Reloads the current page
+        });
     });
 </script>
 

@@ -57,7 +57,8 @@
                         <div class="mb-1">
                             <label for="defaultFormControlInput" class="form-label text-primary">Total Net Amount</label>
                             <input type="text" class="form-control" id="netAmount" placeholder="₱" aria-describedby="defaultFormControlHelp" />
-                            <div id="netAmountHelp" class="form-text text-danger">Enter the exact net amount and be sure to double-check the amount entered.</div>
+                            <div id="netAmountHelp" class="form-text text-info">Enter the exact net amount and be sure to double-check the amount entered.</div>
+                            <small class="text-danger"  id="netAmountError"  style="display:none;"><i class='bx bx-error-circle'></i> Please enter a valid amount with up to two decimal places.</small>
                         </div>
                     </div>
 
@@ -134,71 +135,6 @@
 @section('components.specific_page_scripts')
 
 {{-- DATATABLES --}}
-{{-- <script>
-    $(document).ready(function() {
-        var table = $('#cashierOpenQueueTable').DataTable({
-            processing: true,
-            serverSide: false,
-            data: [
-                {
-                    batch_id: '000-0000',
-                    date_of_trans: 'September 17, 2024',
-                    faculty: 'John Doe',
-                    id_number: '0000-0000',
-                    academic_rank: 'lorem ipsum',
-                    college: 'lorem ipsum',
-                    honorarium: 'lorem ipsum',
-                    sem: 'lorem ipsum',
-                    year: '2024',
-                    month: 'July',
-                    created_by: 'John Doe',
-                    net_amount: '<button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">Add</button>',
-                }
-                // Add more objects as needed
-            ],
-            pageLength: 10,
-            paging: true,
-            dom: '<"top"lf>rt<"bottom"ip>',
-            language: {
-                search: "",
-                searchPlaceholder: "Search..."
-            },
-            columns: [
-                { data: 'batch_id', name: 'batch_id', title: 'Tracking Number' },
-                { data: 'date_of_trans', name: 'date_of_trans', title: 'Date Received' },
-                { data: 'faculty', name: 'faculty', title: 'Faculty' },
-                { data: 'id_number', name: 'id_number', title: 'ID Number' },
-                { data: 'academic_rank', name: 'academic_rank', title: 'Academic Rank' },
-                { data: 'college', name: 'college', title: 'College' },
-                { data: 'honorarium', name: 'honorarium', title: 'Honorarium' },
-                { data: 'sem', name: 'sem', title: 'Semester' },
-                { data: 'year', name: 'year', title: 'Semester Year' },
-                { data: 'month', name: 'month', title: 'Month Of' },
-                { data: 'created_by', name: 'created_by', title: 'Created By' },
-                { data: 'net_amount', name: 'net_amount', title: 'Net Amount' }
-            ],
-        });
-
-        $('#exampleModal').on('hidden.bs.modal', function () {
-            var netAmount = $('#netAmount').val().trim();
-            var isValidAmount = /^[0-9]+(\.[0-9]{1,2})?$/.test(netAmount);
-
-            if (isValidAmount) {
-                var formattedAmount = `<b>₱${parseFloat(netAmount).toFixed(2)}</b>`;
-
-                // Update the DataTable with the new amount
-                table.column(11).data().each(function (value, index) {
-                    if (value.includes('Add')) {
-                        table.cell(index, 11).data(formattedAmount).draw();
-                    }
-                });
-            } else {
-                alert('Please enter a valid amount with up to two decimal places.');
-            }
-        });
-    });
-</script> --}}
-
 <script>
     $(document).ready(function() {
         var table = $('#cashierOpenQueueTable').DataTable({
@@ -245,11 +181,36 @@
         });
 
         // Function to handle adding the net amount to the table
+        // function addNetAmount() {
+        //     var netAmount = $('#netAmount').val().trim();
+        //     var isValidAmount = /^[0-9]+(\.[0-9]{1,2})?$/.test(netAmount);
+
+        //     if (isValidAmount) {
+        //         var formattedAmount = `<button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">₱${parseFloat(netAmount).toFixed(2)}</button>`;
+
+        //         // Update the DataTable with the new amount
+        //         table.column(11).data().each(function (value, index) {
+        //             if (value.includes('Add')) {
+        //                 table.cell(index, 11).data(formattedAmount).draw();
+        //             }
+        //         });
+
+        //         // Close the modal
+        //         $('#exampleModal').modal('hide');
+        //     } else {
+        //         alert('Please enter a valid amount with up to two decimal places.');
+        //     }
+        // }
+
         function addNetAmount() {
             var netAmount = $('#netAmount').val().trim();
             var isValidAmount = /^[0-9]+(\.[0-9]{1,2})?$/.test(netAmount);
 
             if (isValidAmount) {
+                // Hide the error message
+                $('#netAmountError').hide();
+
+                // Format the amount and update the DataTable
                 var formattedAmount = `<button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">₱${parseFloat(netAmount).toFixed(2)}</button>`;
 
                 // Update the DataTable with the new amount
@@ -262,9 +223,18 @@
                 // Close the modal
                 $('#exampleModal').modal('hide');
             } else {
-                alert('Please enter a valid amount with up to two decimal places.');
+                // Show the error message
+                $('#netAmountError').show();
             }
         }
+
+        // Hide the error message when the input field is clicked/focused
+        $('#netAmount').on('focus', function() {
+            // Just hide the error message without resetting the input field
+            $('#netAmountError').hide();
+        });
+
+
 
         // Add button click event
         $('#addButton').on('click', addNetAmount);

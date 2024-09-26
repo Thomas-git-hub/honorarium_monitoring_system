@@ -108,7 +108,7 @@
                 searchPlaceholder: "Search..." // Set the placeholder text
             },
             columns: [
-                { data: 'batch_id', name: 'batch_id', title: 'Batch' },
+                { data: 'batch_id', name: 'batch_id', title: 'TN' },
                 { data: 'from', name: 'from', title: 'From' },
                 { data: 'trans_id', name: 'trans_id', title: 'No. of Transactions' },
                 { data: 'created_at', name: 'created_at', title: 'Received Date' },

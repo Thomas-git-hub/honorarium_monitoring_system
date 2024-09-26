@@ -67,7 +67,7 @@
         <li class="menu-item {{ request()->is('for_acknowledgement') ? 'active' : '' }}">
           <a href="/for_acknowledgement" class="menu-link">
             <i class='menu-icon tf-icons bx bx-archive-in'></i>
-            <div class="text-truncate" data-i18n="Page 2">For Acknowledgement</div>
+            <div class="text-truncate" data-i18n="Page 2">Acknowledgement</div>
             <span class="badge bg-danger badge-notifications p-1 fs-8">14</span>
           </a>
         </li>

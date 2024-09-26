@@ -96,8 +96,7 @@
 
             <div class="border-top mt-3">
                 <div class="d-flex flex-row justify-content-end mt-3 gap-2">
-                    <button type="button" class="btn btn-label-danger border-none btn-trash bg-transparent"
-                        id="discard"><i class='bx bxs-trash-alt'></i></button>
+                    <button type="button" class="btn btn-label-danger border-none btn-trash bg-transparent" id="discard"><i class='bx bxs-trash-alt'></i></button>
                     <button type="submit" class="btn btn-primary" id="sendButton"><i class='bx bxs-send'>&nbsp;</i>Send</button>
                 </div>
             </div>

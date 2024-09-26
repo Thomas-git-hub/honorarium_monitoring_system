@@ -218,6 +218,18 @@
             </div>
         </div>
 
+        {{-- UNCOMMENT IF NEEDED --}}
+        {{-- <div class="row mb-2">
+            <div class="col-md d-flex justify-content-end">
+                <div class="col-md mx-auto d-flex justify-content-end">
+                    <button type="button" class="btn btn-primary gap-1 d-none" id="proceedAccountingButton">Proceed to Accounting<i class='bx bx-chevrons-right'></i></button>
+                </div>
+                <div class="col-md mx-auto d-flex justify-content-end">
+                    <button type="button" class="btn btn-primary gap-1 d-none" id="proceedCashierButton">Proceed to Cashier<i class='bx bx-chevrons-right'></i></button>
+                </div>
+            </div>
+        </div> --}}
+
         <div class="card custom-card">
             <div class="card-body">
                 <div class="table-responsive">
