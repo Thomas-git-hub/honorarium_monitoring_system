@@ -133,8 +133,10 @@
                 { data: 'sem', name: 'sem', title: 'Semester' },
                 { data: 'year', name: 'year', title: 'Semester Year' },
                 { data: 'month.month_name', name: 'month', title: 'Month Of' },
+                { data: 'sent', name: 'sent', title: 'Sent'},
                 { data: 'created_by', name: 'created_by', title: 'Created By' },
-                { data: 'action', name: 'action', title: 'Action' }
+                { data: 'action', name: 'action', title: 'Action' },
+
             ],
             order: [[0, 'desc']], // Sort by date_received column by default
             columnDefs: [

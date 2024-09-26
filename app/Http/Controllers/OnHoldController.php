@@ -93,6 +93,10 @@ class OnHoldController extends Controller
                 return $data->createdBy ? $data->createdBy->first_name  . ' ' . $data->createdBy->last_name: 'Unknown';
             })
 
+            ->addColumn('sent', function($data) {
+                return 'Sent ' . floor($data->updated_at->diffInDays(now())) . ' Days Ago';
+            })
+
             ->addColumn('action', function($data) {
                 // $editButton = '<button type="button" class="btn btn-icon me-2 btn-label-success edit-btn"><span class="tf-icons bx bx-pencil bx-18px"></span></button>';
                 // $on_holdButton = '<button type="button" class="btn btn-icon me-2 btn-label-danger on-hold-btn"><span class="tf-icons bx bxs-hand bx-18px"></span></button>';

@@ -96,8 +96,13 @@ Route::middleware(['auth_check'])->group(function () {
         Route::post('/admin_on_queue/proceed_to_cashier', [QueueController::class, 'proceedToCashier'])->name('admin_on_queue.proceedToCashier');
         Route::match(['post', 'put'], 'admin_on_queue/update', [QueueController::class, 'update'])->name('admin_on_queue.update');
         Route::match(['post', 'put'], 'admin_on_queue/change_to_onhold', [QueueController::class, 'change_to_onhold'])->name('admin_on_queue.change_to_onhold');
+
         Route::get('/cashier_in_queue', [CashierQueueController::class, 'cashier_in_queue'])->name('cashier_in_queue');
+        Route::get('/cashier_in_queue/list', [CashierQueueController::class, 'list'])->name('cashier_in_queue.list');
+
         Route::get('/cashier_open_queue', [CashierQueueController::class, 'cashier_open_queue'])->name('cashier_open_queue');
+        Route::get('/cashier_open_queue/open_list', [CashierQueueController::class, 'open_list'])->name('cashier_open_queue.open_list');
+        Route::post('/cashier_open_queue/store', [CashierQueueController::class, 'store'])->name('cashier_open_queue.store');
 
 
         Route::get('/for_acknowledgement', [ForAcknowledgementController::class, 'for_acknowledgement'])->name('for_acknowledgement');

@@ -33,7 +33,7 @@
         var table = $('#cashierInQueueTable').DataTable({
             processing: true,
             serverSide: true,
-            ajax: '{{route('for_acknowledgement.list')}}',
+            ajax: '{{route('cashier_in_queue.list')}}',
             pageLength: 100,
             paging: true, // abled pagination
             dom: '<"top"lf>rt<"bottom"ip>',

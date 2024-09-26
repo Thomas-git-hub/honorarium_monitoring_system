@@ -34,9 +34,6 @@ class UserController extends Controller
 
     public function register(Request $request){
 
-        $randomString = Str::random(16);
-
-
         // Mail::to("angelicamae.bonganay@gmail.com")->send(new TempPasswordMail($randomString));
 
 
@@ -60,7 +57,7 @@ class UserController extends Controller
             $mysqlUserId = DB::connection('mysql')->table('users')->insertGetId([
                 'employee_id' => $user->id,
                 'email' => $request->email,
-                'password' => Hash::make($randomString),
+
 
             ]);
 
@@ -70,6 +67,8 @@ class UserController extends Controller
 
             $usertype = UserType::where('name', 'Faculties')->first();
             $office = Office::where('name', 'Faculty')->first();
+
+            $password = 'Bugs'. '-' .$employeeDetails->employee_lname. '-' .$user->id;
 
             if ($employeeDetails) {
                 DB::connection('mysql')->table('users')->where('id', $mysqlUserId)->update([
@@ -82,12 +81,13 @@ class UserController extends Controller
                     'usertype_id' => $usertype->id,
                     'office_id' => $office->id,
                     'created_at' => now(),
+                    'password' => Hash::make($password),
 
                 ]);
 
-                Mail::to($user->email)->send(new TempPasswordMail($randomString, $employeeDetails->employee_fname));
+                Mail::to($user->email)->send(new TempPasswordMail($password, $employeeDetails->employee_fname));
 
-                return response()->json(['success' => true, 'data'=> $randomString,  'message' => 'Successfully created a temporary password. Please check your email.']);
+                return response()->json(['success' => true, 'data'=> $password,  'message' => 'Successfully created a temporary password. Please check your email.']);
 
             }
 

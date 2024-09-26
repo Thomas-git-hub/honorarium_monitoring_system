@@ -8,6 +8,7 @@ use App\Models\Activity_logs;
 use App\Models\Emailing;
 use App\Models\Office;
 use App\Models\Transaction;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -22,7 +23,7 @@ class OpenAcknowledgementController extends Controller
         $acknowledgements = Acknowledgement::with(['user', 'office', 'transaction'])
         ->select('id','batch_id', 'office_id', 'created_at', 'user_id')
         ->where('batch_id', $batch_id)
-
+        ->orderBy('id', 'desc')
         ->first();
 
         $TransCount = Transaction::with(['honorarium', 'createdBy'])
@@ -31,8 +32,8 @@ class OpenAcknowledgementController extends Controller
         ->where('batch_id', $batch_id)
         ->count();
 
-        $office = Office::where('id', $acknowledgements->office_id)->first();
-
+        $office = Office::where('id', $acknowledgements->office_id)
+        ->first();
         return view('administration.open_acknowledgement', compact('batch_id', 'acknowledgements', 'office', 'TransCount'));
     }
 
@@ -40,28 +41,13 @@ class OpenAcknowledgementController extends Controller
 
         if(Auth::user()->usertype->name === 'Superadmin'){
             $query = Transaction::with(['honorarium', 'createdBy'])->where('status', 'On Queue')->where('batch_id', $request->batch_id);
-        }
-        elseif(Auth::user()->usertype->name === 'Budget Office'){
-            $office = Office::where('name', 'Budget Office')->first();
+        }else{
             $query = Transaction::with(['honorarium', 'createdBy'])
-                                    ->where('office',  $office->id)
-                                    ->where('batch_id', $request->batch_id)
-                                    ->where('status', 'On Queue')
-                                    ;
-
-        }elseif(Auth::user()->usertype->name === 'Dean'){
-            $office = Office::where('name', 'Dean')->first();
-            $query = Transaction::with(['honorarium', 'createdBy'])
-                                    ->where('office',  $office->id)
-                                    ->where('status', 'On Queue')
-                                    ->where('batch_id', $request->batch_id)
-
-                                    ;
-
+                    ->where('office',  Auth::user()->office_id)
+                    ->where('batch_id', $request->batch_id)
+                    ->where('status', 'On Queue');
         }
 
-
-        // $query = Transaction::with(['honorarium', 'createdBy'])->where('status', 'On Queue')->where('batch_id', $request->batch_id);
         $transactions = $query->get();
         $ibu_dbcon = DB::connection('ibu_test');
 
@@ -91,10 +77,11 @@ class OpenAcknowledgementController extends Controller
                 return ucfirst($employeeDetails->employee_fname) . ' ' . ucfirst($employeeDetails->employee_lname);
             })
             ->addColumn('id_number', function($data) use($ibu_dbcon) {
+                $user =  User::where('employee_id',  $data->employee_id)->first();
                 // $employeeDetails = $ibu_dbcon->table('employee')
                 // ->where('id', $data->employee_id)
                 // ->first();
-                return $data->ee_number ? $data->ee_number : 0;
+                return $user->ee_number ? $user->ee_number : 0;
             })
             ->addColumn('academic_rank', function($data) use($ibu_dbcon) {
                 $employeeDetails = $ibu_dbcon->table('employee')
@@ -185,6 +172,7 @@ class OpenAcknowledgementController extends Controller
                 'batch_id' => $ack->batch_id,
                 'office' => Auth::user()->office_id,
                 'created_by' => Auth::user()->id,
+                'updated_at' => now(),
             ]);
 
         }

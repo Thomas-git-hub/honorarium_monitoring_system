@@ -27,7 +27,8 @@
             @else
             next Office
             @endif
-            @if(Auth::user()->usertype->name === 'Dean')
+          </button>
+          @if(Auth::user()->usertype->name === 'Dean')
             <i class='bx bx-chevrons-right'></i></button>
             <button type="button" id="proceed_cashier" class="btn btn-warning gap-1">Proceed to Cashier
                 <i class='bx bx-chevrons-right'></i></button>
@@ -547,6 +548,7 @@
                 html: `
                     <p class="text-success fw-bold fs-4">You are about to send Honorarium Transactions to the next Office.</p>
                     <p class="text-muted">"Proceeding with this transaction indicates that every individual has submitted all necessary requirements for their honorarium."</p>
+                    <button id="proceedToCashier" class="btn btn-success mt-3">Proceed to Cashier</button>
                 `,
                 showCancelButton: true,
                 confirmButtonText: 'Proceed to @if(Auth::user()->usertype->name === "Dean") Accounting @else next Office @endif',
@@ -630,40 +632,50 @@
         });
 
 
-        $('#proceed_cashier').off('click').on('click', function() {
+        $(document).on('click', '#proceedToCashier', function() {
             $.ajax({
                 url: '{{ route('admin_on_queue.proceedToCashier') }}',
                 method: 'POST',
                 data: {
                     _token: $('meta[name="csrf-token"]').attr('content'),
+                    batch_id: batchId,
+                },
+                beforeSend: function() {
+                    Swal.fire({
+                        title: 'Processing...',
+                        html: '<div class="spinner-border text-primary" role="status"></div>',
+                        showConfirmButton: false,
+                        allowOutsideClick: false
+                    });
                 },
                 success: function(response) {
                     if(response.success){
-                        $('#proceed').modal('hide');
                         Swal.fire({
-                            icon: 'success',
-                            title: 'Success',
-                            text: response.message,
-                        });
-                    }else{
-                        $('#proceed').modal('hide');
+                                icon: 'success',
+                                title: 'Transaction forwarded successfully',
+                                html: `<h4 class="text-success">Tracking Number:<b>${response.batch_id}</b></h4><small class="text-danger">Note: Always attach the tracking number on the documents.</small>`,
+                                text: response.message,
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    // Redirect to /history when OK is clicked
+                                    window.location.href = '/history';
+                                }
+                            });
+                    } else {
                         Swal.fire({
-                            icon: 'error',
-                            title: 'Oh no!',
-                            text: response.message,
-                        });
-
+                                icon: 'error',
+                                title: 'Something went wrong',
+                                text: response.message,
+                            });
                     }
                     $('#facultyTable').DataTable().ajax.reload();
                 },
                 error: function(xhr) {
-                    // Handle error
-                    $('#proceed').modal('hide');
                     Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: 'There was a problem updating the transactions.',
-                    });
+                                icon: 'error',
+                                title: 'Error',
+                                text: 'There was a problem updating the transactions.',
+                            });
                 }
             });
         });

@@ -300,7 +300,11 @@
                         });
                         $('#facultyTable').DataTable().ajax.reload();
                         // $('#proceed').modal('show');
+                        @if(Auth::user()->usertype->name === 'Cashiers')
+                        window.location.href = `/cashier_in_queue`;
+                        @else
                         window.location.href = `/admin_on_queue`;
+                        @endif
 
                     }else{
                         Swal.fire({

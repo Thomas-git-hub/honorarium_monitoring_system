@@ -72,7 +72,7 @@
           </a>
         </li>
         @endif
-        @if(Auth::user()->usertype->name !== 'Faculties')
+        @if(Auth::user()->usertype->name !== 'Faculties' && Auth::user()->usertype->name !== 'Cashiers')
         <li class="menu-item {{ request()->is('admin_on_queue') ? 'active' : '' }}">
           <a href="/admin_on_queue" class="menu-link">
             <i class='menu-icon tf-icons bx bx-list-ol'></i>
@@ -80,7 +80,7 @@
           </a>
         </li>
         @endif
-        @if(Auth::user()->usertype->name !== 'Faculties')
+        @if(Auth::user()->usertype->name === 'Cashiers')
         <li class="menu-item {{ request()->is('cashier_in_queue') || request()->is('cashier_open_queue') ? 'active' : '' }}">
           <a href="/cashier_in_queue" class="menu-link">
             <i class='menu-icon tf-icons bx bx-list-ol'></i>
