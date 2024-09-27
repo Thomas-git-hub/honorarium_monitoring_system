@@ -42,11 +42,11 @@
               <div class="text-truncate" data-i18n="Page 2">Sent Items</div>
             </a>
         </li>
-        @if(Auth::user()->usertype->name !== 'Faculties')
+
         <li class="menu-item">
           <div style="margin-left: 5%; margin-top: 5%; color: #b4b0c4;">Transaction</div>
         </li>
-        @endif
+
         @if(Auth::user()->usertype->name === 'Admin' || Auth::user()->usertype->name === 'Superadmin')
         <li class="menu-item {{ request()->is('admin_honorarium') ? 'active' : '' }}">
             <a href="/admin_honorarium" class="menu-link">
@@ -96,7 +96,7 @@
           </a>
         </li>
         @endif
-        @if(Auth::user()->usertype->name !== 'Faculties')
+        @if(Auth::user()->usertype->name === 'Faculties')
         <li class="menu-item {{ request()->is('faculty_tracking') ? 'active' : '' }}">
           <a href="/faculty_tracking" class="menu-link">
             <i class='menu-icon tf-icons bx bx-tag-alt'></i>
@@ -112,26 +112,27 @@
           </a>
         </li>
         @endif
+        @if(Auth::user()->usertype->name === 'Admin' || Auth::user()->usertype->name === 'Superadmin')
         <li class="menu-item">
             <div style="margin-left: 5%; margin-top: 5%; color: #b4b0c4;">Users</div>
         </li>
 
-        @if(Auth::user()->usertype->name === 'Admin' || Auth::user()->usertype->name === 'Superadmin')
+
         <li class="menu-item {{ request()->is('user_management') ? 'active' : '' }}">
             <a href="/user_management" class="menu-link">
               <i class='menu-icon tf-icons bx bx-shield-alt-2'></i>
               <div class="text-truncate" data-i18n="Page 2">User Management</div>
             </a>
         </li>
-        @endif
 
-        {{-- @if(Auth::user()->usertype->name === 'Admin' || Auth::user()->usertype->name === 'Superadmin') --}}
+
+
         <li class="menu-item {{ request()->is('admin_faculty') || request()->is('admin_view_faculty') ? 'active' : '' }}">
           <a href="/admin_faculty" class="menu-link">
             <i class='menu-icon tf-icons bx bx-group'></i>
             <div class="text-truncate" data-i18n="Page 2">Faculties</div>
           </a>
         </li>
-        {{-- @endif --}}
+        @endif
       </ul>
   </aside>

@@ -103,6 +103,7 @@ Route::middleware(['auth_check'])->group(function () {
         Route::get('/cashier_open_queue', [CashierQueueController::class, 'cashier_open_queue'])->name('cashier_open_queue');
         Route::get('/cashier_open_queue/open_list', [CashierQueueController::class, 'open_list'])->name('cashier_open_queue.open_list');
         Route::post('/cashier_open_queue/store', [CashierQueueController::class, 'store'])->name('cashier_open_queue.store');
+        Route::post('/check-proceed-cashier', [CashierQueueController::class, 'checkIfProceedToCashier'])->name('check.proceed.cashier');
 
 
         Route::get('/for_acknowledgement', [ForAcknowledgementController::class, 'for_acknowledgement'])->name('for_acknowledgement');
@@ -123,12 +124,12 @@ Route::middleware(['auth_check'])->group(function () {
         Route::get('/open_history/list', [HistoryController::class, 'OpenHistoryList'])->name('OpenHistoryList');
         Route::get('/history/list', [HistoryController::class, 'list'])->name('history.list');
 
-        Route::get('/faculty/bugs', [UserController::class, 'AdminList'])->name('faculty.bugs');
-        Route::get('/faculty/budget-office', [UserController::class, 'BudgetList'])->name('faculty.budget-office');
-        Route::get('/faculty/dean_office', [UserController::class, 'DeanList'])->name('faculty.dean_office');
-        Route::get('/faculty/accounting', [UserController::class, 'AccountList'])->name('faculty.accounting');
-        Route::get('/faculty/cashier', [UserController::class, 'CashierList'])->name('faculty.cashier');
-        Route::get('/faculty/honorarium_released', [UserController::class, 'honorarium_released'])->name('faculty.honorarium_released');
+        Route::get('/faculty/bugs', [FacultyTrackingController::class, 'AdminList'])->name('faculty.bugs');
+        Route::get('/faculty/budget-office', [FacultyTrackingController::class, 'BudgetList'])->name('faculty.budget-office');
+        Route::get('/faculty/dean_office', [FacultyTrackingController::class, 'DeanList'])->name('faculty.dean_office');
+        Route::get('/faculty/accounting', [FacultyTrackingController::class, 'AccountList'])->name('faculty.accounting');
+        Route::get('/faculty/cashier', [FacultyTrackingController::class, 'CashierList'])->name('faculty.cashier');
+        Route::get('/faculty/honorarium_released', [FacultyTrackingController::class, 'honorarium_released'])->name('faculty.honorarium_released');
 
         Route::get('/faculty_dashboard', [FacultyDashboardController::class, 'faculty_dashboard'])->name('faculty_dashboard');
         Route::get('/faculty_tracking', [FacultyTrackingController::class, 'faculty_tracking'])->name('faculty_tracking');

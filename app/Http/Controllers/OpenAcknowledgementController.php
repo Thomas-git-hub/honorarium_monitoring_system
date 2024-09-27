@@ -77,11 +77,11 @@ class OpenAcknowledgementController extends Controller
                 return ucfirst($employeeDetails->employee_fname) . ' ' . ucfirst($employeeDetails->employee_lname);
             })
             ->addColumn('id_number', function($data) use($ibu_dbcon) {
-                $user =  User::where('employee_id',  $data->employee_id)->first();
-                // $employeeDetails = $ibu_dbcon->table('employee')
-                // ->where('id', $data->employee_id)
-                // ->first();
-                return $user->ee_number ? $user->ee_number : 0;
+
+                $employeeDetails = $ibu_dbcon->table('employee')
+                ->where('id', $data->employee_id)
+                ->first();
+                return $employeeDetails->employee_no ? $employeeDetails->employee_no : 0;
             })
             ->addColumn('academic_rank', function($data) use($ibu_dbcon) {
                 $employeeDetails = $ibu_dbcon->table('employee')

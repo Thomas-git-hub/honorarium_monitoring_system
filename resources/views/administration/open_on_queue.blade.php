@@ -542,90 +542,85 @@
 
         // Replace Bootstrap modal with SweetAlert2
         $('#proceedTransactionButton').off('click').on('click', function() {
-            Swal.fire({
-                // title: 'Read',
-                icon: 'question',
-                html: `
-                    <p class="text-success fw-bold fs-4">You are about to send Honorarium Transactions to the next Office.</p>
-                    <p class="text-muted">"Proceeding with this transaction indicates that every individual has submitted all necessary requirements for their honorarium."</p>
-                    <button id="proceedToCashier" class="btn btn-success mt-3">Proceed to Cashier</button>
-                `,
-                showCancelButton: true,
-                confirmButtonText: 'Proceed to @if(Auth::user()->usertype->name === "Dean") Accounting @else next Office @endif',
-                cancelButtonText: 'Cancel',
-                customClass: {
-                    confirmButton: 'btn btn-primary gap-1',
-                    cancelButton: 'btn btn-label-danger'
+            $.ajax({
+                url: '{{ route('check.proceed.cashier') }}',
+                method: 'POST',
+                data: {
+                    batch_id: batchId,
+                    _token: $('meta[name="csrf-token"]').attr('content')
                 },
-                buttonsStyling: false
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // AJAX Request to proceed with the transaction
-                    $.ajax({
-                        url: '{{ route('admin_on_queue.proceed') }}',
-                        method: 'POST',
-                        data: {
-                            batch_id: batchId,
-                            _token: $('meta[name="csrf-token"]').attr('content'),
-                        },
-                        beforeSend: function() {
-                            Swal.fire({
-                                title: 'Processing...',
-                                html: '<div class="spinner-border text-primary" role="status"></div>',
-                                showConfirmButton: false,
-                                allowOutsideClick: false
-                            });
-                        },
-
-                        // success: function(response) {
-                        //     if(response.success) {
-                        //         Swal.fire({
-                        //             icon: 'success',
-                        //             title: 'Transaction forwarded succesfully',
-                        //             html: `<h4 class="text-success">Tracking Number:<b>${response.batch_id}</b></h4><small class="text-danger">Note: Always attach the tracking number on the documents.</small>`,
-                        //             text: response.message,
-                        //         });
-                        //     } else {
-                        //         Swal.fire({
-                        //             icon: 'error',
-                        //             title: 'Something went wrong',
-                        //             text: response.message,
-                        //         });
-                        //     }
-                        //     // Reload DataTable
-                        //     $('#facultyTable').DataTable().ajax.reload();
-                        // },
-                        success: function(response) {
-                        if(response.success) {
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Transaction forwarded successfully',
-                                html: `<h4 class="text-success">Tracking Number:<b>${response.batch_id}</b></h4><small class="text-danger">Note: Always attach the tracking number on the documents.</small>`,
-                                text: response.message,
-                            }).then((result) => {
-                                if (result.isConfirmed) {
-                                    // Redirect to /history when OK is clicked
-                                    window.location.href = '/history';
+                success: function(response) {
+                    Swal.fire({
+                        icon: 'question',
+                        html: `
+        <p class="text-success fw-bold fs-4">You are about to send Honorarium Transactions to the next Office.</p>
+        <p class="text-muted">"Proceeding with this transaction indicates that every individual has submitted all necessary requirements for their honorarium."</p>
+        ${response.canProceedToCashier ? '<button id="proceedToCashier" class="btn btn-success mt-3">Proceed to Cashier</button>' : ''}
+    `,
+    showCancelButton: true,
+    confirmButtonText: response.canProceedToCashier ? '' : 'Proceed to @if(Auth::user()->usertype->name === "Dean") Accounting @elseif(Auth::user()->usertype->name === "Accounting") Dean @else next Office @endif',
+    cancelButtonText: 'Cancel',
+    customClass: {
+        confirmButton: 'btn btn-primary gap-1',
+        cancelButton: 'btn btn-label-danger'
+    },
+    buttonsStyling: false,
+    showConfirmButton: !response.canProceedToCashier
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            // AJAX request to proceed with the transaction
+                            $.ajax({
+                                url: '{{ route('admin_on_queue.proceed') }}',
+                                method: 'POST',
+                                data: {
+                                    batch_id: batchId,
+                                    _token: $('meta[name="csrf-token"]').attr('content'),
+                                },
+                                beforeSend: function() {
+                                    Swal.fire({
+                                        title: 'Processing...',
+                                        html: '<div class="spinner-border text-primary" role="status"></div>',
+                                        showConfirmButton: false,
+                                        allowOutsideClick: false
+                                    });
+                                },
+                                success: function(response) {
+                                    if (response.success) {
+                                        Swal.fire({
+                                            icon: 'success',
+                                            title: 'Transaction forwarded successfully',
+                                            html: `<h4 class="text-success">Tracking Number:<b>${response.batch_id}</b></h4><small class="text-danger">Note: Always attach the tracking number on the documents.</small>`,
+                                            text: response.message,
+                                        }).then((result) => {
+                                            if (result.isConfirmed) {
+                                                window.location.href = '/history';
+                                            }
+                                        });
+                                    } else {
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: 'Something went wrong',
+                                            text: response.message,
+                                        });
+                                    }
+                                    $('#facultyTable').DataTable().ajax.reload();
+                                },
+                                error: function(xhr) {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Error',
+                                        text: 'There was a problem updating the transactions.',
+                                    });
                                 }
                             });
-                        } else {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Something went wrong',
-                                text: response.message,
-                            });
                         }
-                        // Reload DataTable
-                        $('#facultyTable').DataTable().ajax.reload();
-                    },
-
-                        error: function(xhr) {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error',
-                                text: 'There was a problem updating the transactions.',
-                            });
-                        }
+                    });
+                },
+                error: function(xhr) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'There was a problem checking the batch status.',
                     });
                 }
             });

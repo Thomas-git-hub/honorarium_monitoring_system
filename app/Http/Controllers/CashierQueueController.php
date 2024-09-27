@@ -141,10 +141,10 @@ class CashierQueueController extends Controller
                 return ucfirst($employeeDetails->employee_fname) . ' ' . ucfirst($employeeDetails->employee_lname);
             })
             ->addColumn('id_number', function($data) use($ibu_dbcon) {
-                // $employeeDetails = $ibu_dbcon->table('employee')
-                // ->where('id', $data->employee_id)
-                // ->first();
-                return $data->ee_number ? $data->ee_number : 0;
+                $employeeDetails = $ibu_dbcon->table('employee')
+                ->where('id', $data->employee_id)
+                ->first();
+                return $employeeDetails->employee_no ? $employeeDetails->employee_no : 0;
             })
             ->addColumn('academic_rank', function($data) use($ibu_dbcon) {
                 $employeeDetails = $ibu_dbcon->table('employee')
@@ -218,6 +218,25 @@ class CashierQueueController extends Controller
 
         // Return success response
         return response()->json(['success' => 'Net amount updated successfully.']);
+    }
+
+    public function checkIfProceedToCashier(Request $request)
+    {
+        $batchId = $request->input('batch_id');
+        $user = Auth::user();
+        $accountingOfficeId = Office::where('name', 'Accounting')->first()->id;
+
+        // Check if the batch is already acknowledged by Accounting
+        $batchAcknowledgedByAccounting = Acknowledgement::where('batch_id', $batchId)
+            ->where('office_id', $accountingOfficeId)
+            ->exists();
+
+        // Check if the user is a Dean
+        $isDean = $user->usertype->name === 'Dean';
+
+        return response()->json([
+            'canProceedToCashier' => $batchAcknowledgedByAccounting && $isDean
+        ]);
     }
 
 }
