@@ -179,16 +179,34 @@ class QueueController extends Controller
         $ack->save();
 
         // Update the status to 'On Queue'
-        Transaction::where('status', 'Processing')
-        ->where('office', Auth::user()->office_id)
-        ->where('created_by', Auth::user()->id)
-        ->where('batch_id', $request->batch_id)
-        ->update([
-            'status' => 'On Queue',
-            'office' => $office->id,
-            'created_by' => Auth::user()->id,
-            'updated_at' => now(),
-        ]);
+        if($usertype === 'Cashiers' ){
+
+            Transaction::where('status', 'Processing')
+            ->where('office', Auth::user()->office_id)
+            ->where('created_by', Auth::user()->id)
+            ->where('batch_id', $request->batch_id)
+            ->update([
+                'status' => 'Completed',
+                'office' => $office->id,
+                'created_by' => Auth::user()->id,
+                'updated_at' => now(),
+            ]);
+
+        }else{
+
+            Transaction::where('status', 'Processing')
+            ->where('office', Auth::user()->office_id)
+            ->where('created_by', Auth::user()->id)
+            ->where('batch_id', $request->batch_id)
+            ->update([
+                'status' => 'On Queue',
+                'office' => $office->id,
+                'created_by' => Auth::user()->id,
+                'updated_at' => now(),
+            ]);
+
+        }
+
 
         $batchId = $request->batch_id;
 
@@ -294,7 +312,7 @@ class QueueController extends Controller
                     'transaction_id' => $transaction->id,
                     'employee_fname' => $employeedetails->employee_fname,
                     'employee_lname' => $employeedetails->employee_lname,
-                    'status' => 'On Queue',
+                    'status' => 'PendiOn Queueng',
                     'created_at' => now()->format('F j, Y'),
                     'honorarium' => $transaction->honorarium->name,
                     'office' => $office->name,
