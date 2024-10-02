@@ -312,7 +312,7 @@ class QueueController extends Controller
                     'transaction_id' => $transaction->id,
                     'employee_fname' => $employeedetails->employee_fname,
                     'employee_lname' => $employeedetails->employee_lname,
-                    'status' => 'PendiOn Queueng',
+                    'status' => 'On Queue',
                     'created_at' => now()->format('F j, Y'),
                     'honorarium' => $transaction->honorarium->name,
                     'office' => $office->name,
