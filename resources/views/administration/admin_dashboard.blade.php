@@ -19,7 +19,7 @@
                         </div>
                           <h3 class="text-info fw-bold">{{$EmailCount ? $EmailCount : 0}} New Emails</h3>
                     </div>
-                    <p class="fw-medium mb-0 d-flex justify-content-end"><a class="stretched-link" href="">Go to<i class='bx bx-chevron-right'></i></a></p>
+                    <p class="fw-medium mb-0 d-flex justify-content-end"><a class="stretched-link" href="/admin_email">Go to<i class='bx bx-chevron-right'></i></a></p>
                   </div>
                 </div>
             </div>
@@ -33,7 +33,7 @@
                         </div>
                           <h3 class="text-warning fw-bold">{{$OnQueue ? $OnQueue : 0}} In-Queue Trans</h3>
                     </div>
-                    <p class="fw-medium mb-0 d-flex justify-content-end"><a class="stretched-link" href="">Go to<i class='bx bx-chevron-right'></i></a></p>
+                    <p class="fw-medium mb-0 d-flex justify-content-end"><a class="stretched-link" href="/admin_on_queue">Go to<i class='bx bx-chevron-right'></i></a></p>
                   </div>
                 </div>
             </div>
@@ -43,7 +43,7 @@
                   <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center gap-2">
                         <div class="badge bg-danger p-4 rounded mb-4">
-                            <i class='bx bx-list-ol fs-3' ></i>
+                            <i class='bx bx-error-alt fs-3' ></i>
                         </div>
                           <h3 class="text-danger fw-bold">{{$OnHold ? $OnHold : 0}} On-Hold Emails</h3>
                     </div>
@@ -65,9 +65,9 @@
                             {{-- <div class="badge bg-secondary p-4 rounded mb-4">
                                 <i class='bx bx-archive-in fs-3' ></i>
                             </div> --}}
-                                <h3 class="fw-light">10 Incoming Acknowledgements</h3>
+                                <h3 class="fw-light">Incoming Acknowledgements</h3>
                         </div>
-                        <p class="fw-medium mb-0 d-flex justify-content-end"><a class="stretched-link" href="">Go to<i class='bx bx-chevron-right'></i></a></p>
+                        <p class="fw-medium mb-0 d-flex justify-content-end"><a class="stretched-link" href="/for_acknowledgement">Go to<i class='bx bx-chevron-right'></i></a></p>
                         </div>
                     </div>
 
@@ -92,7 +92,7 @@
                             {{-- <div class="badge bg-secondary p-4 rounded mb-4">
                                 <i class='bx bx-archive-in fs-3' ></i>
                             </div> --}}
-                                <h3 class="fw-light">Incoming Emails</h3>
+                                <h3 class="fw-light text-info">Incoming Emails</h3>
                         </div>
                         <p class="fw-medium mb-0 d-flex justify-content-end"><a class="stretched-link" href="">Go to<i class='bx bx-chevron-right'></i></a></p>
                         </div>

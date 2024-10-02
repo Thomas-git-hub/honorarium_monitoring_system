@@ -390,8 +390,6 @@
             var row = $(this).closest('tr');
             var rowData = table.row(row).data();
 
-            // var transactionId = rowData.id; // Adjust if necessary
-
             Swal.fire({
                 title: 'You are about to Hold this Transaction',
                 text: "The transaction will be put on hold.",
@@ -409,6 +407,14 @@
                         data: {
                             id: rowData.id,
                             _token: $('meta[name="csrf-token"]').attr('content') // Include CSRF token
+                        },
+                        beforeSend: function() {
+                            Swal.fire({
+                                title: 'Processing...',
+                                html: '<div class="spinner-border text-primary" role="status"></div>',
+                                showConfirmButton: false,
+                                allowOutsideClick: false
+                            });
                         },
                         success: function(response) {
                             if (response.success) {
@@ -438,6 +444,7 @@
                 }
             });
         });
+
 
 
     });
