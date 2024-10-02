@@ -94,7 +94,7 @@
                             </div> --}}
                                 <h3 class="fw-light text-info">Incoming Emails</h3>
                         </div>
-                        <p class="fw-medium mb-0 d-flex justify-content-end"><a class="stretched-link" href="">Go to<i class='bx bx-chevron-right'></i></a></p>
+                        <p class="fw-medium mb-0 d-flex justify-content-end"><a class="stretched-link" href="/admin_email">Go to<i class='bx bx-chevron-right'></i></a></p>
                         </div>
                     </div>
                     <div class="table-responsive">

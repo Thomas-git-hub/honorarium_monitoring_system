@@ -25,9 +25,8 @@ class AdminController extends Controller
             $EmailCount = $pendingMails->count();
 
             if(Auth::user()->usertype->name === 'Admin'){
-                $OnQueue = Transaction::where('status', 'Processing')
-                ->orWhere('status', 'On Queue')
-                ->where('created_by', Auth::user()->id)
+                $OnQueue = Transaction::where('created_by', Auth::user()->id)
+                ->whereIn('status', ['Processing'])
                 ->where('batch_id', '!=', NULL)
                 ->count();
             }

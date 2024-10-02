@@ -21,7 +21,7 @@ use App\Http\Controllers\FacultyDashboardController;
 use App\Http\Controllers\FacultyTrackingController;
 
 //START NO AUTHENTICATED ACCESS
-Route::middleware(['guest'])->group(function () {
+Route::middleware(['guest', '419'])->group(function () {
 
     Route::get('/', [UserController::class, 'index'])->name("login")->name("login");
     Route::post('/login', [UserController::class, 'login'])->name("login.user");
@@ -33,7 +33,7 @@ Route::middleware(['guest'])->group(function () {
 
 //START AUTHENTICATED ACCESS
 
-Route::middleware(['auth_check'])->group(function () {
+Route::middleware(['auth_check', '419'])->group(function () {
 
     Route::post('/test', [UserController::class, 'test'])->name('test');
 

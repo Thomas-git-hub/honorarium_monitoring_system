@@ -2,6 +2,7 @@
 
 use App\Http\Middleware\CheckUserType;
 use App\Http\Middleware\FacultyRedirect;
+use App\Http\Middleware\Handle419Error;
 use App\Http\Middleware\IsAdmin;
 use App\Http\Middleware\IsAuthenticated;
 use App\Http\Middleware\IsGuest;
@@ -37,6 +38,10 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->appendToGroup('faculty', [
             FacultyRedirect::class,
+        ]);
+
+        $middleware->appendToGroup('419', [
+            Handle419Error::class
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
