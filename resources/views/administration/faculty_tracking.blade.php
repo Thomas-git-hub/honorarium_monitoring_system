@@ -15,7 +15,7 @@
     <div class="nav-align-top mb-6">
         <ul class="nav nav-pills nav-fill d-flex flex-nowrap overflow-auto mb-3 gap-2" id="ul-scroll" role="tablist">
             <li class="nav-item mb-1 mb-sm-0">
-                <button type="button" class="btn-label-primary text-primary nav-link active office-btn" data-route="{{ route('faculty.bugs') }}" role="tab" aria-selected="true">
+                <button type="button" class="btn-label-primary text-primary nav-link office-btn" data-route="{{ route('faculty.bugs') }}" role="tab" aria-selected="true">
                     <span class="d-none d-sm-block">
                         <i class="tf-icons bx bxs-home bx-sm me-1_5 align-text-bottom"></i>
                         BUGS Admin

@@ -23,12 +23,14 @@
             <div class="text-truncate" data-i18n="Page 1">Dashboard</div>
           </a>
         </li>
+        @if(Auth::user()->usertype->name === 'Faculties')
         <li class="menu-item {{ request()->is('faculty_dashboard') ? 'active' : '' }}">
             <a href="/faculty_dashboard" class="menu-link">
               <i class="menu-icon tf-icons bx bx-home-circle"></i>
               <div class="text-truncate" data-i18n="Page 1">Faculty Dashboard</div>
             </a>
           </li>
+        @endif
         <li class="menu-item {{ request()->is('admin_email') ? 'active' : '' }}">
           <a href="/admin_email" class="menu-link">
             <i class='menu-icon tf-icons bx bx-envelope'></i>

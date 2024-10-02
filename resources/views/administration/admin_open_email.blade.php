@@ -16,7 +16,7 @@
                     <div class="card-body">
                         <p class="border-bottom">{{$data->message}}</p>
 
-                        @if(count($docuJson) > 0)
+                        @if(is_array($docuJson) || is_countable($docuJson) > 0)
 
                         <p><strong>Missing Documents:</strong></p>
                         <ul>
