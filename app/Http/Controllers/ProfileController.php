@@ -10,7 +10,12 @@ use Illuminate\Http\Request;
 class ProfileController extends Controller
 {
     public function profile(){
-        return view('administration.profile');
+        if(Auth::check()){
+            return view('administration.profile');
+        }else{
+            abort(403, 'Unauthorized action.');
+        }
+
     }
 
     public function profile_update(Request $request)

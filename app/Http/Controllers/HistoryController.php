@@ -14,7 +14,11 @@ use Yajra\DataTables\Facades\DataTables;
 class HistoryController extends Controller
 {
     public function history(){
-        return view('administration.history');
+        if(Auth::user()->usertype->name !== 'Faculties'){
+            return view('administration.history');
+        }else{
+            abort(403, 'Unauthorized action.');
+        }
     }
 
     public function open_history(Request $request){
@@ -159,7 +163,7 @@ class HistoryController extends Controller
         ->where('batch_id', $request->batch_id)
         ->where('status', '!=', 'On-hold');
         $transactions = $query->get();
-        $ibu_dbcon = DB::connection('ors_pgsql');
+        $ibu_dbcon = DB::connection('ibu_test');
 
         $months = [
             1 => 'January',

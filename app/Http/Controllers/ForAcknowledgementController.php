@@ -17,27 +17,31 @@ class ForAcknowledgementController extends Controller
 {
     public function for_acknowledgement(request $request)
     {
+        if(Auth::user()->usertype->name !== 'Faculties'){
+            $TransCountToday = Transaction::with(['honorarium', 'createdBy'])
+                                    ->where('status', 'On Queue')
+                                    ->where('office', Auth::user()->office_id)
+                                    ->whereDate('created_at', Carbon::today())
+                                    ->count();
+            $yesterday = Carbon::yesterday()->format('Y-m-d');
 
-        $TransCountToday = Transaction::with(['honorarium', 'createdBy'])
-                                ->where('status', 'On Queue')
-                                ->where('office', Auth::user()->office_id)
-                                ->whereDate('created_at', Carbon::today())
-                                ->count();
-        $yesterday = Carbon::yesterday()->format('Y-m-d');
+            $TransCountYesterday = Transaction::with(['honorarium', 'createdBy'])
+                ->where('status', 'On Queue')
+                ->where('office', Auth::user()->office_id)
+                ->whereDate('updated_at', $yesterday)
+                ->count();
 
-        $TransCountYesterday = Transaction::with(['honorarium', 'createdBy'])
-            ->where('status', 'On Queue')
-            ->where('office', Auth::user()->office_id)
-            ->whereDate('updated_at', $yesterday)
-            ->count();
+            $TransCountDaysAgo = Transaction::with(['honorarium', 'createdBy'])
+                ->where('status', 'On Queue')
+                ->where('office', Auth::user()->office_id)
+                ->whereDate('updated_at', '<', now()->subDays(1))
+                ->whereDate('updated_at', '>=', now()->subDays(7))
+                ->count();
+            return view('administration.for_acknowledgement', compact('TransCountToday', 'TransCountYesterday', 'TransCountDaysAgo' ));
 
-        $TransCountDaysAgo = Transaction::with(['honorarium', 'createdBy'])
-            ->where('status', 'On Queue')
-            ->where('office', Auth::user()->office_id)
-            ->whereDate('updated_at', '<', now()->subDays(1))
-            ->whereDate('updated_at', '>=', now()->subDays(7))
-            ->count();
-        return view('administration.for_acknowledgement', compact('TransCountToday', 'TransCountYesterday', 'TransCountDaysAgo' ));
+        }else{
+            abort(403, 'Unauthorized action.');
+        }
     }
 
     public function list(Request $request)

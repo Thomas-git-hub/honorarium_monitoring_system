@@ -19,31 +19,36 @@ class AdminController extends Controller
 {
     public function admin_dashboard(){
 
-        $pendingMails = Emailing::where('status', 'Unread')->where('to_user', Auth::user()->employee_id);
-        $EmailCount = $pendingMails->count();
+        if(Auth::user()->usertype->name !== 'Faculties'){
 
-        if(Auth::user()->usertype->name === 'Admin'){
-            $OnQueue = Transaction::where('status', 'Processing')
-            ->orWhere('status', 'On Queue')
-            ->where('created_by', Auth::user()->id)
+            $pendingMails = Emailing::where('status', 'Unread')->where('to_user', Auth::user()->employee_id);
+            $EmailCount = $pendingMails->count();
+
+            if(Auth::user()->usertype->name === 'Admin'){
+                $OnQueue = Transaction::where('status', 'Processing')
+                ->orWhere('status', 'On Queue')
+                ->where('created_by', Auth::user()->id)
+                ->where('batch_id', '!=', NULL)
+                ->count();
+            }
+            else{
+                $OnQueue = Transaction::where('status', 'Processing')
+                ->where('created_by', Auth::user()->id)
+                ->where('batch_id', '!=', NULL)
+                ->count();
+            }
+
+
+            $OnHold = Transaction::where('status', 'On-hold')
             ->where('batch_id', '!=', NULL)
-            ->count();
-        }
-        else{
-            $OnQueue = Transaction::where('status', 'Processing')
+            ->where('office', Auth::user()->office_id)
             ->where('created_by', Auth::user()->id)
-            ->where('batch_id', '!=', NULL)
             ->count();
+
+            return view('administration.admin_dashboard', compact('EmailCount', 'OnQueue', 'OnHold'));
+        }else{
+            abort(403, 'Unauthorized action.');
         }
-
-
-        $OnHold = Transaction::where('status', 'On-hold')
-        ->where('batch_id', '!=', NULL)
-        ->where('office', Auth::user()->office_id)
-        ->where('created_by', Auth::user()->id)
-        ->count();
-
-        return view('administration.admin_dashboard', compact('EmailCount', 'OnQueue', 'OnHold'));
     }
 
     public function admin_email(){
@@ -69,38 +74,43 @@ class AdminController extends Controller
     }
 
     public function admin_faculty(){
-        if(Auth::user()->usertype->name === 'Faculties'){
-            $user = Auth::user();
-            $collegeDetails = DB::connection('ors_pgsql')->table('college')
-            ->where('id', $user->college_id)
-            ->first();
+        // if(Auth::user()->usertype->name === 'Faculties'){
+        //     $user = Auth::user();
+        //     $collegeDetails = DB::connection('ibu_test')->table('college')
+        //     ->where('id', $user->college_id)
+        //     ->first();
 
-            if(!empty($collegeDetails)){
-                $college = $collegeDetails->college_name;
-            }
-            else{
-                $college = 'No Assigned College';
-            }
-            return view('administration.view_auth_faculty', compact('user', 'college'));
+        //     if(!empty($collegeDetails)){
+        //         $college = $collegeDetails->college_name;
+        //     }
+        //     else{
+        //         $college = 'No Assigned College';
+        //     }
+        //     return view('administration.view_auth_faculty', compact('user', 'college'));
+        // }
+        if(Auth::user()->usertype->name === 'Admin'){
+            $today = Carbon::today();
+            $employeeIds = DB::connection('ibu_test')->table('employee_user')->pluck('id');
+            $newAccountsToday = DB::connection('mysql')->table('users')
+                ->whereDate('created_at', $today)
+                ->whereNull('deleted_at')
+                ->whereIn('employee_id', $employeeIds)
+                ->count();
+                return view('administration.admin_faculty', compact('newAccountsToday'));
+
+        }else{
+            abort(403, 'Unauthorized action.');
         }
 
-        $today = Carbon::today();
-        $employeeIds = DB::connection('ors_pgsql')->table('employee_user')->pluck('id');
-        $newAccountsToday = DB::connection('mysql')->table('users')
-            ->whereDate('created_at', $today)
-            ->whereNull('deleted_at')
-            ->whereIn('employee_id', $employeeIds)
-            ->count();
-            return view('administration.admin_faculty', compact('newAccountsToday'));
     }
 
     public function admin_view_faculty(Request $request){
         $id = $request->query('id');
-        $ibu_dbcon = DB::connection('ors_pgsql');
+        $ibu_dbcon = DB::connection('ibu_test');
         $user = $ibu_dbcon->table('employee')->where('id', $id )->first();
         // Transaction::findOrFail($id);
 
-        $collegeDetails = DB::connection('ors_pgsql')->table('college')
+        $collegeDetails = DB::connection('ibu_test')->table('college')
                 ->where('id', $user->college_id)
                 ->first();
 
@@ -116,17 +126,27 @@ class AdminController extends Controller
 
 
     public function admin_honorarium(){
-        return view('administration.admin_honorarium');
+
+        if(Auth::user()->usertype->name === 'Admin'){
+            return view('administration.admin_honorarium');
+        }else{
+            abort(403, 'Unauthorized action.');
+        }
     }
 
     /* ---------------------------------------NEW ENTRIES FUNCTIONS-------------------------------------------- */
     public function admin_new_entries(){
 
-        $onQueue = Transaction::where('office', Auth::user()->office_id)
-            ->where('created_by', Auth::user()->id)
-            ->whereIn('status', ['Processing', 'On-hold'])
-            ->count();
-        return view('administration.admin_new_entries', compact('onQueue'));
+        if(Auth::user()->usertype->name === 'Admin'){
+
+            $onQueue = Transaction::where('office', Auth::user()->office_id)
+                ->where('created_by', Auth::user()->id)
+                ->whereIn('status', ['Processing', 'On-hold'])
+                ->count();
+            return view('administration.admin_new_entries', compact('onQueue'));
+        }else{
+            abort(403, 'Unauthorized action.');
+        }
     }
 
 
@@ -215,31 +235,48 @@ class AdminController extends Controller
 
     public function admin_on_queue(){
 
-        if(Auth::user()->usertype->name === 'Admin'){
-            $onQueue = Transaction::where('status', 'Processing')
-            ->orWhere('status', 'On Queue')
-            // ->where('created_by', Auth::user()->id)
-            ->where('batch_id', '!=', NULL)
-            ->count();
-        }
-        else{
-            $onQueue = Transaction::where('status', 'Processing')
-            ->where('created_by', Auth::user()->id)
-            ->where('batch_id', '!=', NULL)
-            ->count();
+        if(Auth::user()->usertype->name === 'Faculties'){
 
+            abort(403, 'Unauthorized action.');
+
+        }else{
+
+            if(Auth::user()->usertype->name === 'Admin'){
+                $onQueue = Transaction::where('status', 'Processing')
+                ->orWhere('status', 'On Queue')
+                // ->where('created_by', Auth::user()->id)
+                ->where('batch_id', '!=', NULL)
+                ->count();
+            }
+            else{
+                $onQueue = Transaction::where('status', 'Processing')
+                ->where('created_by', Auth::user()->id)
+                ->where('batch_id', '!=', NULL)
+                ->count();
+
+            }
+            return view('administration.admin_on_queue', compact('onQueue'));
         }
 
-        return view('administration.admin_on_queue', compact('onQueue'));
+
+
+
     }
 
     public function admin_on_hold(){
-        $OnHold = Transaction::where('status', 'On-hold')
-        // ->where('office', Auth::user()->office_id)
-        ->where('batch_id', '!=', NULL)
-        ->where('created_by', Auth::user()->id)
-        ->count();
-        return view('administration.admin_on_hold', compact('OnHold'));
+        if(Auth::user()->usertype->name === 'Faculties'){
+
+            abort(403, 'Unauthorized action.');
+
+        }else{
+            $OnHold = Transaction::where('status', 'On-hold')
+            // ->where('office', Auth::user()->office_id)
+            ->where('batch_id', '!=', NULL)
+            ->where('created_by', Auth::user()->id)
+            ->count();
+            return view('administration.admin_on_hold', compact('OnHold'));
+
+        }
     }
 
     public function list(Request $request)
@@ -291,7 +328,7 @@ class AdminController extends Controller
         // }
 
         $transactions = $query->get();
-        $ibu_dbcon = DB::connection('ors_pgsql');
+        $ibu_dbcon = DB::connection('ibu_test');
 
         $months = [
             1 => 'January',

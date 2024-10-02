@@ -24,7 +24,7 @@ class QueueController extends Controller
 
     public function proceedToBudgetOffice(Request $request)
     {
-        $ibu_dbcon = DB::connection('ors_pgsql');
+        $ibu_dbcon = DB::connection('ibu_test');
 
         // Fetch all transactions with status 'Processing'
         $transactions = Transaction::with(['honorarium', 'office'])
@@ -103,7 +103,7 @@ class QueueController extends Controller
                         'transaction_id' => $transaction->id,
                         'employee_fname' => $employeedetails->employee_fname,
                         'employee_lname' => $employeedetails->employee_lname,
-                        'status' => 'Pending',
+                        'status' => 'On Queue',
                         'created_at' => now()->format('F j, Y'),
                         'honorarium' => $transaction->honorarium->name,
                         'office' => $office->name,
@@ -136,7 +136,7 @@ class QueueController extends Controller
 
     public function proceed(Request $request)
     {
-        $ibu_dbcon = DB::connection('ors_pgsql');
+        $ibu_dbcon = DB::connection('ibu_test');
 
         // Fetch all transactions with status 'Processing'
         $transactions = Transaction::where('status', 'Processing')
@@ -211,7 +211,7 @@ class QueueController extends Controller
                     'transaction_id' => $transaction->id,
                     'employee_fname' => $employeedetails->employee_fname,
                     'employee_lname' => $employeedetails->employee_lname,
-                    'status' => 'Pending',
+                    'status' => 'On Queue',
                     'created_at' => now()->format('F j, Y'),
                     'honorarium' => $transaction->honorarium->name,
                     'office' => $office->name,
@@ -239,7 +239,7 @@ class QueueController extends Controller
 
     public function proceedToCashier(Request $request)
     {
-        $ibu_dbcon = DB::connection('ors_pgsql');
+        $ibu_dbcon = DB::connection('ibu_test');
 
         // Fetch all transactions with status 'Processing'
         $transactions = Transaction::where('status', 'Processing')
@@ -294,7 +294,7 @@ class QueueController extends Controller
                     'transaction_id' => $transaction->id,
                     'employee_fname' => $employeedetails->employee_fname,
                     'employee_lname' => $employeedetails->employee_lname,
-                    'status' => 'Pending',
+                    'status' => 'On Queue',
                     'created_at' => now()->format('F j, Y'),
                     'honorarium' => $transaction->honorarium->name,
                     'office' => $office->name,
@@ -368,7 +368,7 @@ class QueueController extends Controller
 
         // Find the transaction by ID
         $transaction = Transaction::find($request->id);
-        $ibu_dbcon = DB::connection('ors_pgsql');
+        $ibu_dbcon = DB::connection('ibu_test');
 
         $office = Office::where('id', $transaction->office)->first();
         // dd($transaction->employee_id);
@@ -585,7 +585,7 @@ class QueueController extends Controller
         }
 
         $transactions = $query->get();
-        $ibu_dbcon = DB::connection('ors_pgsql');
+        $ibu_dbcon = DB::connection('ibu_test');
 
         $months = [
             1 => 'January',

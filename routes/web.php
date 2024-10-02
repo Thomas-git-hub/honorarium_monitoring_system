@@ -42,7 +42,10 @@ Route::middleware(['auth_check'])->group(function () {
     Route::match(['post', 'put'], 'profile/update', [ProfileController::class, 'profile_update'])->name('profile.update');
     Route::post('/logout', [UserController::class, 'logout'])->name('logout');
 
-    Route::get('/admin_dashboard', [AdminController::class, 'admin_dashboard'])->name("admin_dashboard");
+    Route::middleware(['faculty'])->group(function () {
+        Route::get('/admin_dashboard', [AdminController::class, 'admin_dashboard'])->name("admin_dashboard");
+    });
+
     Route::get('/admin_email', [AdminController::class, 'admin_email'])->name("admin_email");
     Route::get('/admin_open_email', [AdminController::class, 'admin_open_email'])->name("admin_open_email");
 
@@ -90,7 +93,10 @@ Route::middleware(['auth_check'])->group(function () {
         Route::get('/open_on_queue', [QueueController::class, 'OpenOnQueue'])->name('open_on_queue');
         Route::get('/admin_on_queue/list', [QueueController::class, 'list'])->name('admin_on_queue.list');
         Route::get('/admin_on_queue/open_list', [QueueController::class, 'open_list'])->name('admin_on_queue.open_list');
+
         Route::get('/admin_on_hold', [AdminController::class, 'admin_on_hold'])->name('admin_on_hold');
+
+
         Route::post('/admin_on_queue/proceed_to_budget-office', [QueueController::class, 'proceedToBudgetOffice'])->name('admin_on_queue.proceedToBudgetOffice');
         Route::post('/admin_on_queue/proceed', [QueueController::class, 'proceed'])->name('admin_on_queue.proceed');
         Route::post('/admin_on_queue/proceed_to_cashier', [QueueController::class, 'proceedToCashier'])->name('admin_on_queue.proceedToCashier');

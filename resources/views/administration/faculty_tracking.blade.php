@@ -19,7 +19,7 @@
                     <span class="d-none d-sm-block">
                         <i class="tf-icons bx bxs-home bx-sm me-1_5 align-text-bottom"></i>
                         BUGS Admin
-                        <span class="badge rounded-pill badge-center position-absolute h-px-20 w-px-20 bg-danger ms-1 pt-50">3</span>
+                        <span class="badge rounded-pill badge-center position-absolute h-px-20 w-px-20 bg-danger ms-1 pt-50">{{$adminCount ?? 0}}</span>
                     </span>
                     <i class="bx bx bxs-bank bx-sm d-sm-none"></i>
                 </button>
@@ -29,7 +29,7 @@
                     <span class="d-none d-sm-block">
                         <i class="tf-icons bx bxs-coin bx-sm me-1_5 align-text-bottom"></i>
                         Budget Office
-                        <span class="badge rounded-pill badge-center position-absolute h-px-20 w-px-20 bg-danger ms-1 pt-50">3</span>
+                        <span class="badge rounded-pill badge-center position-absolute h-px-20 w-px-20 bg-danger ms-1 pt-50">{{$budgtCount ?? 0}}</span>
                     </span>
                     <i class="bx bx bxs-bank bx-sm d-sm-none"></i>
                 </button>
@@ -39,7 +39,7 @@
                     <span class="d-none d-sm-block">
                         <i class="tf-icons bx bxs-graduation bx-sm me-1_5 align-text-bottom"></i>
                         Deans Office
-                        <span class="badge rounded-pill badge-center position-absolute h-px-20 w-px-20 bg-danger ms-1 pt-50">3</span>
+                        <span class="badge rounded-pill badge-center position-absolute h-px-20 w-px-20 bg-danger ms-1 pt-50">{{$deanCount ?? 0}}</span>
                     </span>
                     <i class="bx bx bxs-bank bx-sm d-sm-none"></i>
                 </button>
@@ -49,9 +49,18 @@
                     <span class="d-none d-sm-block">
                         <i class="tf-icons bx bxs-calculator bx-sm me-1_5 align-text-bottom"></i>
                         Accounting
-                        <span class="badge rounded-pill badge-center position-absolute h-px-20 w-px-20 bg-danger ms-1 pt-50">3</span>
+                        <span class="badge rounded-pill badge-center position-absolute h-px-20 w-px-20 bg-danger ms-1 pt-50">{{$acctCount ?? 0}}</span>
                     </span>
                     <i class="bx bx bxs-bank bx-sm d-sm-none"></i>
+                </button>
+            </li>
+            <li class="nav-item">
+                <button type="button" class="btn-label-warning text-warning nav-link office-btn" data-route="{{ route('faculty.dean_office') }}" role="tab">
+                    <span class="d-none d-sm-block"><i class="tf-icons bx bxs-graduation bx-sm me-1_5 align-text-bottom"></i>
+                        Deans Office
+                        <span class="badge rounded-pill badge-center position-absolute h-px-20 w-px-20 bg-danger ms-1 pt-50">3</span>
+                    </span>
+                    <i class="bx bxs-graduation bx-sm d-sm-none"></i>
                 </button>
             </li>
             <li class="nav-item">
@@ -59,17 +68,17 @@
                     <span class="d-none d-sm-block">
                         <i class="tf-icons bx bxs-credit-card-alt bx-sm me-1_5 align-text-bottom"></i>
                         Cashier
-                        <span class="badge rounded-pill badge-center position-absolute h-px-20 w-px-20 bg-danger ms-1 pt-50">3</span>
+                        <span class="badge rounded-pill badge-center position-absolute h-px-20 w-px-20 bg-danger ms-1 pt-50">{{$cashCount ?? 0}}</span>
                     </span>
                     <i class="bx bx bxs-bank bx-sm d-sm-none"></i>
                 </button>
             </li>
             <li class="nav-item">
-                <button type="button" class="btn-label-dark text-dark nav-link" data-route="{{ route('faculty.honorarium_released') }}" role="tab">
+                <button type="button" class="btn-label-dark text-dark nav-link office-btn" data-route="{{ route('faculty.honorarium_released') }}" role="tab">
                     <span class="d-none d-sm-block">
                         <i class="tf-icons bx bxs-bank bx-sm me-1_5 align-text-bottom"></i>
                         Releasing
-                        <span class="badge rounded-pill badge-center position-absolute h-px-20 w-px-20 bg-danger ms-1 pt-50">3</span>
+                        <span class="badge rounded-pill badge-center position-absolute h-px-20 w-px-20 bg-danger ms-1 pt-50">{{$releaseCount ?? 0}}</span>
                     </span>
                     <i class="bx bx bxs-bank bx-sm d-sm-none"></i>
                 </button>

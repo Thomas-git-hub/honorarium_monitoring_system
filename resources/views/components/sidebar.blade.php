@@ -17,12 +17,14 @@
 
     <ul class="menu-inner py-1">
         <!-- Page -->
+        @if(Auth::user()->usertype->name !== 'Faculties')
         <li class="menu-item {{ request()->is('admin_dashboard') ? 'active' : '' }}">
           <a href="/admin_dashboard" class="menu-link">
             <i class="menu-icon tf-icons bx bx-home-circle"></i>
             <div class="text-truncate" data-i18n="Page 1">Dashboard</div>
           </a>
         </li>
+        @endif
         @if(Auth::user()->usertype->name === 'Faculties')
         <li class="menu-item {{ request()->is('faculty_dashboard') ? 'active' : '' }}">
             <a href="/faculty_dashboard" class="menu-link">

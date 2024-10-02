@@ -39,7 +39,7 @@ class SendTransactionEmails extends Command implements ShouldQueue // Implement 
      */
     public function handle()
     {
-        $ibu_dbcon = DB::connection('ors_pgsql');
+        $ibu_dbcon = DB::connection('ibu_test');
 
         $transactionIds = $this->argument('transaction_ids');
 
@@ -61,7 +61,7 @@ class SendTransactionEmails extends Command implements ShouldQueue // Implement 
                     'transaction_id' => $transaction->id,
                     'employee_fname' => $employeedetails->employee_fname,
                     'employee_lname' => $employeedetails->employee_lname,
-                    'status' => 'Pending',
+                    'status' => 'On Queue',
                     'created_at' => now()->format('F j, Y'),
                     'honorarium' => $transaction->honorarium->name,
                     'office' => $transaction->office->name,

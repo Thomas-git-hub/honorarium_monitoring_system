@@ -7,6 +7,7 @@ use App\Models\Office;
 use App\Models\User;
 use App\Models\UserType;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Yajra\DataTables\Facades\DataTables;
@@ -14,15 +15,19 @@ use Yajra\DataTables\Facades\DataTables;
 class UserManagementController extends Controller
 {
     public function user_management(){
+        if(Auth::user()->usertype->name === 'Admin'){
 
-        return view('administration.user_management');
+            return view('administration.user_management');
+        }else{
+            abort(403, 'Unauthorized action.');
+        }
     }
 
 
     public function list(Request $request)
     {
 
-        $ibu_dbcon = DB::connection('ors_pgsql');
+        $ibu_dbcon = DB::connection('ibu_test');
 
         $users = User::with('office')->get();
 
@@ -70,7 +75,7 @@ class UserManagementController extends Controller
 
             ->editColumn('college', function($user) {
                 if($user->college_id){
-                    $collegeDetails = DB::connection('ors_pgsql')->table('college')
+                    $collegeDetails = DB::connection('ibu_test')->table('college')
                     ->where('id', $user->college_id)
                     ->first();
                     return $collegeDetails->college_name;
