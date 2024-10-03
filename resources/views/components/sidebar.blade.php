@@ -37,7 +37,7 @@
           <a href="/admin_email" class="menu-link">
             <i class='menu-icon tf-icons bx bx-envelope'></i>
             <div class="text-truncate" data-i18n="Page 2">Inbox</div>
-            <span class="badge bg-danger badge-notifications p-1 fs-8">14</span>
+            <span class="badge bg-danger badge-notifications p-1 fs-8">{{$EmailCount ?? 0}}</span>
           </a>
         </li>
         <li class="menu-item {{ request()->is('sent_items') ? 'active' : '' }}">

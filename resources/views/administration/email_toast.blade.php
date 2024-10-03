@@ -64,6 +64,8 @@
                 <small class="text-danger" id="label" style="display: none;">Please specify the reason for holding this transaction.</small>
             </div> --}}
 
+            @if(Auth::user()->usertype->name !== 'Faculties')
+
             <div class="mt-4">
                 <div>
                     <small class="text-danger">Check the missing document that needs for compliance</small>
@@ -93,6 +95,8 @@
                     </label>
                 </div>
             </div>
+
+            @endif
 
             <div class="border-top mt-3">
                 <div class="d-flex flex-row justify-content-end mt-3 gap-2">

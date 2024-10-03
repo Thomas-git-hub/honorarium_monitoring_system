@@ -14,7 +14,11 @@ use Yajra\DataTables\Facades\DataTables;
 class SentItemsController extends Controller
 {
     public function sent_items(){
-        return view('administration.sent_items');
+
+        $pendingMails = Emailing::where('status', 'Unread')->where('to_user', Auth::user()->employee_id);
+        $EmailCount = $pendingMails->count();
+
+        return view('administration.sent_items', compact('EmailCount'));
     }
 
     public function send_reply(Request $request){

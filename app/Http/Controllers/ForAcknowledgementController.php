@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Acknowledgement;
+use App\Models\Emailing;
 use App\Models\Office;
 use App\Models\Transaction;
 use Carbon\Carbon;
@@ -37,7 +38,10 @@ class ForAcknowledgementController extends Controller
                 ->whereDate('updated_at', '<', now()->subDays(1))
                 ->whereDate('updated_at', '>=', now()->subDays(7))
                 ->count();
-            return view('administration.for_acknowledgement', compact('TransCountToday', 'TransCountYesterday', 'TransCountDaysAgo' ));
+
+            $pendingMails = Emailing::where('status', 'Unread')->where('to_user', Auth::user()->employee_id);
+            $EmailCount = $pendingMails->count();
+            return view('administration.for_acknowledgement', compact('TransCountToday', 'TransCountYesterday', 'TransCountDaysAgo', 'EmailCount'));
 
         }else{
             abort(403, 'Unauthorized action.');

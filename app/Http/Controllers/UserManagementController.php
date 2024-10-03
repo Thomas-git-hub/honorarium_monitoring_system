@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Mail\TempPasswordMail;
+use App\Models\Emailing;
 use App\Models\Office;
 use App\Models\User;
 use App\Models\UserType;
@@ -17,7 +18,10 @@ class UserManagementController extends Controller
     public function user_management(){
         if(Auth::user()->usertype->name === 'Admin'){
 
-            return view('administration.user_management');
+            $pendingMails = Emailing::where('status', 'Unread')->where('to_user', Auth::user()->employee_id);
+            $EmailCount = $pendingMails->count();
+
+            return view('administration.user_management', compact('EmailCount'));
         }else{
             abort(403, 'Unauthorized action.');
         }

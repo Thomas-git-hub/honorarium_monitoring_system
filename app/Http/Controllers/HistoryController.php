@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Mail\Acknowledge;
 use App\Models\Acknowledgement;
+use App\Models\Emailing;
 use App\Models\Office;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
@@ -15,7 +16,11 @@ class HistoryController extends Controller
 {
     public function history(){
         if(Auth::user()->usertype->name !== 'Faculties'){
-            return view('administration.history');
+
+            $pendingMails = Emailing::where('status', 'Unread')->where('to_user', Auth::user()->employee_id);
+            $EmailCount = $pendingMails->count();
+            
+            return view('administration.history', compact('EmailCount'));
         }else{
             abort(403, 'Unauthorized action.');
         }
