@@ -41,7 +41,13 @@ class ForAcknowledgementController extends Controller
 
             $pendingMails = Emailing::where('status', 'Unread')->where('to_user', Auth::user()->employee_id);
             $EmailCount = $pendingMails->count();
-            return view('administration.for_acknowledgement', compact('TransCountToday', 'TransCountYesterday', 'TransCountDaysAgo', 'EmailCount'));
+
+            $TransactionCount = Transaction::with(['honorarium', 'createdBy'])
+            ->where('status', 'On Queue')
+            ->where('office', Auth::user()->office_id)
+            ->count();
+
+            return view('administration.for_acknowledgement', compact('TransCountToday', 'TransCountYesterday', 'TransCountDaysAgo', 'EmailCount', 'TransactionCount'));
 
         }else{
             abort(403, 'Unauthorized action.');

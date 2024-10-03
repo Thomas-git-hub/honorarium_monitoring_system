@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Mail\SendEmail;
 use App\Models\Emailing;
+use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
@@ -18,7 +19,12 @@ class SentItemsController extends Controller
         $pendingMails = Emailing::where('status', 'Unread')->where('to_user', Auth::user()->employee_id);
         $EmailCount = $pendingMails->count();
 
-        return view('administration.sent_items', compact('EmailCount'));
+        $TransactionCount = Transaction::with(['honorarium', 'createdBy'])
+        ->where('status', 'On Queue')
+        ->where('office', Auth::user()->office_id)
+        ->count();
+
+        return view('administration.sent_items', compact('EmailCount', 'TransactionCount'));
     }
 
     public function send_reply(Request $request){

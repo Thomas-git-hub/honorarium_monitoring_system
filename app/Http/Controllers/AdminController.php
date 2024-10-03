@@ -44,7 +44,12 @@ class AdminController extends Controller
             ->where('created_by', Auth::user()->id)
             ->count();
 
-            return view('administration.admin_dashboard', compact('EmailCount', 'OnQueue', 'OnHold'));
+            $TransactionCount = Transaction::with(['honorarium', 'createdBy'])
+            ->where('status', 'On Queue')
+            ->where('office', Auth::user()->office_id)
+            ->count();
+
+            return view('administration.admin_dashboard', compact('EmailCount', 'OnQueue', 'OnHold', 'TransactionCount'));
         }else{
             abort(403, 'Unauthorized action.');
         }
@@ -62,7 +67,12 @@ class AdminController extends Controller
         $pendingMails = Emailing::where('status', 'Unread')->where('to_user', Auth::user()->employee_id);
         $EmailCount = $pendingMails->count();
 
-        return view('administration.admin_email', compact('emailtoday', 'UnreadCount', 'EmailCount'));
+        $TransactionCount = Transaction::with(['honorarium', 'createdBy'])
+        ->where('status', 'On Queue')
+        ->where('office', Auth::user()->office_id)
+        ->count();
+
+        return view('administration.admin_email', compact('emailtoday', 'UnreadCount', 'EmailCount', 'TransactionCount'));
     }
 
     public function admin_open_email(Request $request){
@@ -72,10 +82,15 @@ class AdminController extends Controller
         $pendingMails = Emailing::where('status', 'Unread')->where('to_user', Auth::user()->employee_id);
         $EmailCount = $pendingMails->count();
 
+        $TransactionCount = Transaction::with(['honorarium', 'createdBy'])
+        ->where('status', 'On Queue')
+        ->where('office', Auth::user()->office_id)
+        ->count();
+
         $docuJson = json_decode($data->documentation);
 
 
-        return view('administration.admin_open_email', compact('data', 'docuJson', 'EmailCount'));
+        return view('administration.admin_open_email', compact('data', 'docuJson', 'EmailCount', 'TransactionCount'));
     }
 
     public function admin_faculty(){
@@ -104,7 +119,13 @@ class AdminController extends Controller
 
             $pendingMails = Emailing::where('status', 'Unread')->where('to_user', Auth::user()->employee_id);
             $EmailCount = $pendingMails->count();
-                return view('administration.admin_faculty', compact('newAccountsToday', 'EmailCount'));
+
+            $TransactionCount = Transaction::with(['honorarium', 'createdBy'])
+            ->where('status', 'On Queue')
+            ->where('office', Auth::user()->office_id)
+            ->count();
+
+                return view('administration.admin_faculty', compact('newAccountsToday', 'EmailCount', 'TransactionCount'));
 
         }else{
             abort(403, 'Unauthorized action.');
@@ -261,6 +282,13 @@ class AdminController extends Controller
             $pendingMails = Emailing::where('status', 'Unread')->where('to_user', Auth::user()->employee_id);
             $EmailCount = $pendingMails->count();
 
+            $TransactionCount = Transaction::with(['honorarium', 'createdBy'])
+            ->where('status', 'On Queue')
+            ->where('office', Auth::user()->office_id)
+            ->count();
+
+
+
             if(Auth::user()->usertype->name === 'Admin'){
                 $onQueue = Transaction::where('status', 'Processing')
                 ->orWhere('status', 'On Queue')
@@ -275,7 +303,7 @@ class AdminController extends Controller
                 ->count();
 
             }
-            return view('administration.admin_on_queue', compact('onQueue', 'EmailCount'));
+            return view('administration.admin_on_queue', compact('onQueue', 'EmailCount', 'TransactionCount'));
         }
 
 
@@ -290,6 +318,11 @@ class AdminController extends Controller
 
         }else{
 
+            $TransactionCount = Transaction::with(['honorarium', 'createdBy'])
+            ->where('status', 'On Queue')
+            ->where('office', Auth::user()->office_id)
+            ->count();
+
             $pendingMails = Emailing::where('status', 'Unread')->where('to_user', Auth::user()->employee_id);
             $EmailCount = $pendingMails->count();
 
@@ -298,7 +331,7 @@ class AdminController extends Controller
             ->where('batch_id', '!=', NULL)
             ->where('created_by', Auth::user()->id)
             ->count();
-            return view('administration.admin_on_hold', compact('OnHold', 'EmailCount'));
+            return view('administration.admin_on_hold', compact('OnHold', 'EmailCount', 'TransactionCount'));
 
         }
     }

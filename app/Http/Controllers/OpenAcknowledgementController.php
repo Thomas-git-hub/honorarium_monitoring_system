@@ -38,7 +38,12 @@ class OpenAcknowledgementController extends Controller
         $pendingMails = Emailing::where('status', 'Unread')->where('to_user', Auth::user()->employee_id);
         $EmailCount = $pendingMails->count();
 
-        return view('administration.open_acknowledgement', compact('batch_id', 'acknowledgements', 'office', 'TransCount', 'EmailCount'));
+        $TransactionCount = Transaction::with(['honorarium', 'createdBy'])
+        ->where('status', 'On Queue')
+        ->where('office', Auth::user()->office_id)
+        ->count();
+
+        return view('administration.open_acknowledgement', compact('batch_id', 'acknowledgements', 'office', 'TransCount', 'EmailCount', 'TransactionCount'));
     }
 
     public function list(Request $request){
