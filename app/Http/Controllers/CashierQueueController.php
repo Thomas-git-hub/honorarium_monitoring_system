@@ -22,11 +22,13 @@ class CashierQueueController extends Controller
         $batch_id = $request->input('id');
 
         $acknowledgements = Acknowledgement::with(['user', 'office', 'transaction'])
+        ->whereNull('deleted_at')
         ->select('batch_id', 'office_id', 'created_at', 'user_id')
         ->where('batch_id', $batch_id)
         ->first();
 
         $TransCount = Transaction::with(['honorarium', 'createdBy'])
+        ->whereNull('deleted_at')
         ->where('office', Auth::user()->office_id)
         ->where('status', 'Processing')
         ->where('batch_id', $batch_id)
@@ -46,6 +48,7 @@ class CashierQueueController extends Controller
 
         $From_office = Office::where('name', 'Dean')->first();
         $acknowledgements = Acknowledgement::with(['user', 'office', 'transaction'])
+            ->whereNull('deleted_at')
             ->select('batch_id', 'office_id', 'created_at', 'user_id')
             ->where('office_id', $From_office->id)
             ->groupBy('batch_id')
@@ -53,7 +56,8 @@ class CashierQueueController extends Controller
 
         if(Auth::user()->usertype->name === 'Superadmin'){
             $filteredAcknowledgements = $acknowledgements->filter(function ($acknowledgement) {
-                $countTran = Transaction::where('batch_id', $acknowledgement->batch_id)
+                $countTran = Transaction::whereNull('deleted_at')
+                ->where('batch_id', $acknowledgement->batch_id)
                 ->where('status', 'Processing')
                 ->count();
                 return $countTran > 0;
@@ -61,7 +65,8 @@ class CashierQueueController extends Controller
         }
         else{
             $filteredAcknowledgements = $acknowledgements->filter(function ($acknowledgement) {
-                $countTran = Transaction::where('batch_id', $acknowledgement->batch_id)
+                $countTran = Transaction::whereNull('deleted_at')
+                ->where('batch_id', $acknowledgement->batch_id)
                 ->where('status', 'Processing')
                 ->where('office', Auth::user()->office_id)
                 ->where('created_by', Auth::user()->id)
@@ -83,12 +88,14 @@ class CashierQueueController extends Controller
             })
             ->addColumn('trans_id', function ($data) {
                 if(Auth::user()->usertype->name === 'Admin' || Auth::user()->usertype->name === 'Superadmin'){
-                    return Transaction::where('batch_id', $data->batch_id)
+                    return Transaction::whereNull('deleted_at')
+                    ->where('batch_id', $data->batch_id)
                     ->where('status','!=', 'On-hold')
                     ->count();
                 }
                 else{
-                    return Transaction::where('batch_id', $data->batch_id)->where('status', 'Processing')
+                    return Transaction::whereNull('deleted_at')
+                    ->where('batch_id', $data->batch_id)->where('status', 'Processing')
                     ->where('office', Auth::user()->office_id)
                     ->count();
                 }
@@ -103,9 +110,11 @@ class CashierQueueController extends Controller
     public function open_list(Request $request){
 
         if(Auth::user()->usertype->name === 'Superadmin'){
-            $query = Transaction::with(['honorarium', 'createdBy'])->where('status', 'Processing')->where('batch_id', $request->batch_id);
+            $query = Transaction::with(['honorarium', 'createdBy'])->whereNull('deleted_at')
+            ->where('status', 'Processing')->where('batch_id', $request->batch_id);
         }else{
             $query = Transaction::with(['honorarium', 'createdBy'])
+                                    ->whereNull('deleted_at')
                                     ->where('status', 'Processing')
                                     ->where('batch_id', $request->batch_id)
                                     ->where('office',  Auth::user()->office_id);

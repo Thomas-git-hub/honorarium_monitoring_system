@@ -21,12 +21,14 @@ class OpenAcknowledgementController extends Controller
         $batch_id = $request->input('id');
 
         $acknowledgements = Acknowledgement::with(['user', 'office', 'transaction'])
+        ->whereNull('deleted_at')
         ->select('id','batch_id', 'office_id', 'created_at', 'user_id')
         ->where('batch_id', $batch_id)
         ->orderBy('id', 'desc')
         ->first();
 
         $TransCount = Transaction::with(['honorarium', 'createdBy'])
+        ->whereNull('deleted_at')
         ->where('office', Auth::user()->office_id)
         ->where('status', 'On Queue')
         ->where('batch_id', $batch_id)
@@ -39,6 +41,7 @@ class OpenAcknowledgementController extends Controller
         $EmailCount = $pendingMails->count();
 
         $TransactionCount = Transaction::with(['honorarium', 'createdBy'])
+        ->whereNull('deleted_at')
         ->where('status', 'On Queue')
         ->where('office', Auth::user()->office_id)
         ->count();
@@ -49,9 +52,10 @@ class OpenAcknowledgementController extends Controller
     public function list(Request $request){
 
         if(Auth::user()->usertype->name === 'Superadmin'){
-            $query = Transaction::with(['honorarium', 'createdBy'])->where('status', 'On Queue')->where('batch_id', $request->batch_id);
+            $query = Transaction::with(['honorarium', 'createdBy'])->whereNull('deleted_at')->where('status', 'On Queue')->where('batch_id', $request->batch_id);
         }else{
             $query = Transaction::with(['honorarium', 'createdBy'])
+                    ->whereNull('deleted_at')
                     ->where('office',  Auth::user()->office_id)
                     ->where('batch_id', $request->batch_id)
                     ->where('status', 'On Queue');
@@ -145,12 +149,14 @@ class OpenAcknowledgementController extends Controller
 
     public function acknowledge(Request $request){
 
-        $transactions = Transaction::where('office', Auth::user()->office_id)
+        $transactions = Transaction::whereNull('deleted_at')
+                                ->where('office', Auth::user()->office_id)
                                 ->where('batch_id', $request->batchId)
                                 ->where('status', 'On Queue')
                                 ->get();
 
         $getCreateBy = Transaction::with(['user', 'createdBy'])
+        ->whereNull('deleted_at')
         ->where('office', Auth::user()->office_id)
         ->where('batch_id', $request->batchId)
         ->where('status', 'On Queue')
@@ -180,7 +186,8 @@ class OpenAcknowledgementController extends Controller
         $ack->save();
 
         foreach ($transactions as $batch_id) {
-            Transaction::where('status', 'On Queue')
+            Transaction::whereNull('deleted_at')
+            ->where('status', 'On Queue')
             ->where('batch_id', $transaction->batch_id)
             ->where('office', Auth::user()->office_id)
             ->update([

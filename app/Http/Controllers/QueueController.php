@@ -28,6 +28,7 @@ class QueueController extends Controller
 
         // Fetch all transactions with status 'Processing'
         $transactions = Transaction::with(['honorarium', 'office'])
+        ->whereNull('deleted_at')
         ->where('status', 'Processing')
         ->orwhere('status', 'On-hold')
         ->where('batch_id', '!=', NULL)
@@ -63,7 +64,8 @@ class QueueController extends Controller
         // $ack->save();
 
         // Update the status to 'On Queue'
-        $transaction_update = Transaction::where('status', 'Processing')
+        $transaction_update = Transaction::whereNull('deleted_at')
+        ->where('status', 'Processing')
         ->where('office', Auth::user()->office_id)
         ->where('created_by', Auth::user()->id)
         ->update([
@@ -73,7 +75,8 @@ class QueueController extends Controller
             'updated_at' => now(),
         ]);
 
-        $transaction_update = Transaction::where('status', 'On-hold')
+        $transaction_update = Transaction::whereNull('deleted_at')
+        ->where('status', 'On-hold')
         ->where('office', Auth::user()->office_id)
         ->where('created_by', Auth::user()->id)
         ->update([
@@ -139,7 +142,8 @@ class QueueController extends Controller
         $ibu_dbcon = DB::connection('ors_pgsql');
 
         // Fetch all transactions with status 'Processing'
-        $transactions = Transaction::where('status', 'Processing')
+        $transactions = Transaction::whereNull('deleted_at')
+        ->where('status', 'Processing')
         ->where('office', Auth::user()->office_id)
         ->where('created_by', Auth::user()->id)
         ->where('batch_id', $request->batch_id)
@@ -181,7 +185,8 @@ class QueueController extends Controller
         // Update the status to 'On Queue'
         if($usertype === 'Cashiers' ){
 
-            Transaction::where('status', 'Processing')
+            Transaction::whereNull('deleted_at')
+            ->where('status', 'Processing')
             ->where('office', Auth::user()->office_id)
             ->where('created_by', Auth::user()->id)
             ->where('batch_id', $request->batch_id)
@@ -194,7 +199,8 @@ class QueueController extends Controller
 
         }else{
 
-            Transaction::where('status', 'Processing')
+            Transaction::whereNull('deleted_at')
+            ->where('status', 'Processing')
             ->where('office', Auth::user()->office_id)
             ->where('created_by', Auth::user()->id)
             ->where('batch_id', $request->batch_id)
@@ -260,7 +266,8 @@ class QueueController extends Controller
         $ibu_dbcon = DB::connection('ors_pgsql');
 
         // Fetch all transactions with status 'Processing'
-        $transactions = Transaction::where('status', 'Processing')
+        $transactions = Transaction::whereNull('deleted_at')
+        ->where('status', 'Processing')
         ->where('office', Auth::user()->office_id)
         ->where('created_by', Auth::user()->id)
         ->where('batch_id', $request->batch_id)
@@ -334,7 +341,8 @@ class QueueController extends Controller
         }
 
         // Update the status to 'On Queue'
-        Transaction::where('status', 'Processing')
+        Transaction::whereNull('deleted_at')
+        ->where('status', 'Processing')
         ->where('office', Auth::user()->office_id)
         ->where('created_by', Auth::user()->id)
         ->where('batch_id', $request->batch_id)
@@ -487,7 +495,8 @@ class QueueController extends Controller
 
         if(Auth::user()->usertype->name === 'Admin'){
             $filteredAcknowledgements = $acknowledgements->filter(function ($acknowledgement) {
-                $countTran = Transaction::where('batch_id', $acknowledgement->batch_id)
+                $countTran = Transaction::whereNull('deleted_at')
+                ->where('batch_id', $acknowledgement->batch_id)
                 ->where('office', Auth::user()->office_id)
                 ->where('created_by', Auth::user()->id)
                 ->where('status', 'Processing')
@@ -497,7 +506,8 @@ class QueueController extends Controller
 
         }elseif(Auth::user()->usertype->name === 'Superadmin'){
             $filteredAcknowledgements = $acknowledgements->filter(function ($acknowledgement) {
-                $countTran = Transaction::where('batch_id', $acknowledgement->batch_id)
+                $countTran = Transaction::whereNull('deleted_at')
+                ->where('batch_id', $acknowledgement->batch_id)
                 ->where('status', 'Processing')
                 ->count();
                 return $countTran > 0;
@@ -505,7 +515,8 @@ class QueueController extends Controller
         }
         else{
             $filteredAcknowledgements = $acknowledgements->filter(function ($acknowledgement) {
-                $countTran = Transaction::where('batch_id', $acknowledgement->batch_id)
+                $countTran = Transaction::whereNull('deleted_at')
+                ->where('batch_id', $acknowledgement->batch_id)
                 ->where('status', 'Processing')
                 ->where('office', Auth::user()->office_id)
                 ->count();
@@ -528,12 +539,14 @@ class QueueController extends Controller
             })
             ->addColumn('trans_id', function ($data) {
                 if(Auth::user()->usertype->name === 'Admin' || Auth::user()->usertype->name === 'Superadmin'){
-                    return Transaction::where('batch_id', $data->batch_id)
+                    return Transaction::whereNull('deleted_at')
+                    ->where('batch_id', $data->batch_id)
                     ->where('status','!=', 'On-hold')
                     ->count();
                 }
                 else{
-                    return Transaction::where('batch_id', $data->batch_id)->where('status', 'Processing')
+                    return Transaction::whereNull('deleted_at')
+                    ->where('batch_id', $data->batch_id)->where('status', 'Processing')
                     ->where('office', Auth::user()->office_id)
                     ->count();
                 }
@@ -556,6 +569,7 @@ class QueueController extends Controller
         ->first();
 
         $TransCount = Transaction::with(['honorarium', 'createdBy'])
+        ->whereNull('deleted_at')
         ->where('office', Auth::user()->office_id)
         ->where('status', 'Processing')
         ->where('batch_id', $batch_id)
@@ -569,11 +583,12 @@ class QueueController extends Controller
     public function open_list(Request $request){
 
         if(Auth::user()->usertype->name === 'Superadmin'){
-            $query = Transaction::with(['honorarium', 'createdBy'])->where('status', 'Processing')->where('batch_id', $request->batch_id);
+            $query = Transaction::with(['honorarium', 'createdBy'])->whereNull('deleted_at')->where('status', 'Processing')->where('batch_id', $request->batch_id);
         }
         elseif(Auth::user()->usertype->name === 'Admin'){
             $office = Office::where('name', 'Budget Office')->first();
             $query = Transaction::with(['honorarium', 'createdBy'])
+                                    ->whereNull('deleted_at')
                                     ->where('batch_id', $request->batch_id)
                                     ->where('status','!=', 'On-hold');
 
@@ -581,6 +596,7 @@ class QueueController extends Controller
         elseif(Auth::user()->usertype->name === 'Budget Office'){
             $office = Office::where('name', 'Budget Office')->first();
             $query = Transaction::with(['honorarium', 'createdBy'])
+                                    ->whereNull('deleted_at')
                                     ->where('office',  $office->id)
                                     ->where('batch_id', $request->batch_id)
                                     ->where('status', 'Processing');
@@ -589,6 +605,7 @@ class QueueController extends Controller
         }elseif(Auth::user()->usertype->name === 'Dean'){
             $office = Office::where('name', 'Dean')->first();
             $query = Transaction::with(['honorarium', 'createdBy'])
+                                    ->whereNull('deleted_at')
                                     ->where('status', 'Processing')
                                     ->where('batch_id', $request->batch_id)
                                     ->where('office',  $office->id);
@@ -596,6 +613,7 @@ class QueueController extends Controller
         }elseif(Auth::user()->usertype->name === 'Accounting'){
             $office = Office::where('name', 'Accounting')->first();
             $query = Transaction::with(['honorarium', 'createdBy'])
+                                    ->whereNull('deleted_at')
                                     ->where('status', 'Processing')
                                     ->where('batch_id', $request->batch_id)
                                     ->where('office',  $office->id);

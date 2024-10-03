@@ -23,6 +23,7 @@ class UserManagementController extends Controller
             $EmailCount = $pendingMails->count();
 
             $TransactionCount = Transaction::with(['honorarium', 'createdBy'])
+            ->whereNull('deleted_at')
             ->where('status', 'On Queue')
             ->where('office', Auth::user()->office_id)
             ->count();

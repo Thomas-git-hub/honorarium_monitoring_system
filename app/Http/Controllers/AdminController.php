@@ -25,26 +25,30 @@ class AdminController extends Controller
             $EmailCount = $pendingMails->count();
 
             if(Auth::user()->usertype->name === 'Admin'){
-                $OnQueue = Transaction::where('created_by', Auth::user()->id)
+                $OnQueue = Transaction::whereNull('deleted_at')
+                ->where('created_by', Auth::user()->id)
                 ->whereIn('status', ['Processing'])
                 ->where('batch_id', '!=', NULL)
                 ->count();
             }
             else{
-                $OnQueue = Transaction::where('status', 'Processing')
+                $OnQueue = Transaction::whereNull('deleted_at')
+                ->where('status', 'Processing')
                 ->where('created_by', Auth::user()->id)
                 ->where('batch_id', '!=', NULL)
                 ->count();
             }
 
 
-            $OnHold = Transaction::where('status', 'On-hold')
+            $OnHold = Transaction::whereNull('deleted_at')
+            ->where('status', 'On-hold')
             ->where('batch_id', '!=', NULL)
             ->where('office', Auth::user()->office_id)
             ->where('created_by', Auth::user()->id)
             ->count();
 
             $TransactionCount = Transaction::with(['honorarium', 'createdBy'])
+            ->whereNull('deleted_at')
             ->where('status', 'On Queue')
             ->where('office', Auth::user()->office_id)
             ->count();
@@ -68,6 +72,7 @@ class AdminController extends Controller
         $EmailCount = $pendingMails->count();
 
         $TransactionCount = Transaction::with(['honorarium', 'createdBy'])
+        ->whereNull('deleted_at')
         ->where('status', 'On Queue')
         ->where('office', Auth::user()->office_id)
         ->count();
@@ -83,6 +88,7 @@ class AdminController extends Controller
         $EmailCount = $pendingMails->count();
 
         $TransactionCount = Transaction::with(['honorarium', 'createdBy'])
+        ->whereNull('deleted_at')
         ->where('status', 'On Queue')
         ->where('office', Auth::user()->office_id)
         ->count();
@@ -121,6 +127,7 @@ class AdminController extends Controller
             $EmailCount = $pendingMails->count();
 
             $TransactionCount = Transaction::with(['honorarium', 'createdBy'])
+            ->whereNull('deleted_at')
             ->where('status', 'On Queue')
             ->where('office', Auth::user()->office_id)
             ->count();
@@ -177,7 +184,8 @@ class AdminController extends Controller
             $pendingMails = Emailing::where('status', 'Unread')->where('to_user', Auth::user()->employee_id);
             $EmailCount = $pendingMails->count();
 
-            $onQueue = Transaction::where('office', Auth::user()->office_id)
+            $onQueue = Transaction::whereNull('deleted_at')
+                ->where('office', Auth::user()->office_id)
                 ->where('created_by', Auth::user()->id)
                 ->whereIn('status', ['Processing', 'On-hold'])
                 ->count();
@@ -283,6 +291,7 @@ class AdminController extends Controller
             $EmailCount = $pendingMails->count();
 
             $TransactionCount = Transaction::with(['honorarium', 'createdBy'])
+            ->whereNull('deleted_at')
             ->where('status', 'On Queue')
             ->where('office', Auth::user()->office_id)
             ->count();
@@ -290,7 +299,8 @@ class AdminController extends Controller
 
 
             if(Auth::user()->usertype->name === 'Admin'){
-                $onQueue = Transaction::where('status', 'Processing')
+                $onQueue = Transaction::whereNull('deleted_at')
+                ->where('status', 'Processing')
                 ->orWhere('status', 'On Queue')
                 // ->where('created_by', Auth::user()->id)
                 ->where('batch_id', '!=', NULL)
@@ -319,6 +329,7 @@ class AdminController extends Controller
         }else{
 
             $TransactionCount = Transaction::with(['honorarium', 'createdBy'])
+            ->whereNull('deleted_at')
             ->where('status', 'On Queue')
             ->where('office', Auth::user()->office_id)
             ->count();
@@ -326,7 +337,8 @@ class AdminController extends Controller
             $pendingMails = Emailing::where('status', 'Unread')->where('to_user', Auth::user()->employee_id);
             $EmailCount = $pendingMails->count();
 
-            $OnHold = Transaction::where('status', 'On-hold')
+            $OnHold = Transaction::whereNull('deleted_at')
+            ->where('status', 'On-hold')
             // ->where('office', Auth::user()->office_id)
             ->where('batch_id', '!=', NULL)
             ->where('created_by', Auth::user()->id)
@@ -341,6 +353,7 @@ class AdminController extends Controller
         if(Auth::user()->usertype->name === 'Superadmin'){
             $bugs_office = Office::where('name', 'BUGS Administration')->first();
             $query = Transaction::with(['honorarium', 'createdBy'])
+            ->whereNull('deleted_at')
             ->where('office', $bugs_office->id)
             ->whereIn('status', ['Processing', 'On-hold']);
 
@@ -349,6 +362,7 @@ class AdminController extends Controller
 
             $bugs_office = Office::where('name', 'BUGS Administration')->first();
             $query = Transaction::with(['honorarium', 'createdBy'])
+            ->whereNull('deleted_at')
             ->where('office', $bugs_office->id)
             ->where('created_by', Auth::user()->id)
             ->whereIn('status', ['Processing', 'On-hold']);
@@ -471,7 +485,8 @@ class AdminController extends Controller
 
     public function generate_trackingNum(Request $request){
 
-        $transactions = Transaction::where('office', Auth::user()->office_id)
+        $transactions = Transaction::whereNull('deleted_at')
+        ->where('office', Auth::user()->office_id)
         // whereNull('batch_id')
         ->where('created_by', Auth::user()->id)
         ->get();
@@ -491,11 +506,13 @@ class AdminController extends Controller
                 $lastBatchCreatedAt = $lastBatch->created_at->format('F j, Y');
 
                 // Count transactions with the status 'processing' for the new batch_id
-                $processingTransactions = Transaction::where('batch_id', $lastBatch->batch_id)
+                $processingTransactions = Transaction::whereNull('deleted_at')
+                ->where('batch_id', $lastBatch->batch_id)
                 ->where('status', 'processing') // Adjust the 'status' value based on your actual column values
                 ->count();
 
-                $onHoldTransactions = Transaction::where('batch_id', $lastBatch->batch_id)
+                $onHoldTransactions = Transaction::whereNull('deleted_at')
+                ->where('batch_id', $lastBatch->batch_id)
                 ->where('status', 'On-hold') // Adjust the 'status' value based on your actual column values
                 ->count();
 
@@ -516,7 +533,8 @@ class AdminController extends Controller
         }
 
         // Find the last batch_id to increment the number part
-        $lastBatch = Transaction::whereNotNull('batch_id')
+        $lastBatch = Transaction::whereNull('deleted_at')
+            ->whereNotNull('batch_id')
             ->orderBy('batch_id', 'desc')
             ->first();
 
@@ -550,14 +568,17 @@ class AdminController extends Controller
 
 
         // Count total transactions for the new batch_id
-        $totalTransactions = Transaction::where('batch_id', $newBatchId)->count();
+        $totalTransactions = Transaction::whereNull('deleted_at')
+                                ->where('batch_id', $newBatchId)->count();
 
         // Count transactions with the status 'processing' for the new batch_id
-        $processingTransactions = Transaction::where('batch_id', $newBatchId)
+        $processingTransactions = Transaction::whereNull('deleted_at')
+            ->where('batch_id', $newBatchId)
             ->where('status', 'processing') // Adjust the 'status' value based on your actual column values
             ->count();
 
-        $onHoldTransactions = Transaction::where('batch_id', $newBatchId)
+        $onHoldTransactions = Transaction::whereNull('deleted_at')
+            ->where('batch_id', $newBatchId)
             ->where('status', 'On-hold') // Adjust the 'status' value based on your actual column values
             ->count();
 
@@ -574,7 +595,8 @@ class AdminController extends Controller
 
     public function Getadmin_new_entries(){
 
-        $onQueue = Transaction::where('office', Auth::user()->office_id)
+        $onQueue = Transaction::whereNull('deleted_at')
+            ->where('office', Auth::user()->office_id)
             ->whereIn('status', ['Processing', 'On-hold'])
             ->count();
         return response()->json([

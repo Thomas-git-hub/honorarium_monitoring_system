@@ -21,6 +21,7 @@ class HistoryController extends Controller
             $EmailCount = $pendingMails->count();
 
             $TransactionCount = Transaction::with(['honorarium', 'createdBy'])
+            ->whereNull('deleted_at')
             ->where('status', 'On Queue')
             ->where('office', Auth::user()->office_id)
             ->count();
@@ -35,11 +36,13 @@ class HistoryController extends Controller
         $batch_id = $request->input('id');
 
         $acknowledgements = Acknowledgement::with(['user', 'office', 'transaction'])
+        ->whereNull('deleted_at')
         ->select('batch_id', 'office_id', 'created_at', 'user_id')
         ->where('batch_id', $batch_id)
         ->first();
 
         $TransCount = Transaction::with(['honorarium', 'createdBy'])
+        ->whereNull('deleted_at')
         ->where('batch_id', $batch_id)
         ->where('status', '!=', 'On-hold')
         ->count();
@@ -104,7 +107,8 @@ class HistoryController extends Controller
         if(Auth::user()->usertype->name === 'Admin'){
 
             $filteredAcknowledgements = $acknowledgements->filter(function ($acknowledgement) {
-                $countTran = Transaction::where('batch_id', $acknowledgement->batch_id)
+                $countTran = Transaction::whereNull('deleted_at')
+                ->where('batch_id', $acknowledgement->batch_id)
                 ->whereNot('status', 'On-hold')
                 ->whereNot('office', Auth::user()->office_id)
                 ->count();
@@ -113,7 +117,8 @@ class HistoryController extends Controller
 
         }elseif(Auth::user()->usertype->name === 'Superadmin'){
             $filteredAcknowledgements = $acknowledgements->filter(function ($acknowledgement) {
-                $countTran = Transaction::where('batch_id', $acknowledgement->batch_id)
+                $countTran = Transaction::whereNull('deleted_at')
+                ->where('batch_id', $acknowledgement->batch_id)
                 ->whereNot('status', 'On-hold')
                 ->count();
                 return $countTran > 0;
@@ -122,7 +127,8 @@ class HistoryController extends Controller
         else{
             $filteredAcknowledgements = $acknowledgements->filter(function ($acknowledgement) {
                 $office = Office::where('name', 'BUGS Administration')->first();
-                $countTran = Transaction::where('batch_id', $acknowledgement->batch_id)
+                $countTran = Transaction::whereNull('deleted_at')
+                ->where('batch_id', $acknowledgement->batch_id)
                 ->whereNotIn('office', [Auth::user()->office_id, $office])
                 ->whereNot('status', 'On-hold')
                 ->count();
@@ -149,12 +155,14 @@ class HistoryController extends Controller
             ->addColumn('number_of_transactions', function ($data) {
                 $office = Office::where('name', 'BUGS Administration')->first();
                 if(Auth::user()->usertype->name === 'Admin' || Auth::user()->usertype->name === 'Superadmin'){
-                    return Transaction::where('batch_id', $data->batch_id)
+                    return Transaction::whereNull('deleted_at')
+                    ->where('batch_id', $data->batch_id)
                     ->where('status','!=', 'On-hold')
                     ->count();
                 }
                 else{
-                    return Transaction::where('batch_id', $data->batch_id)
+                    return Transaction::whereNull('deleted_at')
+                    ->where('batch_id', $data->batch_id)
                     ->where('status','!=', 'On-hold')
                     ->whereNotIn('office', [Auth::user()->office_id, $office])
                     ->count();
@@ -170,6 +178,7 @@ class HistoryController extends Controller
     public function OpenHistoryList(Request $request){
 
         $query = Transaction::with(['honorarium', 'createdBy'])
+        ->whereNull('deleted_at')
         ->where('batch_id', $request->batch_id)
         ->where('status', '!=', 'On-hold');
         $transactions = $query->get();

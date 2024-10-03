@@ -19,7 +19,8 @@ class OnHoldController extends Controller
     public function getOnHoldTransactions(Request $request)
     {
         // Query to get transactions with status 'On-hold'
-        $transactions = Transaction::where('batch_id', '!=', NULL)->where('status', 'On-hold')
+        $transactions = Transaction::whereNull('deleted_at')
+        ->where('batch_id', '!=', NULL)->where('status', 'On-hold')
         ->where('created_by', Auth::user()->id)
         ->get();
         $ibu_dbcon = DB::connection('ors_pgsql');
@@ -151,7 +152,8 @@ class OnHoldController extends Controller
         $ibu_dbcon = DB::connection('ors_pgsql');
 
         // Fetch all transactions with status 'On-hold'
-        $transaction = Transaction::where('status', 'On-hold')->where('id', $request->id)->first();
+        $transaction = Transaction::whereNull('deleted_at')
+        ->where('status', 'On-hold')->where('id', $request->id)->first();
 
         if (empty($transaction)) {
             return response()->json(['success' => false, 'message' => 'No transactions found with status Processing']);
@@ -172,7 +174,8 @@ class OnHoldController extends Controller
             $office = Office::where('name', 'Faculty')->first();
         }
 
-        $transactionQuery = Transaction::where('status', 'On-hold')
+        $transactionQuery = Transaction::whereNull('deleted_at')
+            ->where('status', 'On-hold')
             // ->where('office', Auth::user()->office_id)
             ->where('id', $request->id)
             ->where('created_by', Auth::user()->id)

@@ -20,6 +20,7 @@ class ForAcknowledgementController extends Controller
     {
         if(Auth::user()->usertype->name !== 'Faculties'){
             $TransCountToday = Transaction::with(['honorarium', 'createdBy'])
+                                    ->whereNull('deleted_at')
                                     ->where('status', 'On Queue')
                                     ->where('office', Auth::user()->office_id)
                                     ->whereDate('created_at', Carbon::today())
@@ -27,12 +28,14 @@ class ForAcknowledgementController extends Controller
             $yesterday = Carbon::yesterday()->format('Y-m-d');
 
             $TransCountYesterday = Transaction::with(['honorarium', 'createdBy'])
+                ->whereNull('deleted_at')
                 ->where('status', 'On Queue')
                 ->where('office', Auth::user()->office_id)
                 ->whereDate('updated_at', $yesterday)
                 ->count();
 
             $TransCountDaysAgo = Transaction::with(['honorarium', 'createdBy'])
+                ->whereNull('deleted_at')
                 ->where('status', 'On Queue')
                 ->where('office', Auth::user()->office_id)
                 ->whereDate('updated_at', '<', now()->subDays(1))
@@ -43,6 +46,7 @@ class ForAcknowledgementController extends Controller
             $EmailCount = $pendingMails->count();
 
             $TransactionCount = Transaction::with(['honorarium', 'createdBy'])
+            ->whereNull('deleted_at')
             ->where('status', 'On Queue')
             ->where('office', Auth::user()->office_id)
             ->count();
@@ -101,7 +105,8 @@ class ForAcknowledgementController extends Controller
         if(Auth::user()->usertype->name === 'Admin' || Auth::user()->usertype->name === 'Superadmin'){
             // Filter out acknowledgements with a transaction count of 0
             $filteredAcknowledgements = $acknowledgements->filter(function ($acknowledgement) {
-                $countTran = Transaction::where('batch_id', $acknowledgement->batch_id)
+                $countTran = Transaction::whereNull('deleted_at')
+                ->where('batch_id', $acknowledgement->batch_id)
                 ->where('status', 'On Queue')
                 // ->where('office', Auth::user()->office_id)
                 ->count();
@@ -112,7 +117,8 @@ class ForAcknowledgementController extends Controller
         }else{
            // Filter out acknowledgements with a transaction count of 0
             $filteredAcknowledgements = $acknowledgements->filter(function ($acknowledgement) {
-                $countTran = Transaction::where('batch_id', $acknowledgement->batch_id)
+                $countTran = Transaction::whereNull('deleted_at')
+                ->where('batch_id', $acknowledgement->batch_id)
                 ->where('status', 'On Queue')
                 ->where('office', Auth::user()->office_id)
                 ->count();
@@ -134,7 +140,8 @@ class ForAcknowledgementController extends Controller
                     '(' . $data->office->name . ')';
             })
             ->addColumn('trans_id', function ($data) {
-                return Transaction::where('batch_id', $data->batch_id)
+                return Transaction::whereNull('deleted_at')
+                ->where('batch_id', $data->batch_id)
                 ->where('status', 'On Queue')
                 ->where('office', Auth::user()->office_id)
                 ->count();

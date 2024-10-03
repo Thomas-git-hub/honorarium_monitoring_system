@@ -150,7 +150,8 @@ class UserController extends Controller
         // ->whereNull('deleted_at')
         // ->whereIn('employee_id', $employeeIds);
 
-        $query = Transaction::whereIn('employee_id', $employeeIds);
+        $query = Transaction::whereNull('deleted_at')
+        ->whereIn('employee_id', $employeeIds);
 
         $users = $query->get();
 
