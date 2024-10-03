@@ -406,6 +406,16 @@
 </script>
 {{-- BACK NAVIGATION BUTTON START --}}
 
+{{-- DISCARD EMAIL TOAST --}}
+<script>
+    $(document).ready(function() {
+        $('#discard').click(function() {
+            location.reload(); // Reloads the current page
+        });
+    });
+</script>
+{{-- DISCARD EMAIL TOAST END--}}
+
 
 
 

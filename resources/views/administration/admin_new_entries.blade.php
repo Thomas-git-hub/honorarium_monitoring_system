@@ -883,12 +883,6 @@
 
 <script>
     $(document).ready(function() {
-        $('#discard').click(function() {
-            location.reload(); // Reloads the current page
-        });
-    });
-
-    $(document).ready(function() {
         $('#refresh').click(function() {
             location.reload(); // Reloads the current page
         });
