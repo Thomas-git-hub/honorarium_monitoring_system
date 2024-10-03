@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Honorarium;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Yajra\DataTables\Facades\DataTables;
 
 class HonorariumController extends Controller
@@ -17,10 +18,10 @@ class HonorariumController extends Controller
                 return '<button type="button" class="btn btn-icon btn-label-success me-2 edit-btn" data-id="'.$data->id.'"><span class="tf-icons bx bx-pencil bx-18px"></span></button>';
             })
             ->editColumn('created_at', function($data) {
-                return $data->created_at? $data->created_at->format('m/d/Y') : now();
+                return $data->created_at ? $data->created_at->format('m-d-Y') : now();
             })
             ->editColumn('updated_at', function($data) {
-                return $data->updated_at? $data->updated_at->format('m/d/Y') : now();
+                return $data->updated_at ? $data->updated_at->format('m-d-Y') : now();
             })
             ->rawColumns(['action'])
             ->make(true);
@@ -38,7 +39,7 @@ class HonorariumController extends Controller
         foreach($data as $item){
             Honorarium::create([
                 'name' => $item,
-                'created_by' => auth()->user()->id,
+                'created_by' =>Auth::user()->id,
                 'status' => 'Active'
             ]);
         }

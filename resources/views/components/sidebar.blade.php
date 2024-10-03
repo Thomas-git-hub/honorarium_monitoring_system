@@ -1,6 +1,6 @@
 <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
     <div class="app-brand demo">
-      <a href="index.html" class="app-brand-link">
+      <a href="#" class="app-brand-link">
         <img src="{{asset('assets/myimg/logo.png')}}" class="app-brand-logo w-px-30 h-auto me-2 " alt="logo" />
             <span class="app-brand-text menu-text fw-bold">BUGS
               <br />
@@ -37,7 +37,7 @@
           <a href="/admin_email" class="menu-link">
             <i class='menu-icon tf-icons bx bx-envelope'></i>
             <div class="text-truncate" data-i18n="Page 2">Inbox</div>
-            <span class="badge bg-danger badge-notifications p-1 fs-8">14</span>
+            <span class="badge bg-danger badge-notifications p-1 fs-8">{{$EmailCount ?? 0}}</span>
           </a>
         </li>
         <li class="menu-item {{ request()->is('sent_items') ? 'active' : '' }}">
@@ -72,7 +72,7 @@
           <a href="/for_acknowledgement" class="menu-link">
             <i class='menu-icon tf-icons bx bx-archive-in'></i>
             <div class="text-truncate" data-i18n="Page 2">Acknowledgement</div>
-            <span class="badge bg-danger badge-notifications p-1 fs-8">14</span>
+            <span class="badge bg-danger badge-notifications p-1 fs-8">{{$TransactionCount ?? 0}}</span>
           </a>
         </li>
         @endif

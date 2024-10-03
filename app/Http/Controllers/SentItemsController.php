@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Mail\SendEmail;
 use App\Models\Emailing;
+use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
@@ -14,7 +15,16 @@ use Yajra\DataTables\Facades\DataTables;
 class SentItemsController extends Controller
 {
     public function sent_items(){
-        return view('administration.sent_items');
+
+        $pendingMails = Emailing::where('status', 'Unread')->where('to_user', Auth::user()->employee_id);
+        $EmailCount = $pendingMails->count();
+
+        $TransactionCount = Transaction::with(['honorarium', 'createdBy'])
+        ->where('status', 'On Queue')
+        ->where('office', Auth::user()->office_id)
+        ->count();
+
+        return view('administration.sent_items', compact('EmailCount', 'TransactionCount'));
     }
 
     public function send_reply(Request $request){
@@ -114,7 +124,7 @@ class SentItemsController extends Controller
                 return $data->subject;
             })
             ->addColumn('date', function ($data) {
-                return $data->created_at->format('m/d/Y');
+                return $data->created_at ? $data->created_at->format('m-d-Y') : 'N/A';
             })
 
             ->make(true);

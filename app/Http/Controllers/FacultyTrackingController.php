@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Emailing;
 use App\Models\Office;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
@@ -14,6 +15,9 @@ class FacultyTrackingController extends Controller
     public function faculty_tracking(){
 
         if(Auth::user()->usertype->name === 'Faculties'){
+
+            $pendingMails = Emailing::where('status', 'Unread')->where('to_user', Auth::user()->employee_id);
+            $EmailCount = $pendingMails->count();
 
             $user = Auth::user();
             $collegeDetails = DB::connection('ors_pgsql')->table('college')
@@ -70,7 +74,7 @@ class FacultyTrackingController extends Controller
             else{
                 $college = 'No Assigned College';
             }
-            return view('administration.faculty_tracking', compact('user', 'college', 'adminCount', 'budgtCount', 'deanCount', 'acctCount', 'cashCount', 'releaseCount'));
+            return view('administration.faculty_tracking', compact('user', 'college', 'adminCount', 'budgtCount', 'deanCount', 'acctCount', 'cashCount', 'releaseCount', 'EmailCount'));
         }else{
 
             abort(403, 'Unauthorized action.');
