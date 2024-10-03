@@ -140,7 +140,7 @@ class ForAcknowledgementController extends Controller
                 ->count();
             })
             ->addColumn('created_at', function ($data) {
-                return $data->created_at ? $data->created_at->format('Y-m-d H:i:s') : 'N/A';
+                return $data->created_at ? $data->created_at->format('m-d-Y') : 'N/A';
             })
             ->make(true);
     }

@@ -124,7 +124,7 @@ class SentItemsController extends Controller
                 return $data->subject;
             })
             ->addColumn('date', function ($data) {
-                return $data->created_at->format('m/d/Y');
+                return $data->created_at ? $data->created_at->format('m-d-Y') : 'N/A';
             })
 
             ->make(true);
