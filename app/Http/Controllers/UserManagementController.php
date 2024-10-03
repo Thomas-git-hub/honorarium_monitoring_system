@@ -27,7 +27,7 @@ class UserManagementController extends Controller
     public function list(Request $request)
     {
 
-        $ibu_dbcon = DB::connection('ibu_test');
+        $ibu_dbcon = DB::connection('ors_pgsql');
 
         $users = User::with('office')->get();
 
@@ -75,7 +75,7 @@ class UserManagementController extends Controller
 
             ->editColumn('college', function($user) {
                 if($user->college_id){
-                    $collegeDetails = DB::connection('ibu_test')->table('college')
+                    $collegeDetails = DB::connection('ors_pgsql')->table('college')
                     ->where('id', $user->college_id)
                     ->first();
                     return $collegeDetails->college_name;

@@ -16,7 +16,7 @@ class FacultyTrackingController extends Controller
         if(Auth::user()->usertype->name === 'Faculties'){
 
             $user = Auth::user();
-            $collegeDetails = DB::connection('ibu_test')->table('college')
+            $collegeDetails = DB::connection('ors_pgsql')->table('college')
             ->where('id', $user->college_id)
             ->first();
 
@@ -91,7 +91,7 @@ class FacultyTrackingController extends Controller
         // ->orWhere('status', 'On-hold');
 
         $transactions = $query->get();
-        $ibu_dbcon = DB::connection('ibu_test');
+        $ibu_dbcon = DB::connection('ors_pgsql');
 
         $months = [
             1 => 'January',
@@ -162,7 +162,7 @@ class FacultyTrackingController extends Controller
         // ->orWhere('status', 'On-hold');
 
         $transactions = $query->get();
-        $ibu_dbcon = DB::connection('ibu_test');
+        $ibu_dbcon = DB::connection('ors_pgsql');
 
         $months = [
             1 => 'January',
@@ -233,7 +233,7 @@ class FacultyTrackingController extends Controller
         // ->orWhere('status', 'On-hold');
 
         $transactions = $query->get();
-        $ibu_dbcon = DB::connection('ibu_test');
+        $ibu_dbcon = DB::connection('ors_pgsql');
 
         $months = [
             1 => 'January',
@@ -303,7 +303,7 @@ class FacultyTrackingController extends Controller
         // ->orWhere('status', 'On-hold');
 
         $transactions = $query->get();
-        $ibu_dbcon = DB::connection('ibu_test');
+        $ibu_dbcon = DB::connection('ors_pgsql');
 
         $months = [
             1 => 'January',
@@ -374,7 +374,7 @@ class FacultyTrackingController extends Controller
         // ->orWhere('status', 'On-hold');
 
         $transactions = $query->get();
-        $ibu_dbcon = DB::connection('ibu_test');
+        $ibu_dbcon = DB::connection('ors_pgsql');
 
         $months = [
             1 => 'January',
@@ -445,7 +445,7 @@ class FacultyTrackingController extends Controller
         // ->orWhere('status', 'On-hold');
 
         $transactions = $query->get();
-        $ibu_dbcon = DB::connection('ibu_test');
+        $ibu_dbcon = DB::connection('ors_pgsql');
 
         $months = [
             1 => 'January',
@@ -515,7 +515,7 @@ class FacultyTrackingController extends Controller
         ->where('status', 'Completed');
 
         $transactions = $query->get();
-        $ibu_dbcon = DB::connection('ibu_test');
+        $ibu_dbcon = DB::connection('ors_pgsql');
 
         $months = [
             1 => 'January',

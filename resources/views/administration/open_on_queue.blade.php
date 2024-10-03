@@ -411,7 +411,7 @@
                         beforeSend: function() {
                             Swal.fire({
                                 title: 'Processing...',
-                                html: '<div class="spinner-border text-primary" role="status"></div>',
+                                html: '<div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;"></div>',
                                 showConfirmButton: false,
                                 allowOutsideClick: false
                             });
@@ -586,7 +586,7 @@
                                 beforeSend: function() {
                                     Swal.fire({
                                         title: 'Processing...',
-                                        html: '<div class="spinner-border text-primary" role="status"></div>',
+                                        html: '<div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;"></div>',
                                         showConfirmButton: false,
                                         allowOutsideClick: false
                                     });
@@ -645,7 +645,7 @@
                 beforeSend: function() {
                     Swal.fire({
                         title: 'Processing...',
-                        html: '<div class="spinner-border text-primary" role="status"></div>',
+                        html: '<div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;"></div>',
                         showConfirmButton: false,
                         allowOutsideClick: false
                     });

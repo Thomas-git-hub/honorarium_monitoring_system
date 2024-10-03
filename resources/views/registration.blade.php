@@ -166,61 +166,69 @@
 
     <script>
         $('#registerForm').on('submit', function(event) {
-          event.preventDefault();
-          $.ajax({
-            url: '{{ route('form.register') }}',
-            method: 'POST',
-            data: {
-              email: $('#email').val(),
-              _token: '{{ csrf_token() }}'
-            },
-            success: function(response) {
-              if (response.success) {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Success!',
-                    text: response.message,
-                    showConfirmButton: true,
-                    confirmButtonText: 'Redirect to Gmail'
-                    }).then((result) => {
-                    if (result.isConfirmed) {
-                        window.open('https://mail.google.com', '_blank');
-                    }
-                });
-              } else {
-                if(response.message){
+            event.preventDefault();
+            $.ajax({
+                url: '{{ route('form.register') }}',
+                method: 'POST',
+                data: {
+                    email: $('#email').val(),
+                    _token: '{{ csrf_token() }}'
+                },
+                beforeSend: function() {
                     Swal.fire({
-                    icon: 'error',
-                    title: 'Error!',
-                    text: response.message,
-                    showConfirmButton: true,
-                });
-
-                }else{
-
-                    var errors = response.errors;
-                    Object.keys(errors).forEach(function(key) {
-                        var inputField = $('#registerForm [name=' + key + ']');
-                        inputField.addClass('is-invalid');
-                        $('#registerForm #' + key + 'Error').text(errors[key][0]);
+                        title: 'Your registration is being processed',
+                        html: '<div class="spinner-grow text-primary" role="status" style="width: 3rem; height: 3rem;"></div>',
+                        showConfirmButton: false,
+                        allowOutsideClick: false
                     });
-
+                },
+                success: function(response) {
+                    if (response.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success!',
+                            text: response.message,
+                            showConfirmButton: true,
+                            confirmButtonText: 'Redirect to Gmail'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                window.open('https://mail.google.com', '_blank');
+                            }
+                            // Clear form fields after success
+                            $('#registerForm')[0].reset();  // This will reset the entire form
+                            $('.is-invalid').removeClass('is-invalid');  // Remove any validation error highlights
+                            $('.invalid-feedback').text('');  // Clear any error messages
+                        });
+                    } else {
+                        if(response.message) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error!',
+                                text: response.message,
+                                showConfirmButton: true,
+                            });
+                        } else {
+                            var errors = response.errors;
+                            Object.keys(errors).forEach(function(key) {
+                                var inputField = $('#registerForm [name=' + key + ']');
+                                inputField.addClass('is-invalid');
+                                $('#registerForm #' + key + 'Error').text(errors[key][0]);
+                            });
+                        }
+                    }
+                },
+                error: function() {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Failed!',
+                        text: 'Something went wrong.',
+                        showConfirmButton: true,
+                    });
                 }
-
-
-
-              }
-            },
-            error: function() {
-              Swal.fire({
-                icon: 'error',
-                title: 'Failed!',
-                text: 'Something went wrong.',
-                showConfirmButton: true,
-              });
-            }
-          });
+            });
         });
+
+
 
         $('#registerForm').find('input, select').on('keyup change', function() {
             $(this).removeClass('is-invalid');

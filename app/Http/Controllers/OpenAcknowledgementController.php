@@ -49,7 +49,7 @@ class OpenAcknowledgementController extends Controller
         }
 
         $transactions = $query->get();
-        $ibu_dbcon = DB::connection('ibu_test');
+        $ibu_dbcon = DB::connection('ors_pgsql');
 
         $months = [
             1 => 'January',
