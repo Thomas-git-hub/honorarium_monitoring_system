@@ -40,7 +40,7 @@ class SentItemsController extends Controller
         }
 
 
-        $ibu_dbcon = DB::connection('ors_pgsql');
+        $ibu_dbcon = DB::connection('ibu_test');
 
         $employee = $ibu_dbcon->table('employee_user')
         ->where('id', $request->user_id)
@@ -87,7 +87,7 @@ class SentItemsController extends Controller
                   ->orWhere('deleted_by', '!=', Auth::user()->employee_id); // Show only emails not deleted by the user
         })
         ->get();
-        $ibu_dbcon = DB::connection('ors_pgsql');
+        $ibu_dbcon = DB::connection('ibu_test');
 
         $months = [
             1 => 'January',

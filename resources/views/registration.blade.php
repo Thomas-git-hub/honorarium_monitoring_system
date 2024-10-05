@@ -177,7 +177,7 @@
                 beforeSend: function() {
                     Swal.fire({
                         title: 'Your registration is being processed',
-                        html: '<div class="spinner-grow text-primary" role="status" style="width: 3rem; height: 3rem;"></div>',
+                        html: '<div class="spinner-grow text-primary bg-transparent" role="status" style="width: 3rem; height: 3rem;"></div>',
                         showConfirmButton: false,
                         allowOutsideClick: false
                     });

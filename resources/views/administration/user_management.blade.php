@@ -71,9 +71,9 @@
                     </div>
                 </div>
             </div>
-            <div class="modal-footer">
-            <button class="btn btn-label-danger">Close</button>
-            </div>
+            {{-- <div class="modal-footer">
+                <button class="btn btn-label-danger">Close</button>
+            </div> --}}
         </div>
         </div>
     </div>
@@ -387,10 +387,18 @@
                 type: 'POST',
                 url: '{{ route('user_management.store') }}',
                 data: $(this).serialize(),
+                beforeSend: function() {
+                    Swal.fire({
+                        title: 'Registration is being processed',
+                        html: '<div class="spinner-grow text-primary" role="status" style="width: 3rem; height: 3rem;"></div>',
+                        showConfirmButton: false,
+                        allowOutsideClick: false
+                    });
+                },
                 success: function(response) {
                     Swal.fire({
                         icon: 'success',
-                        title: 'Account added successfully!!',
+                        title: 'Account Registered!!',
                         showClass: {
                             popup: 'animate__animated animate__bounceIn'
                         },
@@ -399,46 +407,44 @@
                         },
                         buttonsStyling: false
                     }).then(() => {
-                        $('#requestAccountTable').DataTable().ajax.reload();
-                        $('#requestFormContainer').hide();
-                        clearForm()
+                        $('#requestAccountTable').DataTable().ajax.reload(); // Reload the DataTable
+                        $('#requestFormContainer').hide(); // Hide the form container
+                        clearForm(); // Clear the form fields
                     });
-
                 },
                 error: function(xhr) {
                     // Clear previous error messages
                     $('.error-message').text('');
                     $('.warning').hide();
 
-                    // Loop through the validation errors and display them under each field
                     if (xhr.status === 409) {
-                // Show SweetAlert for error 409
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Conflict',
-                    text: 'The user already exists.',
-                    showClass: {
-                        popup: 'animate__animated animate__shakeX'
-                    },
-                    customClass: {
-                        confirmButton: 'btn btn-danger'
-                    },
-                    buttonsStyling: false
-                });
-            } else {
-                // Loop through the validation errors and display them under each field
-                $.each(xhr.responseJSON.errors, function(key, value) {
-                    $('#' + key).next('.error-message')
-                        .text(value[0])
-                        .addClass('small-warning text-danger');
-                });
-            }
+                        // Show SweetAlert for error 409
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Conflict',
+                            text: 'The user already exists.',
+                            showClass: {
+                                popup: 'animate__animated animate__shakeX'
+                            },
+                            customClass: {
+                                confirmButton: 'btn btn-danger'
+                            },
+                            buttonsStyling: false
+                        });
+                    } else {
+                        // Loop through the validation errors and display them under each field
+                        $.each(xhr.responseJSON.errors, function(key, value) {
+                            $('#' + key).next('.error-message')
+                                .text(value[0])
+                                .addClass('small-warning text-danger');
+                        });
+                    }
 
-
-                    $('.warning').show();
+                    $('.warning').show(); // Show warning if necessary
                 }
             });
         });
+
 
         // Function to capitalize the first letter of every word
         function capitalizeWords(str) {

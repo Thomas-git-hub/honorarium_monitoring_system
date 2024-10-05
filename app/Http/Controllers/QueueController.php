@@ -24,7 +24,7 @@ class QueueController extends Controller
 
     public function proceedToBudgetOffice(Request $request)
     {
-        $ibu_dbcon = DB::connection('ors_pgsql');
+        $ibu_dbcon = DB::connection('ibu_test');
 
         // Fetch all transactions with status 'Processing'
         $transactions = Transaction::with(['honorarium', 'office'])
@@ -139,7 +139,7 @@ class QueueController extends Controller
 
     public function proceed(Request $request)
     {
-        $ibu_dbcon = DB::connection('ors_pgsql');
+        $ibu_dbcon = DB::connection('ibu_test');
 
         // Fetch all transactions with status 'Processing'
         $transactions = Transaction::whereNull('deleted_at')
@@ -263,7 +263,7 @@ class QueueController extends Controller
 
     public function proceedToCashier(Request $request)
     {
-        $ibu_dbcon = DB::connection('ors_pgsql');
+        $ibu_dbcon = DB::connection('ibu_test');
 
         // Fetch all transactions with status 'Processing'
         $transactions = Transaction::whereNull('deleted_at')
@@ -394,7 +394,7 @@ class QueueController extends Controller
 
         // Find the transaction by ID
         $transaction = Transaction::find($request->id);
-        $ibu_dbcon = DB::connection('ors_pgsql');
+        $ibu_dbcon = DB::connection('ibu_test');
 
         $office = Office::where('id', $transaction->office)->first();
         // dd($transaction->employee_id);
@@ -621,7 +621,7 @@ class QueueController extends Controller
         }
 
         $transactions = $query->get();
-        $ibu_dbcon = DB::connection('ors_pgsql');
+        $ibu_dbcon = DB::connection('ibu_test');
 
         $months = [
             1 => 'January',
@@ -638,70 +638,80 @@ class QueueController extends Controller
             12 => 'December',
         ];
 
-        return DataTables::of($transactions)
-            ->addColumn('id', function($data) {
-                return $data->id;
-            })
-            ->addColumn('faculty', function($data) use($ibu_dbcon) {
-                $employeeDetails = $ibu_dbcon->table('employee')
-                ->where('id', $data->employee_id)
-                ->first();
-                return ucfirst($employeeDetails->employee_fname) . ' ' . ucfirst($employeeDetails->employee_lname);
-            })
-            ->addColumn('id_number', function($data) use($ibu_dbcon) {
-                // $employeeDetails = $ibu_dbcon->table('employee')
-                // ->where('id', $data->employee_id)
-                // ->first();
-                return $data->ee_number ? $data->ee_number : 0;
-            })
-            ->addColumn('academic_rank', function($data) use($ibu_dbcon) {
-                $employeeDetails = $ibu_dbcon->table('employee')
-                ->where('id', $data->employee_id)
-                ->first();
-                return ucfirst($employeeDetails->employee_academic_rank);
-            })
-
-            ->addColumn('college', function($data) use($ibu_dbcon) {
-                $employeeDetails = $ibu_dbcon->table('employee')
-                ->where('id', $data->employee_id)
-                ->first();
-
-                $collegeDetails = $ibu_dbcon->table('college')
-                ->where('id', $employeeDetails->college_id)
-                ->first();
-                return $collegeDetails->college_shortname ? $collegeDetails->college_shortname : 'No College Found';
-            })
-
-            ->addColumn('honorarium', function($data) {
-                return $data->honorarium_id ? $data->honorarium->name : 'N/A';
-            })
-
-            ->addColumn('month', function($data) use ($months) {
-                // return $months[$data->month] ?? 'Unknown';
-                return [
-                    'month_number' => $data->month,
-                    'month_name' => $months[$data->month] ?? 'Unknown'
-                ];
-            })
-
-            ->addColumn('created_by', function($data) {
-                return $data->createdBy ? $data->createdBy->first_name  . ' ' . $data->createdBy->last_name: 'Unknown';
-            })
-            ->addColumn('action', function($data) {
-                $usertype = Auth::user()->usertype->name;
-                if ( $usertype === 'Admin' ||  $usertype === 'Accounting' ||$usertype === 'Superadmin') {
-                    $editButton = '<button type="button" class="btn btn-icon me-2 btn-label-success edit-btn"><span class="tf-icons bx bx-pencil bx-18px"></span></button>';
-
-                }else{
-                    $editButton = '';
-                }
-                // $editButton = '<button type="button" class="btn btn-icon me-2 btn-label-success edit-btn"><span class="tf-icons bx bx-pencil bx-18px"></span></button>';
-                $on_holdButton = '<button type="button" class="btn btn-icon me-2 btn-label-danger on-hold-btn"><span class="tf-icons bx bxs-hand bx-18px"></span></button>';
-
-                return '<div class="d-flex flex-row" data-id="' . $data->id . '">' . $editButton . $on_holdButton . '</div>';
+            return DataTables::of($transactions)
+                ->addColumn('id', function($data) {
+                    return $data->id;
+                })
+                ->addColumn('faculty', function($data) use($ibu_dbcon) {
+                    $employeeDetails = $ibu_dbcon->table('employee')
+                    ->where('id', $data->employee_id)
+                    ->first();
+                    return ucfirst($employeeDetails->employee_fname) . ' ' . ucfirst($employeeDetails->employee_lname);
+                })
+                ->addColumn('id_number', function($data) use($ibu_dbcon) {
+                    // $employeeDetails = $ibu_dbcon->table('employee')
+                    // ->where('id', $data->employee_id)
+                    // ->first();
+                    return $data->ee_number ? $data->ee_number : 0;
+                })
+                ->addColumn('academic_rank', function($data) use($ibu_dbcon) {
+                    $employeeDetails = $ibu_dbcon->table('employee')
+                    ->where('id', $data->employee_id)
+                    ->first();
+                    return ucfirst($employeeDetails->employee_academic_rank);
                 })
 
-            ->make(true);
+                ->addColumn('college', function($data) use($ibu_dbcon) {
+                    $employeeDetails = $ibu_dbcon->table('employee')
+                    ->where('id', $data->employee_id)
+                    ->first();
+
+                    $collegeDetails = $ibu_dbcon->table('college')
+                    ->where('id', $employeeDetails->college_id)
+                    ->first();
+                    return $collegeDetails->college_shortname ? $collegeDetails->college_shortname : 'No College Found';
+                })
+
+                ->addColumn('honorarium', function($data) {
+                    return $data->honorarium_id ? $data->honorarium->name : 'N/A';
+                })
+
+                ->addColumn('month', function($data) use ($months) {
+                    // return $months[$data->month] ?? 'Unknown';
+                    return [
+                        'month_number' => $data->month,
+                        'month_name' => $months[$data->month] ?? 'Unknown'
+                    ];
+                })
+
+                ->addColumn('created_by', function($data) {
+                    return $data->createdBy ? $data->createdBy->first_name  . ' ' . $data->createdBy->last_name: 'Unknown';
+                })
+
+                // newly added remarks column, added last oct 4, 2024
+                // ->addColumn('remarks', function($data) {
+                //     $usertype = Auth==user()->usertype->name;
+                //     if ( $usertype === 'Admin' ||  $usertype === 'Accounting' ||$usertype === 'Superadmin') {
+                //         $remarksButton = '<button type="button" class="btn btn-icon me-2 btn-label-warning" data-bs-toggle="modal" data-bs-target="#remarksModal"><span class="tf-icons bx bx-message-square-error bx-22px"></span></button>';
+                //     }
+                //     return '<button type="button" class="btn btn-icon me-2 btn-label-warning" data-bs-toggle="modal" data-bs-target="#remarksModal"><span class="tf-icons bx bx-message-square-error bx-22px"></span></button>';
+                // })
+
+                ->addColumn('action', function($data) {
+                    $usertype = Auth::user()->usertype->name;
+                    if ( $usertype === 'Admin' ||  $usertype === 'Accounting' ||$usertype === 'Superadmin') {
+                        $editButton = '<button type="button" class="btn btn-icon me-2 btn-label-success edit-btn"><span class="tf-icons bx bx-pencil bx-18px"></span></button>';
+
+                    }else{
+                        $editButton = '';
+                    }
+                    // $editButton = '<button type="button" class="btn btn-icon me-2 btn-label-success edit-btn"><span class="tf-icons bx bx-pencil bx-18px"></span></button>';
+                    $on_holdButton = '<button type="button" class="btn btn-icon me-2 btn-label-danger on-hold-btn"><span class="tf-icons bx bxs-hand bx-18px"></span></button>';
+
+                    return '<div class="d-flex flex-row" data-id="' . $data->id . '">' . $editButton . $on_holdButton . '</div>';
+                    })
+
+                ->make(true);
 
     }
 

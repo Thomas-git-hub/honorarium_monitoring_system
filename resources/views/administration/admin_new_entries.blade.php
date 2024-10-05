@@ -186,7 +186,7 @@
                     </div>
                 </div>
                 <div class="">
-                    {{-- <small class="text-danger">Proceeding with this transaction indicates that every individual has submitted all necessary requirements for their honorarium.</small> --}}
+                    <small class="text-danger">Transactions with incomplete requirements will not proceed to the next office.</small>
                     <button class="btn btn-primary w-100" id="proceedTransactionButton">Proceed to next office</button>
                 </div>
 
@@ -381,7 +381,7 @@
                 beforeSend: function() {
                     Swal.fire({
                         title: 'Processing...',
-                        html: '<div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;"></div>',
+                        html: '<div class="spinner-grow text-primary" role="status" style="width: 3rem; height: 3rem;"></div>',
                         showConfirmButton: false,
                         allowOutsideClick: false
                     });

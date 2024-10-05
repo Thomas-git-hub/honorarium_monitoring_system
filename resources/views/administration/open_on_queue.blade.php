@@ -114,6 +114,10 @@
                         <option value="12">December</option>
                     </select>
                 </div>
+                <div>
+                    <label for="exampleFormControlTextarea1" class="form-label">Remarks</label>
+                    <textarea class="form-control" id="remarks" rows="3"></textarea>
+                </div>
                 <input type="hidden" id="editRowIndex">
             </div>
             <div class="modal-footer">
@@ -174,9 +178,23 @@
   </div>
 {{-- MESSAGE MODAL END --}}
 
-{{-- <div class="row mt-4">
-    <h4 class="card-title text-secondary">In Queue</h4>
-</div> --}}
+<!-- Remarks Modal -->
+<button type="button" class="btn btn-icon me-2 btn-label-warning" data-bs-toggle="modal" data-bs-target="#remarksModal"><span class="tf-icons bx bx-message-square-error bx-22px"></span></button>
+<div class="modal fade" id="remarksModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h6 class="modal-title d-flex align-items-center text-warning" id="exampleModalLabel"><i class='bx bx-message-square-error'></i>&nbsp;Remarks</h6>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+            </button>
+        </div>
+        <div class="modal-body">
+          <p>Croissant jelly beans donut apple pie. Caramels bonbon lemon drops. Sesame snaps lemon drops lemon drops liquorice icing bonbon pastry pastry carrot cake. Dragée sweet sweet roll sugar plum.</p>
+        </div>
+      </div>
+    </div>
+</div>
+<!-- Remarks Modal End-->
 
 <div class="row mt-2 gap-3">
     <div class="col-md">
@@ -283,15 +301,27 @@
                 { data: 'year', name: 'year', title: 'Semester Year' },
                 { data: 'month.month_name', name: 'month', title: 'Month Of' },
                 { data: 'created_by', name: 'created_by', title: 'Created By' },
-                { data: 'action', name: 'action', title: 'Action' }
-            ],
-            order: [[0, 'desc']], // Sort by date_received column by default
-            columnDefs: [
+                // New pie_chart column with render set to allow HTML
                 {
-                    type: 'date',
-                    targets: [0, 1] // Apply date sorting to date_received and date_on_hold columns
-                }
-            ],
+                    data: 'remarks',
+                    name: 'remarks',
+                    title: 'Remarks',
+                    render: function(data, type, row) {
+                        return data ? data : ''; // Make sure it's rendered as HTML
+                    },
+                    orderable: false,  // Disable ordering for this column if needed
+                    searchable: false  // Disable searching for this column if needed
+                },
+
+                { data: 'action', name: 'action', title: 'Action' }
+                ],
+                order: [[0, 'desc']], // Sort by date_received column by default
+                columnDefs: [
+                    {
+                        type: 'date',
+                        targets: [0, 1] // Apply date sorting to date_received and date_on_hold columns
+                    }
+                ],
 
             createdRow: function(row, data) {
                 $(row).addClass('unopened');
@@ -411,7 +441,7 @@
                         beforeSend: function() {
                             Swal.fire({
                                 title: 'Processing...',
-                                html: '<div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;"></div>',
+                                html: '<div class="spinner-grow text-primary" role="status" style="width: 3rem; height: 3rem;"></div>',
                                 showConfirmButton: false,
                                 allowOutsideClick: false
                             });
@@ -586,7 +616,7 @@
                                 beforeSend: function() {
                                     Swal.fire({
                                         title: 'Processing...',
-                                        html: '<div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;"></div>',
+                                        html: '<div class="spinner-grow text-primary" role="status" style="width: 3rem; height: 3rem;"></div>',
                                         showConfirmButton: false,
                                         allowOutsideClick: false
                                     });
@@ -645,7 +675,7 @@
                 beforeSend: function() {
                     Swal.fire({
                         title: 'Processing...',
-                        html: '<div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;"></div>',
+                        html: '<div class="spinner-grow text-primary" role="status" style="width: 3rem; height: 3rem;"></div>',
                         showConfirmButton: false,
                         allowOutsideClick: false
                     });
