@@ -27,9 +27,9 @@
             <a href="javascript:void(0)" class="btn btn-label-danger btn-lg p-4 mb-2 w-100 shadow-sm office-btn" data-route="{{ route('faculty.accounting') }}">
                 Accounting
             </a>
-            {{-- <a href="javascript:void(0)" class="btn btn-label-warning btn-lg p-4 mb-2 w-100 shadow-sm office-btn" data-route="{{ route('faculty.dean_office') }}">
+            <a href="javascript:void(0)" class="btn btn-label-warning btn-lg p-4 mb-2 w-100 shadow-sm office-btn" data-route="{{ route('faculty.dean_office') }}">
                 Dean Office
-            </a> --}}
+            </a>
             <a href="javascript:void(0)" class="btn btn-label-info btn-lg p-4 mb-2 w-100 shadow-sm office-btn" data-route="{{ route('faculty.cashier') }}">
                 Cashier
             </a>
