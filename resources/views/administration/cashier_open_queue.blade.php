@@ -18,7 +18,7 @@
                                 Full Name:
                             </div>
                             <div class="col-md-8">
-                                <b id="faculty">John Doe</b>
+                                <b id="faculty"> </b>
                             </div>
                         </div>
                         <div class="row mb-2">
@@ -26,7 +26,7 @@
                                 Email:
                             </div>
                             <div class="col-md-8">
-                                <b id="email">lorem@bicol-u.edu.ph</b>
+                                <b id="email">-</b>
                             </div>
                         </div>
                         <div class="row mb-2">
@@ -34,7 +34,7 @@
                                 Academic Rank:
                             </div>
                             <div class="col-md-8">
-                                <b id="position">Lorem Ipsum</b>
+                                <b id="position">-</b>
                             </div>
                         </div>
                         <div class="row mb-2">
@@ -42,7 +42,7 @@
                                 Mother College:
                             </div>
                             <div class="col-md-8">
-                                <b id="college">College of Ipsum</b>
+                                <b id="college">-</b>
                             </div>
                         </div>
                         <div class="row mb-5">
@@ -50,7 +50,7 @@
                                 Contact Number:
                             </div>
                             <div class="col-md-8">
-                                <b id="contact">09156748573</b>
+                                <b id="contact">-</b>
                             </div>
                         </div>
 
@@ -348,7 +348,7 @@
         //     $(this).val(validValue);
         // });
 
-        
+
         // Function to handle adding the net amount to the table
         function addNetAmount() {
             var netAmount = $('#netAmount').val().trim();

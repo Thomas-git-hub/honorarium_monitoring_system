@@ -193,7 +193,9 @@
             </button>
         </div>
         <div class="modal-body">
-          <p>Croissant jelly beans donut apple pie. Caramels bonbon lemon drops. Sesame snaps lemon drops lemon drops liquorice icing bonbon pastry pastry carrot cake. Dragée sweet sweet roll sugar plum.</p>
+          <div>Updated by: <b class="text-primary">Long name</b></div>
+          <div>Updated last: <b class="text-primary">Date</b></div>
+          <p class="mt-3">Croissant jelly beans donut apple pie. Caramels bonbon lemon drops. Sesame snaps lemon drops lemon drops liquorice icing bonbon pastry pastry carrot cake. Dragée sweet sweet roll sugar plum.</p>
         </div>
       </div>
     </div>
