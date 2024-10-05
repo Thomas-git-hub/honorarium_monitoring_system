@@ -114,11 +114,16 @@
                         <option value="12">December</option>
                     </select>
                 </div>
+                @if(Auth::user()->usertype->name === 'Accounting')
+
                 <div>
                     <label for="exampleFormControlTextarea1" class="form-label">Remarks</label>
                     <textarea class="form-control" id="remarks" rows="3"></textarea>
                 </div>
                 <input type="hidden" id="editRowIndex">
+
+                @endif
+
             </div>
             <div class="modal-footer">
                 <button type="submit" class="btn btn-primary" id="saveChanges">Save changes</button>
@@ -301,16 +306,21 @@
                 { data: 'month.month_name', name: 'month', title: 'Month Of' },
                 { data: 'created_by', name: 'created_by', title: 'Created By' },
                 // New pie_chart column with render set to allow HTML
+                @if(Auth::user()->usertype->name === 'Accounting' || Auth::user()->usertype->name === 'Admin' )
                 {
                     data: 'remarks',
                     name: 'remarks',
                     title: 'Remarks',
                     render: function(data, type, row) {
-                        return data ? data : ''; // Make sure it's rendered as HTML
+                        var remarksButton = '<button type="button" class="btn btn-icon me-2 btn-label-warning" data-bs-toggle="modal" data-bs-target="#remarksModal"><span class="tf-icons bx bx-message-square-error bx-22px"></span></button>';
+
+                        return '<div class="d-flex flex-row" data-id="' + row.id + '">' + remarksButton + '</div>';
                     },
                     orderable: false,  // Disable ordering for this column if needed
                     searchable: false  // Disable searching for this column if needed
                 },
+                @endif
+
 
                 { data: 'action', name: 'action', title: 'Action' }
                 ],
