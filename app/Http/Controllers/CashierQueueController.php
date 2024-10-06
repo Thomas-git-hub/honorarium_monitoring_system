@@ -22,7 +22,6 @@ class CashierQueueController extends Controller
         $batch_id = $request->input('id');
 
         $acknowledgements = Acknowledgement::with(['user', 'office', 'transaction'])
-        ->whereNull('deleted_at')
         ->select('batch_id', 'office_id', 'created_at', 'user_id')
         ->where('batch_id', $batch_id)
         ->first();
@@ -48,7 +47,6 @@ class CashierQueueController extends Controller
 
         $From_office = Office::where('name', 'Dean')->first();
         $acknowledgements = Acknowledgement::with(['user', 'office', 'transaction'])
-            ->whereNull('deleted_at')
             ->select('batch_id', 'office_id', 'created_at', 'user_id')
             ->where('office_id', $From_office->id)
             ->groupBy('batch_id')
@@ -162,6 +160,13 @@ class CashierQueueController extends Controller
                 return ucfirst($employeeDetails->employee_academic_rank);
             })
 
+            ->addColumn('email', function($data) use($ibu_dbcon) {
+                $employeeDetails = $ibu_dbcon->table('employee_user')
+                ->where('id', $data->employee_id)
+                ->first();
+                return ucfirst($employeeDetails->email);
+            })
+
             ->addColumn('college', function($data) use($ibu_dbcon) {
                 $employeeDetails = $ibu_dbcon->table('employee')
                 ->where('id', $data->employee_id)
@@ -201,8 +206,12 @@ class CashierQueueController extends Controller
             ->addColumn('created_by', function($data) {
                 return $data->createdBy ? $data->createdBy->first_name  . ' ' . $data->createdBy->last_name: 'Unknown';
             })
+
+            ->addColumn('netAmount', function($data) {
+                return $data->net_amount;
+            })
             ->addColumn('net_amount', function($data) {
-                return '';
+                return $data->net_amount ? $data->net_amount : 'Add';
             })
 
 

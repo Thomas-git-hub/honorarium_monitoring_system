@@ -58,7 +58,7 @@
                             <div class="mb-1">
                                 <input type="hidden" id="id" name="id">
                                 <label for="defaultFormControlInput" class="form-label text-primary">Total Net Amount</label>
-                                <input type="text" class="form-control" id="netAmount" placeholder="₱" aria-describedby="defaultFormControlHelp" />
+                                <input type="text" class="form-control" id="netAmount" placeholder="₱0.00" aria-describedby="defaultFormControlHelp" />
                                 <div id="netAmountHelp" class="form-text text-info">Enter the exact net amount and be sure to double-check the amount entered.</div>
                                 <small class="text-danger"  id="netAmountError"  style="display:none;"><i class='bx bx-error-circle'></i> Please enter a valid amount with up to two decimal places.</small>
                             </div>
@@ -188,14 +188,16 @@
                 { data: 'month.month_name', name: 'month', title: 'Month Of' },
                 { data: 'created_by', name: 'created_by', title: 'Created By' },
                 { data: 'contact', name: 'contact', title: 'contact', visible: false },
+                { data: 'netAmount', name: 'netAmount', title: 'netAmount', visible: false },
                 {
                     data: 'net_amount',
                     name: 'net_amount',
                     title: 'Net Amount',
                     render: function (data, type, row) {
                         // Return HTML for buttons (edit, on hold, and add button)
-                        var addButton = '<button type="button" class="btn btn-sm btn-primary add-btn" data-bs-toggle="modal" data-bs-target="#exampleModal">Add</button>';
-
+                        var buttonTitle = data ? data : 'Add';
+                        // Return the button with either the net_amount or 'Add' as the text
+                        var addButton = '<button type="button" class="btn btn-sm btn-primary add-btn" data-bs-toggle="modal" data-bs-target="#exampleModal">' + buttonTitle + '</button>';
                         return '<div class="d-flex flex-row" data-id="' + row.id + '">' + addButton + '</div>';
                     }
                 }
@@ -216,6 +218,7 @@
             $('#contact').text(rowData.contact);
             $('#college').text(rowData.college);
             $('#id_num').text(rowData.ee_number);
+            $('#netAmount').val(rowData.netAmount);
 
         });
 

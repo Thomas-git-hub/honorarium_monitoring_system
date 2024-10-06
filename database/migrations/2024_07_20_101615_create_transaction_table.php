@@ -25,6 +25,7 @@ return new class extends Migration
             $table->string('created_by');
             $table->decimal('net_amount', 20, 2)->nullable();
             $table->boolean('is_complete')->default(0);
+            $table->longText('remarks')->nullable();
             $table->timestamps();
             $table->softDeletes();
 

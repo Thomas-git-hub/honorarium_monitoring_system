@@ -116,11 +116,12 @@
                 </div>
                 @if(Auth::user()->usertype->name === 'Accounting')
 
-                <div>
-                    <label for="exampleFormControlTextarea1" class="form-label">Remarks</label>
-                    <textarea class="form-control" id="remarks" rows="3"></textarea>
-                </div>
-                <input type="hidden" id="editRowIndex">
+                    <div>
+                        <label for="editRemarks" class="form-label">Remarks</label>
+                        <textarea class="form-control" id="editRemarks" name="remarks" rows="3"></textarea>
+                    </div>
+
+                    <input type="hidden" id="editRowIndex">
 
                 @endif
 
@@ -180,7 +181,7 @@
         </div>
       </div>
     </div>
-  </div>
+</div>
 {{-- MESSAGE MODAL END --}}
 
 <!-- Remarks Modal -->
@@ -193,9 +194,9 @@
             </button>
         </div>
         <div class="modal-body">
-          <div>Updated by: <b class="text-primary">Long name</b></div>
-          <div>Updated last: <b class="text-primary">Date</b></div>
-          <p class="mt-3">Croissant jelly beans donut apple pie. Caramels bonbon lemon drops. Sesame snaps lemon drops lemon drops liquorice icing bonbon pastry pastry carrot cake. Dragée sweet sweet roll sugar plum.</p>
+          <div>Updated by: <b class="text-primary" id="remarkUpdatedBy">Long name</b></div>
+          <div>Updated last: <b class="text-primary" id="remarkUpdatedLast">Date</b></div>
+          <p class="mt-3" id="remarksText">Croissant jelly beans donut apple pie. Caramels bonbon lemon drops. Sesame snaps lemon drops lemon drops liquorice icing bonbon pastry pastry carrot cake. Dragée sweet sweet roll sugar plum.</p>
         </div>
       </div>
     </div>
@@ -314,7 +315,7 @@
                     name: 'remarks',
                     title: 'Remarks',
                     render: function(data, type, row) {
-                        var remarksButton = '<button type="button" class="btn btn-icon me-2 btn-label-warning" data-bs-toggle="modal" data-bs-target="#remarksModal"><span class="tf-icons bx bx-message-square-error bx-22px"></span></button>';
+                        var remarksButton = '<button type="button" class="btn btn-icon me-2 btn-label-warning remarks-btn" data-bs-toggle="modal" data-bs-target="#remarksModal"><span class="tf-icons bx bx-message-square-error bx-22px"></span></button>';
 
                         return '<div class="d-flex flex-row" data-id="' + row.id + '">' + remarksButton + '</div>';
                     },
@@ -323,7 +324,8 @@
                 },
                 @endif
 
-
+                { data: 'remark', name: 'remark', title: 'remark', visible: false},
+                { data: 'updated_at', name: 'updated_at', title: 'updated_at', visible: false},
                 { data: 'action', name: 'action', title: 'Action' }
                 ],
                 order: [[0, 'desc']], // Sort by date_received column by default
@@ -354,34 +356,7 @@
             $('#editSemester').val(rowData.sem);
             $('#editSemesterYear').val(rowData.year).change();
             $('#editHonorarium').val(rowData.honorarium_id).change();
-
             $('#editMonthOf').val(rowData.month.month_number).change(); // Set the month
-
-            //Get Honorarium
-            // $('#editHonorarium').select2({
-            //     placeholder: 'Select Honorarium',
-            //     allowClear: true
-            // });
-            // $.ajax({
-            //     url: '{{ route('getHonorarium') }}',
-            //     type: 'GET',
-            //     success: function(data) {
-            //         var options = [];
-            //         data.forEach(function(hono) {
-            //             options.push({
-            //                 id: hono.id,
-            //                 text: hono.name,
-            //             });
-            //         });
-
-            //         $('#editHonorarium').select2({
-            //             data: options
-            //         });
-            //     },
-            //     error: function(xhr, status, error) {
-            //         console.error('Error fetching Honorarium:', error);
-            //     }
-            // });
 
            // Clear previous options from the honorarium select field
             var select = $('#editHonorarium');
@@ -404,21 +379,7 @@
                 }
             });
 
-            // // Set the select values
-            // $('#editSemester').val(
-            //     rowData.semester.includes('First Semester') ? '1' :
-            //     rowData.semester.includes('Second Semester') ? '2' :
-            //     rowData.semester.includes('Summer Term') ? '3' : ''
-            // );
 
-            // $('#editSemesterYear').val(rowData.semester_year);
-            // $('#editMonthOf').val(
-            //     {
-            //         'January': '1', 'February': '2', 'March': '3', 'April': '4',
-            //         'May': '5', 'June': '6', 'July': '7', 'August': '8',
-            //         'September': '9', 'October': '10', 'November': '11', 'December': '12'
-            //     }[rowData.month_of]
-            // );
             $('#editRowIndex').val(table.row(row).index());
 
             // Show modal
@@ -484,6 +445,14 @@
                     });
                 }
             });
+        });
+
+        $('#facultyTable').on('click', '.remarks-btn', function() {
+            var row = $(this).closest('tr');
+            var rowData = table.row(row).data();
+            $('#remarkUpdatedBy').text(rowData.created_by);
+            $('#remarkUpdatedLast').text(rowData.updated_at);
+            $('#remarksText').text(rowData.remark.replace(/<[^>]+>/g, ''));
         });
 
 
@@ -741,6 +710,7 @@
                         confirmButtonText: 'OK'
                     });
 
+                    $('#editRemarks').val('');
                     $('#editEntryModal').modal('hide');
                     $('#facultyTable').DataTable().ajax.reload();
                 } else {

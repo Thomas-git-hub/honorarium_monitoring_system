@@ -382,8 +382,9 @@ class QueueController extends Controller
         $transaction->sem = $request->sem;
         $transaction->year = $request->year;
         $transaction->month = $request->month;
-        $transaction->created_by =Auth::user()->id;
+        $transaction->created_by = Auth::user()->id;
         $transaction->updated_at = now();
+        $transaction->remarks = $request->remarks ? $request->remarks : null;
         $transaction->save();
 
         return response()->json(['success' => true, 'message' => 'Transaction updated successfully.']);
@@ -688,14 +689,18 @@ class QueueController extends Controller
                     return $data->createdBy ? $data->createdBy->first_name  . ' ' . $data->createdBy->last_name: 'Unknown';
                 })
 
+                ->addColumn('updated_at', function ($data) {
+                    return $data->updated_at ? $data->updated_at->format('m-d-Y') : 'N/A';
+                })
+
                 // newly added remarks column, added last oct 4, 2024
-                // ->addColumn('remarks', function($data) {
-                //     $usertype = Auth==user()->usertype->name;
-                //     if ( $usertype === 'Admin' ||  $usertype === 'Accounting' ||$usertype === 'Superadmin') {
-                //         $remarksButton = '<button type="button" class="btn btn-icon me-2 btn-label-warning" data-bs-toggle="modal" data-bs-target="#remarksModal"><span class="tf-icons bx bx-message-square-error bx-22px"></span></button>';
-                //     }
-                //     return '<button type="button" class="btn btn-icon me-2 btn-label-warning" data-bs-toggle="modal" data-bs-target="#remarksModal"><span class="tf-icons bx bx-message-square-error bx-22px"></span></button>';
-                // })
+                ->addColumn('remarks', function($data) {
+                   return '';
+                })
+
+                ->addColumn('remark', function($data) {
+                   return $data->remarks ?? 'No remarks';
+                })
 
                 ->addColumn('action', function($data) {
                     $usertype = Auth::user()->usertype->name;
