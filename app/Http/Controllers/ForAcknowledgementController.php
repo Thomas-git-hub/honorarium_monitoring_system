@@ -18,7 +18,7 @@ class ForAcknowledgementController extends Controller
 {
     public function for_acknowledgement(request $request)
     {
-        if(Auth::user()->usertype->name !== 'Faculties'){
+        if(Auth::user()->usertype->name !== 'Faculty'){
             $TransCountToday = Transaction::with(['honorarium', 'createdBy'])
                                     ->whereNull('deleted_at')
                                     ->where('status', 'On Queue')
@@ -102,7 +102,7 @@ class ForAcknowledgementController extends Controller
             $acknowledgements = collect();
         }
 
-        if(Auth::user()->usertype->name === 'Admin' || Auth::user()->usertype->name === 'Superadmin'){
+        if(Auth::user()->usertype->name === 'Administrator' || Auth::user()->usertype->name === 'Superadmin'){
             // Filter out acknowledgements with a transaction count of 0
             $filteredAcknowledgements = $acknowledgements->filter(function ($acknowledgement) {
                 $countTran = Transaction::whereNull('deleted_at')

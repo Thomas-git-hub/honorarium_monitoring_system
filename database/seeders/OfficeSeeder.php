@@ -15,6 +15,13 @@ class OfficeSeeder extends Seeder
     {
         Office::create(
             [
+                'name'=> 'ICTO',
+                'created_by'=> 'Superadmin',
+
+            ]
+          );
+        Office::create(
+            [
                 'name'=> 'BUGS Administration',
                 'created_by'=> 'Superadmin',
 

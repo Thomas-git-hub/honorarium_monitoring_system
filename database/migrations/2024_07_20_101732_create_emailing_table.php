@@ -16,7 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('transaction_id')->nullable();
             $table->unsignedBigInteger('to_user');
             $table->string('subject');
-            $table->string('message');
+            $table->longText('message');
             $table->string('status');
             $table->string('created_by');
             $table->string('deleted_by')->nullable();

@@ -64,7 +64,7 @@
                 <small class="text-danger" id="label" style="display: none;">Please specify the reason for holding this transaction.</small>
             </div> --}}
 
-            @if(Auth::user()->usertype->name !== 'Faculties')
+            @if(Auth::user()->usertype->name !== 'Faculty')
 
             <div class="mt-4">
                 <div>

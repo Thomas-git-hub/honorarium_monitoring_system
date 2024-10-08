@@ -131,7 +131,7 @@ class OpenAcknowledgementController extends Controller
             ->addColumn('action', function($data) {
 
                 $usertype = Auth::user()->usertype->name;
-                if ( $usertype === 'Admin' ||  $usertype === 'Accounting' ||$usertype === 'Superadmin') {
+                if ( $usertype === 'Administrator' ||  $usertype === 'Accounting' ||$usertype === 'Superadmin') {
                     $editButton = '<button type="button" class="btn btn-icon me-2 btn-label-success edit-btn"><span class="tf-icons bx bx-pencil bx-18px"></span></button>';
 
                 }else{

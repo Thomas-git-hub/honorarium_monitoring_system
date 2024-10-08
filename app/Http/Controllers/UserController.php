@@ -68,7 +68,7 @@ class UserController extends Controller
 
             ]);
 
-            $usertype = UserType::where('name', 'Faculties')->first();
+            $usertype = UserType::where('name', 'Faculty')->first();
             $office = Office::where('name', 'Faculty')->first();
 
             if ($employeeDetails) {

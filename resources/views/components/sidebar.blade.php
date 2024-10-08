@@ -17,7 +17,7 @@
 
     <ul class="menu-inner py-1">
         <!-- Page -->
-        @if(Auth::user()->usertype->name !== 'Faculties')
+        @if(Auth::user()->usertype->name !== 'Faculty')
         <li class="menu-item {{ request()->is('admin_dashboard') ? 'active' : '' }}">
           <a href="/admin_dashboard" class="menu-link">
             <i class="menu-icon tf-icons bx bx-home-circle"></i>
@@ -25,7 +25,7 @@
           </a>
         </li>
         @endif
-        @if(Auth::user()->usertype->name === 'Faculties')
+        @if(Auth::user()->usertype->name === 'Faculty')
         <li class="menu-item {{ request()->is('faculty_dashboard') ? 'active' : '' }}">
             <a href="/faculty_dashboard" class="menu-link">
               <i class="menu-icon tf-icons bx bx-home-circle"></i>
@@ -51,7 +51,7 @@
           <div style="margin-left: 5%; margin-top: 5%; color: #b4b0c4;">Transaction</div>
         </li>
 
-        @if(Auth::user()->usertype->name === 'Admin' || Auth::user()->usertype->name === 'Superadmin')
+        @if(Auth::user()->usertype->name === 'Administrator' || Auth::user()->usertype->name === 'Superadmin')
         <li class="menu-item {{ request()->is('admin_honorarium') ? 'active' : '' }}">
             <a href="/admin_honorarium" class="menu-link">
               <i class='menu-icon tf-icons bx bx-list-plus'></i>
@@ -59,7 +59,7 @@
             </a>
         </li>
         @endif
-        @if(Auth::user()->usertype->name === 'Admin' || Auth::user()->usertype->name === 'Superadmin')
+        @if(Auth::user()->usertype->name === 'Administrator' || Auth::user()->usertype->name === 'Superadmin')
         <li class="menu-item {{ request()->is('admin_new_entries') ? 'active' : '' }}">
           <a href="/admin_new_entries" class="menu-link">
             <i class='menu-icon tf-icons bx bx-plus-circle'></i>
@@ -67,7 +67,7 @@
           </a>
         </li>
         @endif
-        @if(Auth::user()->usertype->name !== 'Admin' && Auth::user()->usertype->name !== 'Faculties')
+        @if(Auth::user()->usertype->name !== 'Administrator' && Auth::user()->usertype->name !== 'Faculty')
         <li class="menu-item {{ request()->is('for_acknowledgement') ? 'active' : '' }}">
           <a href="/for_acknowledgement" class="menu-link">
             <i class='menu-icon tf-icons bx bx-archive-in'></i>
@@ -76,7 +76,7 @@
           </a>
         </li>
         @endif
-        @if(Auth::user()->usertype->name !== 'Faculties' && Auth::user()->usertype->name !== 'Cashiers')
+        @if(Auth::user()->usertype->name !== 'Faculty' && Auth::user()->usertype->name !== 'Cashiers')
         <li class="menu-item {{ request()->is('admin_on_queue') ? 'active' : '' }}">
           <a href="/admin_on_queue" class="menu-link">
             <i class='menu-icon tf-icons bx bx-list-ol'></i>
@@ -92,7 +92,7 @@
           </a>
         </li>
         @endif
-        @if(Auth::user()->usertype->name !== 'Faculties')
+        @if(Auth::user()->usertype->name !== 'Faculty')
         <li class="menu-item {{ request()->is('admin_on_hold') ? 'active' : '' }}">
           <a href="/admin_on_hold" class="menu-link">
             <i class='menu-icon tf-icons bx bx-error-alt'></i>
@@ -100,7 +100,7 @@
           </a>
         </li>
         @endif
-        @if(Auth::user()->usertype->name === 'Faculties')
+        @if(Auth::user()->usertype->name === 'Faculty')
         <li class="menu-item {{ request()->is('faculty_tracking') ? 'active' : '' }}">
           <a href="/faculty_tracking" class="menu-link">
             <i class='menu-icon tf-icons bx bx-tag-alt'></i>
@@ -108,7 +108,7 @@
           </a>
         </li>
         @endif
-        @if(Auth::user()->usertype->name !== 'Faculties')
+        @if(Auth::user()->usertype->name !== 'Faculty')
         <li class="menu-item {{ request()->is('history') ? 'active' : '' }}">
           <a href="/history" class="menu-link">
             <i class='menu-icon tf-icons bx bx-history' ></i>
@@ -116,7 +116,7 @@
           </a>
         </li>
         @endif
-        @if(Auth::user()->usertype->name === 'Admin' || Auth::user()->usertype->name === 'Superadmin')
+        @if(Auth::user()->usertype->name === 'Administrator' || Auth::user()->usertype->name === 'Superadmin')
         <li class="menu-item">
             <div style="margin-left: 5%; margin-top: 5%; color: #b4b0c4;">Users</div>
         </li>

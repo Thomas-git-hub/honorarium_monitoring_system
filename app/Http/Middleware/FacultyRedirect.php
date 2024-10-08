@@ -16,7 +16,7 @@ class FacultyRedirect
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (Auth::check() && Auth::user()->usertype->name === 'Faculties') {
+        if (Auth::check() && Auth::user()->usertype->name === 'Faculty') {
             // Redirect faculty users to a different dashboard
             return redirect('/faculty_dashboard');
         }

@@ -15,14 +15,14 @@ class UserTypeSeeder extends Seeder
     {
         UserType::create(
             [
-                'name'=> 'Faculties',
+                'name'=> 'Superadmin',
                 'created_by'=> 'Superadmin',
 
             ]
           );
           UserType::create(
             [
-                'name'=> 'Admin',
+                'name'=> 'Administrator',
                 'created_by'=> 'Superadmin',
 
             ]
@@ -55,12 +55,15 @@ class UserTypeSeeder extends Seeder
 
             ]
           );
-          UserType::create(
+        UserType::create(
             [
-                'name'=> 'Superadmin',
+                'name'=> 'Faculty',
                 'created_by'=> 'Superadmin',
 
             ]
           );
+
+
+
     }
 }

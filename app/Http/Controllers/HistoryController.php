@@ -15,7 +15,7 @@ use Yajra\DataTables\Facades\DataTables;
 class HistoryController extends Controller
 {
     public function history(){
-        if(Auth::user()->usertype->name !== 'Faculties'){
+        if(Auth::user()->usertype->name !== 'Faculty'){
 
             $pendingMails = Emailing::where('status', 'Unread')->where('to_user', Auth::user()->employee_id);
             $EmailCount = $pendingMails->count();
@@ -60,7 +60,7 @@ class HistoryController extends Controller
                 ->select('batch_id', 'office_id', 'created_at', 'user_id')
                 ->groupBy('batch_id', 'user_id')
                 ->get();
-        }elseif(Auth::user()->usertype->name === 'Admin'){
+        }elseif(Auth::user()->usertype->name === 'Administrator'){
             $From_office = Office::where('name', 'BUGS Administration')->first();
             $acknowledgements = Acknowledgement::with(['user', 'office', 'transaction'])
                 ->select('batch_id', 'office_id', 'created_at', 'user_id')
@@ -103,7 +103,7 @@ class HistoryController extends Controller
             $acknowledgements = collect();
         }
 
-        if(Auth::user()->usertype->name === 'Admin'){
+        if(Auth::user()->usertype->name === 'Administrator'){
 
             $filteredAcknowledgements = $acknowledgements->filter(function ($acknowledgement) {
                 $countTran = Transaction::whereNull('deleted_at')
@@ -153,7 +153,7 @@ class HistoryController extends Controller
             })
             ->addColumn('number_of_transactions', function ($data) {
                 $office = Office::where('name', 'BUGS Administration')->first();
-                if(Auth::user()->usertype->name === 'Admin' || Auth::user()->usertype->name === 'Superadmin'){
+                if(Auth::user()->usertype->name === 'Administrator' || Auth::user()->usertype->name === 'Superadmin'){
                     return Transaction::whereNull('deleted_at')
                     ->where('batch_id', $data->batch_id)
                     ->where('status','!=', 'On-hold')
@@ -249,7 +249,7 @@ class HistoryController extends Controller
             })
             ->addColumn('action', function($data) {
                 $usertype = Auth::user()->usertype->name;
-                if ( $usertype === 'Admin' ||  $usertype === 'Accounting' ||$usertype === 'Superadmin') {
+                if ( $usertype === 'Administrator' ||  $usertype === 'Accounting' ||$usertype === 'Superadmin') {
                     $editButton = '<button type="button" class="btn btn-icon me-2 btn-label-success edit-btn"><span class="tf-icons bx bx-pencil bx-18px"></span></button>';
 
                 }else{

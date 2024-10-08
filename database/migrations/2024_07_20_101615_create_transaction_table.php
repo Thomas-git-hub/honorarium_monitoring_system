@@ -22,6 +22,7 @@ return new class extends Migration
             $table->integer('year');
             $table->string('date_of_trans');
             $table->string('status');
+            $table->string('batch_status')->default('No Findings');
             $table->string('created_by');
             $table->decimal('net_amount', 20, 2)->nullable();
             $table->boolean('is_complete')->default(0);

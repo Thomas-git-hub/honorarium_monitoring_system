@@ -161,7 +161,7 @@ class OnHoldController extends Controller
 
         $usertype = Auth::user()->usertype->name;
 
-        if($usertype === 'Admin' || $usertype === 'Superadmin'){
+        if($usertype === 'Administrator' || $usertype === 'Superadmin'){
             $office = Office::where('name', 'Budget Office')->first();
         }
         elseif($usertype === 'Budget Office' || $usertype === 'Accounting'){

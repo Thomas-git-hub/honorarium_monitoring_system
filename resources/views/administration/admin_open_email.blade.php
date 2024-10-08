@@ -14,7 +14,7 @@
                         <div class="row"><small>{{$data->employee->first_name. ' ' .$data->employee->last_name}} <div class="fst-italic">({{$data->employee->email}})</div></small></div>
                     </div>
                     <div class="card-body">
-                        <p class="border-bottom">{{$data->message}}</p>
+                        <p class="border-bottom">{!! $data->message !!}</p>
 
                         @if(is_array($docuJson) || is_countable($docuJson) > 0)
 

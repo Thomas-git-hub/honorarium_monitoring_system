@@ -17,7 +17,7 @@ use Yajra\DataTables\Facades\DataTables;
 class UserManagementController extends Controller
 {
     public function user_management(){
-        if(Auth::user()->usertype->name === 'Admin'){
+        if(Auth::user()->usertype->name === 'Administrator'){
 
             $pendingMails = Emailing::where('status', 'Unread')->where('to_user', Auth::user()->employee_id);
             $EmailCount = $pendingMails->count();
@@ -115,7 +115,7 @@ class UserManagementController extends Controller
     public function store(Request $request){
 
         if($request->usertype === '1'){
-            $usertype = UserType::where('name', 'Admin')->first();
+            $usertype = UserType::where('name', 'Administrator')->first();
             $office = Office::where('name', 'BUGS Administration')->first();
         }elseif($request->usertype === '2'){
             $usertype = UserType::where('name', 'Dean')->first();
@@ -134,7 +134,7 @@ class UserManagementController extends Controller
             $office = Office::where('name', 'Cashiers')->first();
 
         }elseif($request->usertype === '6'){
-            $usertype = UserType::where('name', 'Faculties')->first();
+            $usertype = UserType::where('name', 'Faculty')->first();
             $office = Office::where('name', 'Faculty')->first();
 
         }

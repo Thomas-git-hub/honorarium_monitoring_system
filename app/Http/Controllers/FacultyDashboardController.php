@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Auth;
 class FacultyDashboardController extends Controller
 {
     public function faculty_dashboard(){
-        if(Auth::user()->usertype->name === 'Faculties'){
+        if(Auth::user()->usertype->name === 'Faculty'){
 
             $pendingMails = Emailing::where('status', 'Unread')->where('to_user', Auth::user()->employee_id);
             $EmailCount = $pendingMails->count();

@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Office;
 use App\Models\User;
 use App\Models\UserType;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -25,8 +26,8 @@ class UserSeeder extends Seeder
             'email' => 'johndoe@gmail.com',
             'ee_number' => '2024-7-0700',
             'college_id' => '0',
-            'usertype_id' => '7',
-            'office_id' => '1',
+            'usertype_id' => UserType::where('name', 'Superadmin')->first()->id,
+            'office_id' =>  Office::where('name', 'ICTO')->first()->id,
             'status' => 'Active',
             'password' => Hash::make('123456'),
         ]);
@@ -41,8 +42,8 @@ class UserSeeder extends Seeder
             'email' => 'emilygrace@gmail.com',
             'ee_number' => '2024-2-0700',
             'college_id' => '0',
-            'usertype_id' => '2',
-            'office_id' => '1',
+            'usertype_id' => UserType::where('name', 'Administrator')->first()->id,
+            'office_id' => Office::where('name', 'BUGS Administration')->first()->id,
             'status' => 'Active',
             'password' => Hash::make('123456'),
         ]);
@@ -57,8 +58,8 @@ class UserSeeder extends Seeder
             'email' => 'sarahelizabeth@gmail.com',
             'ee_number' => '2024-3-0700',
             'college_id' => '0',
-            'usertype_id' => '3',
-            'office_id' => '2',
+            'usertype_id' => UserType::where('name', 'Budget Office')->first()->id,
+            'office_id' => Office::where('name', 'Budget Office')->first()->id,
             'status' => 'Active',
             'password' => Hash::make('123456'),
         ]);
@@ -73,8 +74,8 @@ class UserSeeder extends Seeder
             'email' => 'jamesalexander@gmail.com',
             'ee_number' => '2024-4-0700',
             'college_id' => '0',
-            'usertype_id' => '4',
-            'office_id' => '4',
+            'usertype_id' => UserType::where('name', 'Dean')->first()->id,
+            'office_id' => Office::where('name', 'Dean')->first()->id,
             'status' => 'Active',
             'password' => Hash::make('123456'),
         ]);
@@ -89,8 +90,8 @@ class UserSeeder extends Seeder
             'email' => 'lauramarie@gmail.com',
             'ee_number' => '2024-5-0700',
             'college_id' => '0',
-            'usertype_id' => '5',
-            'office_id' => '3',
+            'usertype_id' => UserType::where('name', 'Accounting')->first()->id,
+            'office_id' => Office::where('name', 'Accounting')->first()->id,
             'status' => 'Active',
             'password' => Hash::make('123456'),
         ]);
@@ -105,8 +106,8 @@ class UserSeeder extends Seeder
             'email' => 'davidwilliam@gmail.com',
             'ee_number' => '2024-6-0700',
             'college_id' => '0',
-            'usertype_id' => '6',
-            'office_id' => '5',
+            'usertype_id' => UserType::where('name', 'Cashiers')->first()->id,
+            'office_id' => Office::where('name', 'Cashiers')->first()->id,
             'status' => 'Active',
             'password' => Hash::make('123456'),
         ]);
@@ -121,8 +122,8 @@ class UserSeeder extends Seeder
             'email' => 'emmalouise@gmail.com',
             'ee_number' => '2024-1-0700',
             'college_id' => '0',
-            'usertype_id' => '1',
-            'office_id' => '6',
+            'usertype_id' => UserType::where('name', 'Faculty')->first()->id,
+            'office_id' => Office::where('name', 'Faculty')->first()->id,
             'status' => 'Active',
             'password' => Hash::make('123456'),
         ]);

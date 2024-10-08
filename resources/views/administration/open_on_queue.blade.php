@@ -309,7 +309,7 @@
                 { data: 'month.month_name', name: 'month', title: 'Month Of' },
                 { data: 'created_by', name: 'created_by', title: 'Created By' },
                 // New pie_chart column with render set to allow HTML
-                @if(Auth::user()->usertype->name === 'Accounting' || Auth::user()->usertype->name === 'Admin' )
+                @if(Auth::user()->usertype->name === 'Accounting' || Auth::user()->usertype->name === 'Administrator' )
                 {
                     data: 'remarks',
                     name: 'remarks',
@@ -513,7 +513,7 @@
     $(document).ready(function() {
         var batchId = {!! json_encode($batch_id) !!};
 
-        @if(Auth::user()->usertype->name !== 'Admin')
+        @if(Auth::user()->usertype->name !== 'Administrator')
         $('#proceedTransactionButton').removeClass('d-none');
         @endif
 
