@@ -95,6 +95,7 @@ Route::middleware(['auth_check', '419'])->group(function () {
         Route::get('/admin_on_queue/open_list', [QueueController::class, 'open_list'])->name('admin_on_queue.open_list');
 
         Route::get('/admin_on_hold', [AdminController::class, 'admin_on_hold'])->name('admin_on_hold');
+        Route::get('/main_on_hold', [OnHoldController::class, 'mainOnHold'])->name('main_on_hold');
 
 
         Route::post('/admin_on_queue/proceed_to_budget-office', [QueueController::class, 'proceedToBudgetOffice'])->name('admin_on_queue.proceedToBudgetOffice');

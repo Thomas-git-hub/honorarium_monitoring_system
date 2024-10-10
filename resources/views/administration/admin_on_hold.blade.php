@@ -25,25 +25,53 @@
 </div>
 {{-- MODAL END --}}
 
-
-<div class="row mt-4">
-    <h4 class="card-title text-secondary">On Hold</h4>
-</div>
-
-<div class="row mt-4 gap-3">
+<div class="row mt-4 mb-3">
     <div class="col-md">
-        <div class="card shadow-none bg-label-danger">
-            <div class="card-body text-danger">
-                <h5 class="card-title text-danger">On Hold Transactions</h5>
-                <h1 class="text-danger">{{$OnHold? $OnHold : 0}}</h1>
+        <div class="card shadow-none">
+            <div class="card-body">
+                <div class="mb-3"><a href="/main_on_hold" class=""><i class='bx bx-left-arrow-alt text-primary' id="" style="font-size: 2em; cursor: pointer;"></i></a></div>
+
+                <h4 class="d-flex align-items-center"><i class='bx bx-list-ul'  style="font-size: 32px;"></i>Batch Transaction Details</h4>
+                <div class="row">
+                    <div class="col-md">
+                        <div class="alert alert-danger">
+                            On-Hold Transaction: <b>{{$OnHold? $OnHold : 0}}</b>
+                        </div>
+                    </div>
+                    <div class="col-md">
+                        <div class="alert alert-danger">
+                            Transact by: <b>Full Name</b>
+                        </div>
+                    </div>
+                    <div class="col-md">
+                        <div class="alert alert-danger">
+                            Office Of: <b>Office Name</b>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="card shadow-none bg-label-danger">
+                    <div class="card-body">
+                        <h5 class="card-title text-danger">Tracking Number:</h5>
+                        {{-- <h1 class="text-primary">{{$onQueue}}</h1> --}}
+                        <h1 class="text-danger">000-0000</h1>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-<div class="row mt-4">
+<div class="row mb-3">
+    <div class="col-md mx-auto d-flex justify-content-end">
+        <button type="button" class="btn btn-primary gap-1 ProceedAcknowledge " id="ProceedAcknowledge">Proceed Transaction<i class='bx bx-chevrons-right'></i></button>
+    </div>
+</div>
+
+<div class="row">
     <div class="col">
-        <div class="card custom-card">
+        <div class="card custom-card border border-danger">
             <div class="card-body">
                 <div class="table-responsive">
                     <table id="facultyTable" class="table table-borderless table-hover" style="width:100%">
@@ -110,10 +138,34 @@
 </script> --}}
 
 <script>
+    var data = [
+            {
+                id: '<p>000-000</p>',
+                batch_id: '<p class="text-primary">000-000</p>',
+                date_of_trans: 'Oct 10, 2024',
+                faculty: '<p class="text-primary">Full Name</p>',
+                id_number: '000-00000',
+                academic_rank: '<p>Part Timer</p>',
+                college: '<p>College of Arts</p>',
+                honorarium: '<span class="badge bg-label-primary">Honorarium</span>',
+                sem: '<p>First</p>',
+                year: '<p>2024</p>',
+                month: 'October',
+                created_by: '<p>Full Name</p>',
+                sent: '3days ago',
+                requirement_status: 'For Compliance',
+                complied_on: '<button type="button" class="btn me-2 btn-primary btn-sm edit-btn gap-1" data-bs-toggle="modal" data-bs-target="#proceed">Proceed<i class="bx bx-chevrons-right"></i></button>',
+                // action: '3days ago',
+
+
+            },
+            // More data...
+        ];
     var table = $('#facultyTable').DataTable({
-            processing: true,
-            serverSide: true,
-            ajax: '{{ route('on_hold_status') }}',
+            data: data,
+            processing: false,
+            serverSide: false,
+            // ajax: '{{ route('on_hold_status') }}',
             pageLength: 10,
             paging: true,
             dom: '<"top"lf>rt<"bottom"ip>',
@@ -133,9 +185,11 @@
                 { data: 'sem', name: 'sem', title: 'Semester' },
                 { data: 'year', name: 'year', title: 'Semester Year' },
                 { data: 'month.month_name', name: 'month', title: 'Month Of' },
-                { data: 'sent', name: 'sent', title: 'Sent'},
                 { data: 'created_by', name: 'created_by', title: 'Created By' },
-                { data: 'action', name: 'action', title: 'Action' },
+                { data: 'sent', name: 'sent', title: 'Sent'},
+                { data: 'requirement_status', name: 'requirement_status', title: 'Requirements'},
+                { data: 'complied_on', name: 'complied_on', title: 'Complied On' },
+                // { data: 'action', name: 'action', title: 'Action' },
 
             ],
             order: [[0, 'desc']], // Sort by date_received column by default
@@ -149,73 +203,6 @@
                 $(row).addClass('unopened');
             }
     });
-
-    // $('#facultyTable').on('click', '.edit-btn', function() {
-    //     // Get the rowdata.id from the data-id attribute
-
-    //     var row = $(this).closest('tr');
-    //     var rowData = table.row(row).data();
-
-    //     var transactionId = rowData.id;
-    //     var date = new Date(rowData.created_at);
-
-    //     var formattedDate = (date.getMonth() + 1).toString().padStart(2, '0') + '' +
-    //                 date.getDate().toString().padStart(2, '0') + '' +
-    //                 date.getFullYear();
-
-    //     console.log(transactionId);
-    //     console.log(formattedDate);
-
-
-    //      // Handle Proceed button click
-    //      $('#proceed_transaction').off('click').on('click', function() {
-    //         $.ajax({
-    //             url: '{{ route('UpdateToProceed') }}',
-    //             method: 'POST',
-    //             data: {
-    //                 _token: $('meta[name="csrf-token"]').attr('content'),
-    //                 id:transactionId,
-    //             },
-    //             success: function(response) {
-    //                 if(response.success){
-    //                     $('#proceed').modal('hide');
-    //                     Swal.fire({
-    //                         icon: 'success',
-    //                         title: 'Success',
-    //                         text: response.message,
-    //                     });
-    //                 }else{
-    //                     $('#proceed').modal('hide');
-    //                     Swal.fire({
-    //                         icon: 'error',
-    //                         title: 'Oh no!',
-    //                         text: response.message,
-    //                     });
-
-    //                 }
-    //                 $('#facultyTable').DataTable().ajax.reload();
-    //             },
-    //             error: function(xhr) {
-    //                 // Handle error
-    //                 $('#proceed').modal('hide');
-    //                 Swal.fire({
-    //                     icon: 'error',
-    //                     title: 'Error',
-    //                     text: 'There was a problem updating the transactions.',
-    //                 });
-    //             }
-    //         });
-    //     });
-
-
-
-    //     // Update the modal content (if needed)
-    //     // $('#proceed .modal-body').append('<h5 class="text-center text-danger">Transaction ID No. = <b>' + '00' + transactionId + '-' + formattedDate + '</b></h5>');
-
-    //     // You can also update other parts of the modal, if necessary
-    //     // For example, if you want to set a hidden input field with the transaction ID:
-    //     // $('#proceed').find('input[name="transaction_id"]').val(transactionId);
-    // });
 
     $('#facultyTable').on('click', '.edit-btn', function() {
     // Get the row data

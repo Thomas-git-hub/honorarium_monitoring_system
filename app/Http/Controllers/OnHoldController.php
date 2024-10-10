@@ -217,4 +217,9 @@ class OnHoldController extends Controller
 
         return response()->json(['success' => true, 'batch_id'=> $batchId, 'message' => 'Emails sent and transactions updated.']);
     }
+
+    public function mainOnHold()
+    {
+        return view('administration.main_on_hold');
+    }
 }
