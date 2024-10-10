@@ -181,7 +181,7 @@ class HistoryController extends Controller
         ->where('batch_id', $request->batch_id)
         ->where('status', '!=', 'On-hold');
         $transactions = $query->get();
-        $ibu_dbcon = DB::connection('ibu_test');
+        $ibu_dbcon = DB::connection('ors_pgsql');
 
         $months = [
             1 => 'January',

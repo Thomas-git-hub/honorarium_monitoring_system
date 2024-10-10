@@ -23,7 +23,7 @@ class OnHoldController extends Controller
         ->where('batch_id', '!=', NULL)->where('status', 'On-hold')
         ->where('created_by', Auth::user()->id)
         ->get();
-        $ibu_dbcon = DB::connection('ibu_test');
+        $ibu_dbcon = DB::connection('ors_pgsql');
 
         $months = [
             1 => 'January',
@@ -149,7 +149,7 @@ class OnHoldController extends Controller
 
     public function UpdateToProceed(Request $request){
 
-        $ibu_dbcon = DB::connection('ibu_test');
+        $ibu_dbcon = DB::connection('ors_pgsql');
 
         // Fetch all transactions with status 'On-hold'
         $transaction = Transaction::whereNull('deleted_at')

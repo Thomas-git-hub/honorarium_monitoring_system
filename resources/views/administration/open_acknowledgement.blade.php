@@ -231,6 +231,7 @@
         var table = $('#facultyTable').DataTable({
             processing: true,
             serverSide: true,
+            responsive: true,
             ajax: {
                 url: '{{ route('open_acknowledgement.list') }}',
                 data: function(d) {

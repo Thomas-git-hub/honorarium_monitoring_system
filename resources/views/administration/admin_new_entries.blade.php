@@ -391,7 +391,7 @@
                     if (response.success) {
                         Swal.fire({
                             icon: 'success',
-                            title: 'Transaction forwarded successfully',
+                            title: 'Transaction Completed',
                             text: response.message,
                         }).then(function() {
                             // Reload the entire page when the "OK" button is clicked
@@ -655,7 +655,7 @@
                         error: function(xhr, status, error) {
                             Swal.fire(
                                 'Error!',
-                                'An error occurred while updating the transaction.',
+                                'An error occurred',
                                 'error'
                             );
                         }
