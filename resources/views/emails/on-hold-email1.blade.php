@@ -285,11 +285,13 @@
                             <td style="overflow-wrap:break-word;word-break:break-word;padding:10px;font-family:arial,helvetica,sans-serif;" align="left">
 
                               <div style="font-size: 14px; line-height: 140%; text-align: left; word-wrap: break-word;">
-                                <p style="line-height: 140%;">Hi John Doe, 🖐</p>
+                                <p style="line-height: 140%;">Hi {{$emailData['employee_fname']. ' ' .$emailData['employee_lname']}}, 🖐</p>
                                 <p style="line-height: 140%;">&nbsp;</p>
-                                <p style="line-height: 140%;"><span style="color: #e03e2d; line-height: 19.6px;">Your transaction has been put <strong>On-Hold</strong> by <strong><em>Accounting </em></strong>due to missing requirements <strong>(Daily Time Record)</strong>.</span></p>
+                                <p style="line-height: 140%;"><span style="color: #e03e2d; line-height: 19.6px;">Your transaction has been put <strong>On-Hold</strong> by <strong><em>{{$emailData['office_name']}} </em></strong>due to missing requirements <strong> (@foreach($emailData['documents'] as $document)
+                                    {{ $document }},&nbsp;
+                                @endforeach)</strong>.</span></p>
                                 <p style="line-height: 140%;">&nbsp;</p>
-                                <p style="line-height: 140%;">Please visit&nbsp; BUGS Administration Office to comply requirements.</p>
+                                <p style="line-height: 140%;">Please visit&nbsp; {{$emailData['office_name']}} Office to comply requirements.</p>
                               </div>
 
                             </td>

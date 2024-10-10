@@ -39,7 +39,7 @@ class SendTransactionEmails extends Command implements ShouldQueue // Implement 
      */
     public function handle()
     {
-        $ibu_dbcon = DB::connection('ors_pgsql');
+        $ibu_dbcon = DB::connection('ibu_test');
 
         $transactionIds = $this->argument('transaction_ids');
 

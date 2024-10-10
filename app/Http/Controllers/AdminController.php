@@ -100,23 +100,10 @@ class AdminController extends Controller
     }
 
     public function admin_faculty(){
-        // if(Auth::user()->usertype->name === 'Faculty'){
-        //     $user = Auth::user();
-        //     $collegeDetails = DB::connection('ors_pgsql')->table('college')
-        //     ->where('id', $user->college_id)
-        //     ->first();
 
-        //     if(!empty($collegeDetails)){
-        //         $college = $collegeDetails->college_name;
-        //     }
-        //     else{
-        //         $college = 'No Assigned College';
-        //     }
-        //     return view('administration.view_auth_faculty', compact('user', 'college'));
-        // }
         if(Auth::user()->usertype->name === 'Administrator'){
             $today = Carbon::today();
-            $employeeIds = DB::connection('ors_pgsql')->table('employee_user')->pluck('id');
+            $employeeIds = DB::connection('ibu_test')->table('employee_user')->pluck('id');
             $newAccountsToday = DB::connection('mysql')->table('users')
                 ->whereDate('created_at', $today)
                 ->whereNull('deleted_at')
@@ -146,11 +133,11 @@ class AdminController extends Controller
         $EmailCount = $pendingMails->count();
 
         $id = $request->query('id');
-        $ibu_dbcon = DB::connection('ors_pgsql');
+        $ibu_dbcon = DB::connection('ibu_test');
         $user = $ibu_dbcon->table('employee')->where('id', $id )->first();
         // Transaction::findOrFail($id);
 
-        $collegeDetails = DB::connection('ors_pgsql')->table('college')
+        $collegeDetails = DB::connection('ibu_test')->table('college')
                 ->where('id', $user->college_id)
                 ->first();
 
@@ -403,7 +390,7 @@ class AdminController extends Controller
         // }
 
         $transactions = $query->get();
-        $ibu_dbcon = DB::connection('ors_pgsql');
+        $ibu_dbcon = DB::connection('ibu_test');
 
         $months = [
             1 => 'January',
