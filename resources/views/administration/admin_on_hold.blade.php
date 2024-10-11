@@ -15,42 +15,20 @@
         </div>
         <div class="modal-body">
             <div class="border-bottom">
-                <div>Faculty: <b>Full Name</b></div>
-                <div>College: <b>College</b></div>
-                <div>Academic Rank: <b>Full Time</b></div>
+                <div>Faculty: <b id="faculty">-</b></div>
+                <div>College: <b id="college">-</b></div>
+                <div>Academic Rank: <b id="rank">-</b></div>
             </div>
             <div class="mt-3">
-                {{-- <label for="defaultFormControlInput" class="form-label">Select Date of Compliance</label> --}}
+                <input type="hidden" id="id" name="id" placeholder="" class="form-control">
                 <input type="text" id="modalDatePicker" placeholder="yyyy/mm/dd" class="form-control">
             </div>
         </div>
-        {{-- <div class="modal-footer">
-          <button type="button" class="btn btn-label-danger" data-bs-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary">Requirements Complied</button>
-        </div> --}}
+
       </div>
     </div>
   </div>
 
-    {{-- <div class="modal fade" id="datePickerModal" tabindex="-1" role="dialog" aria-labelledby="datePickerModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="datePickerModalLabel">Select a Date</h5>
-                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                <!-- Hidden input for Flatpickr -->
-                    <input type="text" id="modalDatePicker" class="form-control">
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
-    </div> --}}
 
 <div class="row mt-4 mb-3">
     <div class="col-md">
@@ -67,12 +45,12 @@
                     </div>
                     <div class="col-md">
                         <div class="alert alert-danger">
-                            Transact by: <b>Full Name</b>
+                            Transact by: <b>{{$OnHoldData->createdBy->first_name. ' ' .$OnHoldData->createdBy->middle_name. ' ' .$OnHoldData->createdBy->last_name}}</b>
                         </div>
                     </div>
                     <div class="col-md">
                         <div class="alert alert-danger">
-                            Office Of: <b>Office Name</b>
+                            Office Of: <b>{{$office->name}}</b>
                         </div>
                     </div>
                 </div>
@@ -82,7 +60,7 @@
                     <div class="card-body">
                         <h5 class="card-title text-danger">Tracking Number:</h5>
                         {{-- <h1 class="text-primary">{{$onQueue}}</h1> --}}
-                        <h1 class="text-danger">000-0000</h1>
+                        <h1 class="text-danger">{{$OnHoldData->batch_id ?? '000-0000'}}</h1>
                     </div>
                 </div>
             </div>
@@ -90,11 +68,16 @@
     </div>
 </div>
 
+
+@if(Auth::user()->office_id === $OnHoldData->createdBy->office_id)
+
 <div class="row mb-3">
     <div class="col-md mx-auto d-flex justify-content-end">
         <button type="button" class="btn btn-primary gap-1 ProceedAcknowledge " id="ProceedAcknowledge">Proceed Transaction<i class='bx bx-chevrons-right'></i></button>
     </div>
 </div>
+
+@endif
 
 <div class="row">
     <div class="col">
@@ -117,171 +100,139 @@
 @section('components.specific_page_scripts')
 
 {{--FACULTY DATATABLES START --}}
-{{-- <script>
-    $(function () {
-        var data = [
-            {
-                date_received: '<p>07/27/2024</p>',
-                date_on_hold: '<p class="text-danger">07/27/2024</p>',
-                faculty: '<p class="text-primary">John Doe</p>',
-                id_number: '<p class="text-primary">1-id-no-2024</p>',
-                academic_rank: '<span class="badge bg-label-primary">Associate Professor II</span>',
-                college: '<p>College of Arts</p>',
-                honorarium: '<p>honorarium here</p>',
-                semester: '<p class="text-success">First Semester</p>',
-                semester_year: '<p>2024</p>',
-                month_of: '<p>July</p>',
-                action: '<button type="button" class="btn me-2 btn-primary btn-sm edit-btn gap-1" data-bs-toggle="modal" data-bs-target="#proceed">Proceed<i class="bx bx-chevrons-right"></i></button>',
-            },
-            // More data...
-        ];
-
-        var table = $('#facultyTable').DataTable({
-            data: data,
-            processing: false,
-            serverSide: false,
-            pageLength: 10,
-            paging: true,
-            dom: '<"top"lf>rt<"bottom"ip>',
-            language: {
-                search: "",
-                searchPlaceholder: "Search..."
-            },
-            columns: [
-                { data: 'date_received', name: 'date_received', title: 'Date Received' },
-                { data: 'date_on_hold', name: 'date_on_hold', title: 'Date On Hold' },
-                { data: 'faculty', name: 'faculty', title: 'Faculty' },
-                { data: 'id_number', name: 'id_number', title: 'ID Number' },
-                { data: 'academic_rank', name: 'academic_rank', title: 'Academic Rank' },
-                { data: 'college', name: 'college', title: 'College' },
-                { data: 'honorarium', name: 'honorarium', title: 'Honorarium' },
-                { data: 'semester', name: 'semester', title: 'Semester' },
-                { data: 'semester_year', name: 'semester_year', title: 'Semester Year' },
-                { data: 'month_of', name: 'month_of', title: 'Month Of' },
-                { data: 'action', name: 'action', title: 'Action' }
-            ],
-        });
-    });
-</script> --}}
 
 <script>
-    var data = [
-            {
-                id: '<p>000-000</p>',
-                batch_id: '<p class="text-primary">000-000</p>',
-                date_of_trans: 'Oct 10, 2024',
-                faculty: '<p class="text-primary">Full Name</p>',
-                id_number: '000-00000',
-                academic_rank: '<p>Part Timer</p>',
-                college: '<p>College of Arts</p>',
-                honorarium: '<span class="badge bg-label-primary">Honorarium</span>',
-                sem: '<p>First</p>',
-                year: '<p>2024</p>',
-                month: 'October',
-                created_by: '<p>Full Name</p>',
-                sent: '3 days ago',
-                requirement_status: 'For Compliance',
-                complied_on: '<button type="button" id="compliedOn" class="btn btn-sm btn-primary compliedOnBtn"><span class="badge">Select Date</button>',
-            },
-            // More data...
-        ];
 
-        // Initialize DataTable
-        var table = $('#facultyTable').DataTable({
-            data: data,
-            processing: false,
-            serverSide: false,
-            pageLength: 10,
-            paging: true,
-            dom: '<"top"lf>rt<"bottom"ip>',
-            language: {
-                search: "",
-                searchPlaceholder: "Search..."
-            },
-            columns: [
-                { data: 'id', name: 'id', title: 'ID', visible: false },
-                { data: 'batch_id', name: 'batch_id', title: 'TN' },
-                { data: 'date_of_trans', name: 'date_of_trans', title: 'Date Received' },
-                { data: 'faculty', name: 'faculty', title: 'Faculty' },
-                { data: 'id_number', name: 'id_number', title: 'ID Number' },
-                { data: 'academic_rank', name: 'academic_rank', title: 'Academic Rank' },
-                { data: 'college', name: 'college', title: 'College' },
-                { data: 'honorarium', name: 'honorarium', title: 'Honorarium' },
-                { data: 'sem', name: 'sem', title: 'Semester' },
-                { data: 'year', name: 'year', title: 'Semester Year' },
-                { data: 'month', name: 'month', title: 'Month Of' },
-                { data: 'created_by', name: 'created_by', title: 'Created By' },
-                { data: 'sent', name: 'sent', title: 'Sent' },
-                { data: 'requirement_status', name: 'requirement_status', title: 'Requirements' },
-                { data: 'complied_on', name: 'complied_on', title: 'Complied On' },
-            ],
-            order: [[0, 'desc']], // Sort by the first column by default
-            createdRow: function(row, data) {
-                $(row).addClass('unopened');
-            },
-        });
-
-
-
-
-        // Initialize Flatpickr in the modal
-        var datePicker = flatpickr("#modalDatePicker", {
-            dateFormat: "Y-m-d",
-            onChange: function(selectedDates, dateStr) {
-                // Update the button's text after selecting a date
-                var button = $('#datePickerModal').data('button');
-                button.find('span.badge').text(dateStr); // Update the button's text
-                $('#datePickerModal').modal('hide'); // Hide the modal
+    var batchId = {!! json_encode($OnHoldData->batch_id) !!};
+    var User = {!! json_encode(Auth::user()) !!};
+    // Initialize DataTable
+    var table = $('#facultyTable').DataTable({
+        processing: true,
+        serverSide: true,
+        // responsive: true,
+        ajax: {
+            url: '{{ route('on_hold_status') }}',
+            data: function(d) {
+                d.batch_id = batchId; // Passing the batch ID as a parameter
             }
-        });
-
-        // Show the modal when compliedOn button is clicked
-        $('#facultyTable').on('click', '.compliedOnBtn', function() {
-            var button = $(this);
-            // Store the clicked button in a data attribute for use in the modal
-            $('#datePickerModal').data('button', button).modal('show');
-        });
-
-    $('#facultyTable').on('click', '.edit-btn', function() {
-    // Get the row data
-    var row = $(this).closest('tr');
-    var rowData = table.row(row).data();
-
-    var transactionId = rowData.id;
-    var date = new Date(rowData.created_at);
-
-    var formattedDate = (date.getMonth() + 1).toString().padStart(2, '0') + '' +
-                date.getDate().toString().padStart(2, '0') + '' +
-                date.getFullYear();
-
-    console.log(transactionId);
-    console.log(formattedDate);
-
-    // Trigger SweetAlert instead of Bootstrap modal
-    Swal.fire({
-        icon: 'question',
-        html: `
-            <p class="text-center">"Proceeding with this transaction indicates that the individual has complied with all necessary requirements for their honorarium."</p>
-        `,
-        showCancelButton: true,
-        confirmButtonText: 'Proceed to Next Office',
-        cancelButtonText: 'Cancel',
-        customClass: {
-            confirmButton: 'btn btn-primary gap-1',
-            cancelButton: 'btn btn-label-danger'
         },
-        buttonsStyling: false
-    }).then((result) => {
-        if (result.isConfirmed) {
-            // Trigger AJAX call when "Proceed" is confirmed
+        pageLength: 10,
+        paging: true,
+        dom: '<"top"lf>rt<"bottom"ip>',
+        language: {
+            search: "",
+            searchPlaceholder: "Search..."
+        },
+        columns: [
+            { data: 'id', name: 'id', title: 'ID', visible: false },
+            { data: 'created_by_office', name: 'created_by_office', title: 'created_by_office', visible: false },
+            { data: 'batch_id', name: 'batch_id', title: 'TN' },
+            { data: 'date_of_trans', name: 'date_of_trans', title: 'Date Received' },
+            { data: 'faculty', name: 'faculty', title: 'Faculty' },
+            { data: 'id_number', name: 'id_number', title: 'ID Number' },
+            { data: 'academic_rank', name: 'academic_rank', title: 'Academic Rank' },
+            { data: 'college', name: 'college', title: 'College' },
+            { data: 'honorarium', name: 'honorarium', title: 'Honorarium' },
+            { data: 'sem', name: 'sem', title: 'Semester' },
+            { data: 'year', name: 'year', title: 'Semester Year' },
+            { data: 'month.month_name', name: 'month', title: 'Month Of' },
+            { data: 'created_by', name: 'created_by', title: 'Created By' },
+            { data: 'sent', name: 'sent', title: 'Sent' },
+            { data: 'requirement_status', name: 'requirement_status', title: 'Requirements' },
+            @if(Auth::user()->office_id === $OnHoldData->createdBy->office_id)
+
+            {
+                data: 'complied_on',
+                name: 'complied_on',
+                title: 'Complied On',
+                render: function (data, type, row) {
+                    var buttonTitle = data ? data : 'Select Date';
+
+                    // Check if current user’s office matches the transaction office and the status is 'Processing'
+                    var isDisabled = ( row.status === 'Processing') ? 'disabled' : '';
+
+                    // Generate the button, disabling it if the conditions are met
+                    var addButton = '<button type="button" id="compliedOn" class="btn btn-sm btn-primary compliedOnBtn" ' + isDisabled + '><span class="badge">' + buttonTitle + '</button>';
+
+                    return '<div class="d-flex flex-row" data-id="' + row.id + '">' + addButton + '</div>';
+                }
+            }
+            @else
+                { data: 'complied_on', name: 'complied_on', title: 'Complied On' },
+
+            @endif
+
+        ],
+        order: [[0, 'desc']], // Sort by the first column by default
+        createdRow: function(row, data) {
+            $(row).addClass('unopened');
+        },
+    });
+
+    var datePicker = flatpickr("#modalDatePicker", {
+        dateFormat: "Y-m-d",
+        onChange: function(selectedDates, dateStr) {
+            // Update the button's text after selecting a date
+            var transactionId = $('#id').val();
+            console.log(transactionId);
+            var button = $('#datePickerModal').data('button');
+            button.find('span.badge').text(dateStr); // Update the button's text
+            $('#datePickerModal').modal('hide'); // Hide the modal
+
+            // AJAX request to update the complied_on field
             $.ajax({
-                url: '{{ route('UpdateToProceed') }}',
-                method: 'POST',
+                url: "{{ route('update.complied.on') }}",  // Route to handle update
+                type: "POST",
                 data: {
-                    _token: $('meta[name="csrf-token"]').attr('content'),
-                    id: transactionId, // Transaction ID
+                    _token: "{{ csrf_token() }}",   // CSRF token for security
+                    id: transactionId,  // ID of the transaction
+                    complied_on: dateStr            // Selected date
                 },
-                beforeSend: function() {
+                success: function(response) {
+                    if (response.success) {
+                        alert(response.message);
+                        table.ajax.reload();
+                    } else {
+                        alert("Failed to update the date. Please try again.");
+                    }
+                },
+                error: function(xhr) {
+                    console.log(xhr.responseText);
+                    alert("An error occurred. Please try again.");
+                }
+            });
+        }
+    });
+
+    // Show the modal when compliedOn button is clicked
+    $('#facultyTable').on('click', '.compliedOnBtn', function() {
+        var button = $(this);
+        var row = $(this).closest('tr');
+        var rowData = table.row(row).data();
+        console.log(rowData);
+
+            $('#id').val(rowData.id);
+            $('#faculty').text(rowData.faculty);
+            $('#office').text(rowData.office);
+            $('#position').text(rowData.position);
+            $('#email').text(rowData.email);
+            $('#contact').text(rowData.contact);
+            $('#college').text(rowData.college);
+            $('#id_num').text(rowData.ee_number);
+            $('#netAmount').val(rowData.netAmount);
+
+        $('#datePickerModal').data('button', button).modal('show');
+    });
+
+    $('#ProceedAcknowledge').off('click').on('click', function() {
+        $.ajax({
+            url: '{{ route('proceed_on_hold') }}',
+            method: 'POST',
+            data: {
+                _token: $('meta[name="csrf-token"]').attr('content'),
+                batch_id: batchId,
+            },
+            beforeSend: function() {
                     Swal.fire({
                         title: 'Processing...',
                         html: '<div class="spinner-grow text-primary" role="status" style="width: 3rem; height: 3rem;"></div>',
@@ -289,42 +240,46 @@
                         allowOutsideClick: false
                     });
                 },
-                success: function(response) {
-                    Swal.close(); // Close the processing alert
-                    if(response.success){
-                        var batchID = response.batchId;
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Transaction forwarded successfully.',
-                            html: `<h4 class="text-success">Tracking Number: <b>${response.batch_id}</b></h4><small class="text-danger">Note: Always attach the tracking number on the documents.</small>`,
-                            text: response.message,
-                        }).then(() => {
-                            // Reload the page after the success SweetAlert is closed
-                            window.location.reload();
-                        });
-                    } else {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Oh no!',
-                            text: response.message,
-                        });
-                    }
-                    // Reload DataTable after the transaction
+
+            success: function(response) {
+                if(response.success){
+
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: response.message,
+                    });
                     $('#facultyTable').DataTable().ajax.reload();
-                },
-                error: function(xhr) {
-                    // Handle error
-                    Swal.close(); // Close the processing alert
+                    // $('#proceed').modal('show');
+                    // @if(Auth::user()->usertype->name === 'Cashiers')
+                    // window.location.href = `/cashier_in_queue`;
+                    // @else
+                    // window.location.href = `/admin_on_queue`;
+                    // @endif
+
+                }else{
                     Swal.fire({
                         icon: 'error',
-                        title: 'Error',
-                        text: 'There was a problem updating the transactions.',
+                        title: 'Oh no!',
+                        text: response.message,
                     });
+                    $('#facultyTable').DataTable().ajax.reload();
+                    // $('#proceed').modal('hide');
                 }
-            });
-        }
+
+
+            },
+            error: function(xhr) {
+                // Handle error
+                $('#proceed').modal('hide');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'There was a problem updating the transactions.',
+                });
+            }
+        });
     });
-});
 
 
 

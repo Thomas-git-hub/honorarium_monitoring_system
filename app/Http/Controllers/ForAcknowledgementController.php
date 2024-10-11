@@ -64,7 +64,7 @@ class ForAcknowledgementController extends Controller
         $acknowledgements = collect(); // Initialize an empty collection
         DB::statement("SET SQL_MODE=''");
 
-        if (Auth::user()->usertype->name === 'Superadmin') {
+        if (Auth::user()->usertype->name === 'Superadmin' || Auth::user()->usertype->name === 'Administrator') {
             $acknowledgements = Acknowledgement::with(['user', 'office', 'transaction'])
                 ->select('batch_id', 'office_id', 'created_at', 'user_id')
                 ->get();

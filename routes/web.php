@@ -96,6 +96,8 @@ Route::middleware(['auth_check', '419'])->group(function () {
 
         Route::get('/admin_on_hold', [AdminController::class, 'admin_on_hold'])->name('admin_on_hold');
         Route::get('/main_on_hold', [OnHoldController::class, 'mainOnHold'])->name('main_on_hold');
+        Route::get('/main_on_hold_list', [OnHoldController::class, 'list'])->name('main_on_hold.list');
+
 
 
         Route::post('/admin_on_queue/proceed_to_budget-office', [QueueController::class, 'proceedToBudgetOffice'])->name('admin_on_queue.proceedToBudgetOffice');
@@ -125,6 +127,9 @@ Route::middleware(['auth_check', '419'])->group(function () {
         Route::get('/transactions/on-hold', [OnHoldController::class, 'getOnHoldTransactions'])->name('on_hold_status');
         Route::post('/save/onHold', [OnHoldController::class, 'saveOnHold'])->name('saveOnHold');
         Route::post('/save/UpdateToProceed', [OnHoldController::class, 'UpdateToProceed'])->name('UpdateToProceed');
+        Route::post('/update-complied-on', [OnHoldController::class, 'updateCompliedOn'])->name('update.complied.on');
+        Route::post('/proceed_on_hold', [OnHoldController::class, 'proceed_on_hold'])->name('proceed_on_hold');
+
 
         Route::get('/history', [HistoryController::class, 'history'])->name('history');
         Route::get('/open_history', [HistoryController::class, 'open_history'])->name('open_history');

@@ -157,12 +157,29 @@ class QueueController extends Controller
             $office = Office::where('name', 'BUGS Administration')->first();
             $batchId = $transactions->first()->batch_id;
 
+
             Transaction::where('batch_id', $batchId)
                 ->whereNull('deleted_at')
+                ->where('status', 'Processing')
                 ->where('batch_status', '<>', 'Batch On Hold')
                 ->where('office', Auth::user()->office_id)
                 ->where('created_by', Auth::user()->id)
                 ->update([
+                    'from_office' =>  Auth::user()->office_id,
+                    'batch_status' => 'Batch On Hold',
+                    'requirement_status' => 'Complete',
+                    'office' => $office->id,
+                    'updated_at' => now(),
+            ]);
+
+            Transaction::where('batch_id', $batchId)
+                ->whereNull('deleted_at')
+                ->where('status', 'On-hold')
+                ->where('batch_status', '<>', 'Batch On Hold')
+                ->where('office', Auth::user()->office_id)
+                ->where('created_by', Auth::user()->id)
+                ->update([
+                    'from_office' =>  Auth::user()->office_id,
                     'batch_status' => 'Batch On Hold',
                     'office' => $office->id,
                     'updated_at' => now(),
@@ -244,6 +261,7 @@ class QueueController extends Controller
                 ->where('created_by', Auth::user()->id)
                 ->update([
                     'status' => 'On Queue',
+                    'from_office' =>  Auth::user()->office_id,
                     'office' => $office->id,
                     'created_by' => Auth::user()->id,
                     'updated_at' => now(),
@@ -312,8 +330,6 @@ class QueueController extends Controller
         return response()->json(['success' => true, 'batch_id'=> $batchId, 'message' => 'Emails sent and transactions updated.']);
     }
 
-
-
     public function proceed(Request $request)
     {
         $ibu_dbcon = DB::connection('ibu_test');
@@ -326,15 +342,13 @@ class QueueController extends Controller
         ->where('batch_id', $request->batch_id)
         ->get();
 
-
-
         if ($transactions->isEmpty()) {
             return response()->json(['success' => false, 'message' => 'No transactions found with status Processing']);
         }
 
         $usertype = Auth::user()->usertype->name;
 
-        if($usertype === 'Admin' || $usertype === 'Superadmin'){
+        if($usertype === 'Administrator' || $usertype === 'Superadmin'){
             $office = Office::where('name', 'Budget Office')->first();
         }
         elseif($usertype === 'Budget Office' || $usertype === 'Accounting' ){
@@ -368,7 +382,8 @@ class QueueController extends Controller
             ->where('created_by', Auth::user()->id)
             ->where('batch_id', $request->batch_id)
             ->update([
-                'status' => 'Completed',
+                'status' => 'Complete',
+                'from_office' =>  Auth::user()->office_id,
                 'office' => $office->id,
                 'created_by' => Auth::user()->id,
                 'updated_at' => now(),
@@ -383,6 +398,7 @@ class QueueController extends Controller
             ->where('batch_id', $request->batch_id)
             ->update([
                 'status' => 'On Queue',
+                'from_office' =>  Auth::user()->office_id,
                 'office' => $office->id,
                 'created_by' => Auth::user()->id,
                 'updated_at' => now(),
@@ -523,6 +539,7 @@ class QueueController extends Controller
         ->where('batch_id', $request->batch_id)
         ->update([
             'status' => 'On Queue',
+            'from_office' =>  Auth::user()->office_id,
             'office' => $office->id,
             'created_by' => Auth::user()->id,
             'updated_at' => now(),
@@ -602,6 +619,7 @@ class QueueController extends Controller
         }
 
         $transaction->status = 'On-hold';
+        $transaction->from_office = Auth::user()->office_id;
         $transaction->created_by = Auth::user()->id;
         $transaction->updated_at = now();
         $transaction->save();

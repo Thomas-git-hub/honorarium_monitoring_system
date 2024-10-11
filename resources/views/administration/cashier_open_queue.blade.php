@@ -399,13 +399,13 @@
                         net_amount: netAmount // Send the net amount
                     },
                     headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') // Include CSRF token if using Laravel
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                     },
                     success: function(response) {
                         // Handle success response
-                        $('#exampleModal').modal('hide'); // Hide the modal
-                        table.ajax.reload(); // Reload the table to show updated data
-                        alert('Net amount successfully saved.'); // Show success message
+                        $('#exampleModal').modal('hide');
+                        table.ajax.reload();
+                        alert('Net amount successfully saved.');
                     },
                     error: function(xhr, status, error) {
                         // Handle error

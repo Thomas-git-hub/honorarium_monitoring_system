@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('batch_id')->nullable();
             $table->unsignedBigInteger('honorarium_id');
             $table->unsignedBigInteger('office');
+            $table->unsignedBigInteger('from_office')->nullable();
             $table->unsignedBigInteger('employee_id');
             $table->string('month');
             $table->string('sem');
@@ -27,6 +28,8 @@ return new class extends Migration
             $table->decimal('net_amount', 20, 2)->nullable();
             $table->boolean('is_complete')->default(0);
             $table->longText('remarks')->nullable();
+            $table->string('requirement_status')->default('For Compliance');
+            $table->string('complied_on')->nullable();
             $table->timestamps();
             $table->softDeletes();
 

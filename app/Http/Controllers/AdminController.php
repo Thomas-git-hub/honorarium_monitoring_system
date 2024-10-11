@@ -101,7 +101,7 @@ class AdminController extends Controller
 
     public function admin_faculty(){
 
-        if(Auth::user()->usertype->name === 'Administrator'){
+        if(Auth::user()->usertype->name === 'Administrator' || Auth::user()->usertype->name === 'SuperAdmin'){
             $today = Carbon::today();
             $employeeIds = DB::connection('ibu_test')->table('employee_user')->pluck('id');
             $newAccountsToday = DB::connection('mysql')->table('users')
@@ -154,7 +154,7 @@ class AdminController extends Controller
 
     public function admin_honorarium(){
 
-        if(Auth::user()->usertype->name === 'Administrator'){
+        if(Auth::user()->usertype->name === 'Administrator' || Auth::user()->usertype->name === 'SuperAdmin'){
             $pendingMails = Emailing::where('status', 'Unread')->where('to_user', Auth::user()->employee_id);
             $EmailCount = $pendingMails->count();
             return view('administration.admin_honorarium', compact('EmailCount'));
@@ -166,7 +166,7 @@ class AdminController extends Controller
     /* ---------------------------------------NEW ENTRIES FUNCTIONS-------------------------------------------- */
     public function admin_new_entries(){
 
-        if(Auth::user()->usertype->name === 'Administrator'){
+        if(Auth::user()->usertype->name === 'Administrator' || Auth::user()->usertype->name === 'SuperAdmin'){
 
             $pendingMails = Emailing::where('status', 'Unread')->where('to_user', Auth::user()->employee_id);
             $EmailCount = $pendingMails->count();
@@ -207,6 +207,7 @@ class AdminController extends Controller
         $transaction->date_of_trans = $request->date_of_trans;
         $transaction->employee_id = $request->employee_id;
         $transaction->office = Auth::user()->office_id;
+        $transaction->from_office = Auth::user()->office_id;
         $transaction->honorarium_id = $request->honorarium_id;
         $transaction->sem = $request->sem;
         $transaction->year = $request->year;
@@ -215,7 +216,6 @@ class AdminController extends Controller
         $transaction->status = 'Processing';
         $transaction->created_by = Auth::user()->id;
         $transaction->save();
-
 
         $logs = new Activity_logs();
         $logs->trans_id = $transaction->id;
@@ -310,29 +310,38 @@ class AdminController extends Controller
 
     }
 
-    public function admin_on_hold(){
+    public function admin_on_hold(Request $request){
         if(Auth::user()->usertype->name === 'Faculty'){
 
             abort(403, 'Unauthorized action.');
 
         }else{
 
+            $batch_id = $request->input('id');
+
             $TransactionCount = Transaction::with(['honorarium', 'createdBy'])
             ->whereNull('deleted_at')
-            ->where('status', 'On Queue')
-            ->where('office', Auth::user()->office_id)
+            ->where('batch_status', 'Batch On Hold')
             ->count();
 
             $pendingMails = Emailing::where('status', 'Unread')->where('to_user', Auth::user()->employee_id);
             $EmailCount = $pendingMails->count();
 
             $OnHold = Transaction::whereNull('deleted_at')
-            ->where('status', 'On-hold')
-            // ->where('office', Auth::user()->office_id)
-            ->where('batch_id', '!=', NULL)
-            ->where('created_by', Auth::user()->id)
+            ->whereNull('deleted_at')
+            ->where('batch_status', 'Batch On Hold')
+            ->where('batch_id', $batch_id)
             ->count();
-            return view('administration.admin_on_hold', compact('OnHold', 'EmailCount', 'TransactionCount'));
+
+            $OnHoldData = Transaction::with(['createdBy', 'office'])
+            ->whereNull('deleted_at')
+            ->where('batch_status', 'Batch On Hold')
+            ->where('batch_id', $batch_id)
+            ->first();
+
+            $office = Office::where('id', $OnHoldData->office)->first();
+            
+            return view('administration.admin_on_hold', compact('OnHold', 'EmailCount', 'TransactionCount', 'OnHoldData', 'office'));
 
         }
     }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Mail\TransactionStatusChanged;
 use App\Models\Acknowledgement;
 use App\Models\Activity_logs;
+use App\Models\Emailing;
 use App\Models\Office;
 use Illuminate\Http\Request;
 use App\Models\Transaction;
@@ -19,9 +20,10 @@ class OnHoldController extends Controller
     public function getOnHoldTransactions(Request $request)
     {
         // Query to get transactions with status 'On-hold'
-        $transactions = Transaction::whereNull('deleted_at')
-        ->where('batch_id', '!=', NULL)->where('status', 'On-hold')
-        ->where('created_by', Auth::user()->id)
+        $transactions = Transaction::with(['createdBy'])
+        ->whereNull('deleted_at')
+        ->where('batch_id', '=', $request->batch_id)
+        ->where('batch_status', 'Batch On Hold')
         ->get();
         $ibu_dbcon = DB::connection('ibu_test');
 
@@ -91,11 +93,23 @@ class OnHoldController extends Controller
             })
 
             ->addColumn('created_by', function($data) {
-                return $data->createdBy ? $data->createdBy->first_name  . ' ' . $data->createdBy->last_name: 'Unknown';
+                return $data->createdBy ? $data->createdBy->first_name  . ' ' . $data->createdBy->middle_name. ' ' .$data->createdBy->last_name: 'Unknown';
             })
 
             ->addColumn('sent', function($data) {
                 return floor($data->updated_at->diffInDays(now())) . ' Days Ago';
+            })
+
+            ->addColumn('year', function($data) {
+                return $data->year;
+            })
+
+            ->addColumn('requirement_status', function($data) {
+                return $data->requirement_status;
+            })
+
+            ->addColumn('complied_on', function($data) {
+                return $data->complied_on;
             })
 
             ->addColumn('action', function($data) {
@@ -103,6 +117,11 @@ class OnHoldController extends Controller
 
                 return '<div class="d-flex flex-row" data-id="' . $data->id . '">' . $proceedButton . '</div>';
             })
+
+            ->addColumn('created_by_office', function($data) {
+                return $data->createdBy->office_id;
+            })
+
 
             ->make(true);
     }
@@ -222,4 +241,216 @@ class OnHoldController extends Controller
     {
         return view('administration.main_on_hold');
     }
+
+    public function list(Request $request)
+    {
+        // Fetch data from the Acknowledgement table
+        $acknowledgements = collect(); // Initialize an empty collection
+        DB::statement("SET SQL_MODE=''");
+
+
+        $acknowledgements = Acknowledgement::with(['user', 'office', 'transaction'])
+        ->select('batch_id', 'office_id', 'created_at', 'user_id', 'updated_at')
+        ->groupBy('batch_id')
+        ->get();
+
+        if(Auth::user()->usertype->name === 'Administrator' || Auth::user()->usertype->name === 'Superadmin'){
+            // Filter out acknowledgements with a transaction count of 0
+            $filteredAcknowledgements = $acknowledgements->filter(function ($acknowledgement) {
+                $countTran = Transaction::whereNull('deleted_at')
+                ->where('batch_id', $acknowledgement->batch_id)
+                ->where('batch_status', 'Batch On Hold')
+                ->count();
+                return $countTran > 0; // Only keep acknowledgements with a transaction count greater than 0
+            });
+
+
+        }else{
+           // Filter out acknowledgements with a transaction count of 0
+            $filteredAcknowledgements = $acknowledgements->filter(function ($acknowledgement) {
+                $countTran = Transaction::whereNull('deleted_at')
+                ->where('batch_id', $acknowledgement->batch_id)
+                ->where('batch_status', 'Batch On Hold')
+                // ->where('office', Auth::user()->office_id)
+                ->count();
+                return $countTran > 0; // Only keep acknowledgements with a transaction count greater than 0
+            });
+
+
+        }
+
+        // Return data as JSON using DataTables
+        return DataTables::of($filteredAcknowledgements)
+            ->addColumn('batch_id', function ($data) {
+                return $data->batch_id;
+            })
+            ->addColumn('office', function ($data) {
+                return $data->user->first_name . ' ' . $data->user->last_name . ' ' .
+                    '(' . $data->office->name . ')';
+            })
+            ->addColumn('count_transaction', function ($data) {
+                return Transaction::whereNull('deleted_at')
+                ->where('batch_id', $data->batch_id)
+                ->where('batch_status', 'Batch On Hold')
+                // ->where('office', Auth::user()->office_id)
+                ->count();
+            })
+            ->addColumn('hold_by', function ($data) {
+                return $data->user->first_name. ' ' .$data->user->middle_name. ' ' .$data->user->last_name;
+            })
+
+            ->addColumn('sent', function($data) {
+                return floor($data->updated_at->diffInDays(now())) . ' Days Ago';
+            })
+
+            ->addColumn('date_received', function ($data) {
+                return $data->updated_at ? $data->updated_at->format('m-d-Y') : 'N/A';
+            })
+
+            ->make(true);
+    }
+
+    public function updateCompliedOn(Request $request)
+    {
+        // Validate the request
+        $request->validate([
+            'id' => 'required|exists:transaction,id',
+            'complied_on' => 'required|date'
+        ]);
+
+        // Find the transaction by ID
+        $transaction = Transaction::find($request->id);
+
+        if ($transaction) {
+            // Update the complied_on field
+            $transaction->complied_on = $request->complied_on;
+            $transaction->requirement_status = 'Complied';
+            $transaction->save();
+
+            // Return a JSON response
+            return response()->json(['success' => true, 'message' => 'Complied on date updated successfully.']);
+        }
+
+        return response()->json(['success' => false, 'message' => 'Transaction not found.'], 404);
+    }
+
+    public function proceed_on_hold(Request $request)
+    {
+        $ibu_dbcon = DB::connection('ibu_test');
+
+        $transactions = Transaction::whereNull('deleted_at')
+        ->where('batch_status', 'Batch On Hold')
+        ->where('batch_id', $request->batch_id)
+        ->get();
+
+
+        if ($transactions->isEmpty()) {
+            return response()->json(['success' => false, 'message' => 'No transactions found with status Processing']);
+        }
+
+        $usertype = Auth::user()->usertype->name;
+
+        if($usertype === 'Administrator'){
+            $office = Office::where('name', 'Budget Office')->first();
+        }
+        elseif($usertype === 'Budget Office' || $usertype === 'Accounting' ){
+            $office = Office::where('name', 'Dean')->first();
+        }
+        elseif($usertype === 'Dean' ){
+            $office = Office::where('name', 'Accounting')->first();
+
+        }elseif($usertype === 'Cashiers'){
+            $office = Office::where('name', 'Faculty')->first();
+
+        }elseif($usertype === 'Accounting' ){
+            $office = Office::where('name', 'Dean')->first();
+        }
+        else{
+            return response()->json(['success' => false, 'message' => 'No office Found']);
+        }
+
+        $ack = new Acknowledgement();
+        $ack->batch_id= $request->batch_id;
+        $ack->office_id = Auth::user()->office_id;
+        $ack->user_id = Auth::user()->id;
+        $ack->save();
+
+        // Update the status to 'On Queue'
+        if($usertype === 'Cashiers' ){
+
+            Transaction::whereNull('deleted_at')
+            ->where('batch_status', 'Batch On Hold')
+            ->where('batch_id', $request->batch_id)
+            ->update([
+                'batch_status' => 'No Findings',
+                'status' => 'Complete',
+                'requirement_status' => 'Complete',
+                'office' => $office->id,
+                'created_by' => Auth::user()->id,
+                'updated_at' => now(),
+            ]);
+
+        }else{
+
+            Transaction::whereNull('deleted_at')
+            ->where('batch_status', 'Batch On Hold')
+            ->where('batch_id', $request->batch_id)
+            ->update([
+                'batch_status' => 'No Findings',
+                'status' => 'On Queue',
+                'requirement_status' => 'Complete',
+                'office' => $office->id,
+                'created_by' => Auth::user()->id,
+                'updated_at' => now(),
+            ]);
+
+        }
+
+
+        $batchId = $request->batch_id;
+
+        foreach ($transactions as $transaction) {
+            $logs = new Activity_logs();
+            $logs->trans_id = $transaction->id;
+            $logs->office_id = Auth::user()->office_id;
+            $logs->user_id = Auth::user()->id;
+            $logs->save();
+
+            $employee = $ibu_dbcon->table('employee_user')
+            ->where('id', $transaction->employee_id)
+            ->first();
+            $employeedetails = $ibu_dbcon->table('employee')
+            ->where('id', $transaction->employee_id)
+            ->first();
+
+            if (!empty($employee->email)) {
+                $emailData = [
+                    'transaction_id' => $transaction->id,
+                    'employee_fname' => $employeedetails->employee_fname,
+                    'employee_lname' => $employeedetails->employee_lname,
+                    'status' => 'On Queue',
+                    'created_at' => now()->format('F j, Y'),
+                    'honorarium' => $transaction->honorarium->name,
+                    'office' => $office->name,
+
+                ];
+
+                Mail::to($employee->email)->send(new TransactionStatusChanged($emailData));
+            }
+
+            $email = new Emailing();
+            $email->transaction_id = $transaction->id;
+            $email->subject = 'Transaction Processing';
+            $email->to_user = $employeedetails->id;
+            $email->message = '';
+            $email->status = 'Unread';
+            $email->created_by = Auth::user()->id;
+            $email->save();
+
+        }
+
+        return response()->json(['success' => true, 'batch_id'=> $batchId, 'message' => 'Emails sent and transactions updated.']);
+    }
+
+
 }

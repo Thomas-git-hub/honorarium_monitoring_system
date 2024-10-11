@@ -40,23 +40,11 @@
 {{--FACULTY DATATABLES START --}}
 <script>
     $(function () {
-            var data = [
-                {
-                    batch_id: '000-0000',
-                    count_transaction: '3',
-                    hold_by: 'Full Name',
-                    office: 'Office',
-                    sent: '2days ago',
-                    date_received: 'Oct 10',
-
-                },
-                // More data...
-            ];
 
             var table = $('#onHoldTable').DataTable({
-                data: data,
-                processing: false,
-                serverSide: false,
+                processing: true,
+                serverSide: true,
+                ajax: '{{route('main_on_hold.list')}}',
                 responsive: true,
                 pageLength: 10,
                 paging: true,

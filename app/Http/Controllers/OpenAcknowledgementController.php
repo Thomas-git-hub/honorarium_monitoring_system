@@ -172,8 +172,6 @@ class OpenAcknowledgementController extends Controller
             $logs->user_id = Auth::user()->id;
             $logs->save();
 
-
-
         }
 
         $acknowledgement = Acknowledgement::where('batch_id', $request->batchId)->first();

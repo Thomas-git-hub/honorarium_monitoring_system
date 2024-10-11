@@ -229,6 +229,7 @@ class CashierQueueController extends Controller
 
         // Find the transaction by ID and update the net amount
         $transaction = Transaction::find($request->id);
+        $transaction->from_office = Auth::user()->office_id;
         $transaction->net_amount = $request->net_amount;
         $transaction->updated_at = now();
         $transaction->created_by = Auth::user()->id;
