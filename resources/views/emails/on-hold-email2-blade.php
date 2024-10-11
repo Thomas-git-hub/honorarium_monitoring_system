@@ -287,9 +287,10 @@
                               <div style="font-size: 14px; line-height: 140%; text-align: left; word-wrap: break-word;">
                                 <p style="line-height: 140%;">Hi John Doe, 🖐</p>
                                 <p style="line-height: 140%;">&nbsp;</p>
-                                <p style="line-height: 140%;"><span style="line-height: 19.6px;" data-metadata="<!--(figmeta)eyJmaWxlS2V5IjoiZUdQamxleEJPWUZNR3VaSGxxZmpaNyIsInBhc3RlSUQiOjgxNzc1NDU2NCwiZGF0YVR5cGUiOiJzY2VuZSJ9Cg==(/figmeta)-->"></span><span style="line-height: 19.6px;"
+                                <p style="line-height: 140%;"><span style="line-height: 19.6px;" data-metadata=""></span><span style="line-height: 19.6px;">
                                 <p style="line-height: 140%;">&nbsp;</p>
-                                <p style="line-height: 140%;"><span style="color: #000000; line-height: 19.6px;"><span style="line-height: 19.6px;">Date On-Hold: <span style="color: #e03e2d; line-height: 19.6px;"><strong>Date</strong></span></span>
+                                <p style="line-height: 140%;"><span style="line-height: 19.6px;"></span><strong><span style="line-height: 19.6px; color: #e03e2d;">Your honorarium transaction has been placed on hold due to incomplete requirements from one of the faculty members involved in the same transaction.</span></strong></p>
+                                <p style="line-height: 140%;"><span style="color: #000000; line-height: 19.6px;"><pan style="line-height: 19.6px;">Date On-Hold: <span style="color: #e03e2d; line-height: 19.6px;"><strong>Date</strong></span></span>
                                   </span>
                                 </p>
                                 <p style="line-height: 140%;"><span style="color: #000000; line-height: 19.6px;"><span style="line-height: 19.6px;">On-Hold by: <strong><span style="color: #e03e2d; line-height: 19.6px;">Full Name</span></strong>

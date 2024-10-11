@@ -2,28 +2,55 @@
 
 @section('content')
 
-<!-- PROCEED MODAL START -->
-<!-- Modal -->
-<div class="modal fade" id="proceed" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog" role="document">
+  <!-- Modal -->
+  <div class="modal fade" id="datePickerModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h6 class="text-secondary">Read</h6>
+          <div class="d-flex align-items-center gap-2">
+            <i class='bx bx-calendar-event' ></i>
+            <span class="h6 mb-0 modal-title">Select Date of Compliance</span>
+          </div>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <h1 class="text-center text-danger">!</h1>
-          <p class="text-center">"Proceeding with this transaction indicates that the individual has complied with all necessary requirements for their honorarium."</p>
-          {{-- <h5 class="text-center text-danger">Transaction ID No. = <b>002-08122024</b></h5> --}}
+            <div class="border-bottom">
+                <div>Faculty: <b>Full Name</b></div>
+                <div>College: <b>College</b></div>
+                <div>Academic Rank: <b>Full Time</b></div>
+            </div>
+            <div class="mt-3">
+                {{-- <label for="defaultFormControlInput" class="form-label">Select Date of Compliance</label> --}}
+                <input type="text" id="modalDatePicker" placeholder="yyyy/mm/dd" class="form-control">
+            </div>
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-label-danger" data-bs-dismiss="modal"><i class='bx bxs-x-circle'></i></button>
-          <button type="button" id="proceed_transaction" class="btn btn-primary gap-1">Proceed to Next Office<i class='bx bx-chevrons-right'></i></button>
-        </div>
+        {{-- <div class="modal-footer">
+          <button type="button" class="btn btn-label-danger" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary">Requirements Complied</button>
+        </div> --}}
       </div>
     </div>
-</div>
-{{-- MODAL END --}}
+  </div>
+
+    {{-- <div class="modal fade" id="datePickerModal" tabindex="-1" role="dialog" aria-labelledby="datePickerModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="datePickerModalLabel">Select a Date</h5>
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                <!-- Hidden input for Flatpickr -->
+                    <input type="text" id="modalDatePicker" class="form-control">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div> --}}
 
 <div class="row mt-4 mb-3">
     <div class="col-md">
@@ -152,20 +179,18 @@
                 year: '<p>2024</p>',
                 month: 'October',
                 created_by: '<p>Full Name</p>',
-                sent: '3days ago',
+                sent: '3 days ago',
                 requirement_status: 'For Compliance',
-                complied_on: '<button type="button" class="btn me-2 btn-primary btn-sm edit-btn gap-1" data-bs-toggle="modal" data-bs-target="#proceed">Proceed<i class="bx bx-chevrons-right"></i></button>',
-                // action: '3days ago',
-
-
+                complied_on: '<button type="button" id="compliedOn" class="btn btn-sm btn-primary compliedOnBtn"><span class="badge">Select Date</button>',
             },
             // More data...
         ];
-    var table = $('#facultyTable').DataTable({
+
+        // Initialize DataTable
+        var table = $('#facultyTable').DataTable({
             data: data,
             processing: false,
             serverSide: false,
-            // ajax: '{{ route('on_hold_status') }}',
             pageLength: 10,
             paging: true,
             dom: '<"top"lf>rt<"bottom"ip>',
@@ -174,7 +199,7 @@
                 searchPlaceholder: "Search..."
             },
             columns: [
-                { data: 'id', name: 'id', title: 'ID', visible: false},
+                { data: 'id', name: 'id', title: 'ID', visible: false },
                 { data: 'batch_id', name: 'batch_id', title: 'TN' },
                 { data: 'date_of_trans', name: 'date_of_trans', title: 'Date Received' },
                 { data: 'faculty', name: 'faculty', title: 'Faculty' },
@@ -184,25 +209,38 @@
                 { data: 'honorarium', name: 'honorarium', title: 'Honorarium' },
                 { data: 'sem', name: 'sem', title: 'Semester' },
                 { data: 'year', name: 'year', title: 'Semester Year' },
-                { data: 'month.month_name', name: 'month', title: 'Month Of' },
+                { data: 'month', name: 'month', title: 'Month Of' },
                 { data: 'created_by', name: 'created_by', title: 'Created By' },
-                { data: 'sent', name: 'sent', title: 'Sent'},
-                { data: 'requirement_status', name: 'requirement_status', title: 'Requirements'},
+                { data: 'sent', name: 'sent', title: 'Sent' },
+                { data: 'requirement_status', name: 'requirement_status', title: 'Requirements' },
                 { data: 'complied_on', name: 'complied_on', title: 'Complied On' },
-                // { data: 'action', name: 'action', title: 'Action' },
-
             ],
-            order: [[0, 'desc']], // Sort by date_received column by default
-            columnDefs: [
-                {
-                    type: 'date',
-                    targets: [0, 1] // Apply date sorting to date_received and date_on_hold columns
-                }
-            ],
+            order: [[0, 'desc']], // Sort by the first column by default
             createdRow: function(row, data) {
                 $(row).addClass('unopened');
+            },
+        });
+
+
+
+
+        // Initialize Flatpickr in the modal
+        var datePicker = flatpickr("#modalDatePicker", {
+            dateFormat: "Y-m-d",
+            onChange: function(selectedDates, dateStr) {
+                // Update the button's text after selecting a date
+                var button = $('#datePickerModal').data('button');
+                button.find('span.badge').text(dateStr); // Update the button's text
+                $('#datePickerModal').modal('hide'); // Hide the modal
             }
-    });
+        });
+
+        // Show the modal when compliedOn button is clicked
+        $('#facultyTable').on('click', '.compliedOnBtn', function() {
+            var button = $(this);
+            // Store the clicked button in a data attribute for use in the modal
+            $('#datePickerModal').data('button', button).modal('show');
+        });
 
     $('#facultyTable').on('click', '.edit-btn', function() {
     // Get the row data

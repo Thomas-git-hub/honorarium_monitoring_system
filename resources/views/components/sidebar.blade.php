@@ -93,7 +93,7 @@
         </li>
         @endif
         @if(Auth::user()->usertype->name !== 'Faculty')
-        <li class="menu-item {{ request()->is('admin_on_hold') ? 'active' : '' }}">
+        <li class="menu-item {{ request()->is('main_on_hold') || request()->is('admin_on_hold') ? 'active' : '' }}">
           <a href="/main_on_hold" class="menu-link">
             <i class='menu-icon tf-icons bx bx-error-alt'></i>
             <div class="text-truncate" data-i18n="Page 2">On Hold</div>
