@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\On_Hold_Email;
 use App\Mail\SendEmail;
 use App\Models\Activity_logs;
 use App\Models\Emailing;
@@ -33,7 +34,7 @@ class SendEmailController extends Controller
             return response()->json(['success' => false,'errors' => $validator->errors()], 422);
         }
 
-        $ibu_dbcon = DB::connection('ors_pgsql');
+        $ibu_dbcon = DB::connection('ibu_test');
 
         $employee = $ibu_dbcon->table('employee_user')
                 ->where('id', $request->user_id)
@@ -42,28 +43,42 @@ class SendEmailController extends Controller
                 ->where('id', $request->user_id)
                 ->first();
 
+        $office = Office::where('id', Auth::user()->office_id)->first();
+
 
         if (!empty($employee->email)) {
 
             $emailData = [
                 'user_id' => $request->user_id,
                 'employee_fname' => $employeedetails->employee_fname,
+                'employee_lname' => $employeedetails->employee_lname,
                 'subject' => $request->subject,
                 'message' => $request->message,
                 'sender_email' => Auth::user()->email, // Add sender email
                 'documents' => $request->input('documentation', []),
+                'office_name' => $office->name,
             ];
 
-            Mail::to($employee->email)->send(new SendEmail($emailData));
+            Mail::to($employee->email)->send(new On_Hold_Email($emailData));
         }
 
+        $emailMessage = "
+        <div>
+            <p>Hi {$employeedetails->employee_fname} {$employeedetails->employee_lname}, 🖐</p>
+            <p>Your transaction has been put <strong>On-Hold</strong> by <strong><em>{$office->name}</em></strong></p>
+            <ul>";
+        $emailMessage .= "
+                </ul>
+                <p>Please visit {$office->name} Office to comply with the requirements.</p>
+            </div>
+        ";
         $documentationJson = json_encode($request->input('documentation', []));
 
         // Process form data
         $email = new Emailing();
         $email->subject = $request->subject;
         $email->to_user = $request->user_id;
-        $email->message = $request->message;
+        $email->message = $emailMessage;
         $email->status = 'Unread';
         $email->created_by = Auth::user()->id;
         $email->documentation = $documentationJson;
@@ -126,7 +141,7 @@ class SendEmailController extends Controller
                   ->orWhere('deleted_by', '!=', Auth::user()->employee_id); // Show only emails not deleted by the user
         })
         ->get();
-        $ibu_dbcon = DB::connection('ors_pgsql');
+        $ibu_dbcon = DB::connection('ibu_test');
 
         $months = [
             1 => 'January',

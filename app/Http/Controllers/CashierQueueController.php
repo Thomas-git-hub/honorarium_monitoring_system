@@ -85,7 +85,7 @@ class CashierQueueController extends Controller
                     '(' . $data->office->name . ')';
             })
             ->addColumn('trans_id', function ($data) {
-                if(Auth::user()->usertype->name === 'AdAdministratormin' || Auth::user()->usertype->name === 'Superadmin'){
+                if(Auth::user()->usertype->name === 'Administrator' || Auth::user()->usertype->name === 'Superadmin'){
                     return Transaction::whereNull('deleted_at')
                     ->where('batch_id', $data->batch_id)
                     ->where('status','!=', 'On-hold')
@@ -120,7 +120,7 @@ class CashierQueueController extends Controller
         }
 
         $transactions = $query->get();
-        $ibu_dbcon = DB::connection('ors_pgsql');
+        $ibu_dbcon = DB::connection('ibu_test');
 
         $months = [
             1 => 'January',
