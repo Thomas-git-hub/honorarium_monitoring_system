@@ -49,6 +49,15 @@ class FacultyTrackingController extends Controller
             ->whereNull('deleted_at')
             ->where('employee_id', Auth::user()->employee_id)
             ->where('office', $dean_office->id)
+            ->where('from_office', $bugt_office->id)
+            ->whereIn('status', ['Processing', 'On Queue', 'On-hold'])
+            ->count();
+
+            $deanCountTwo = Transaction::with(['honorarium', 'createdBy'])
+            ->whereNull('deleted_at')
+            ->where('employee_id', Auth::user()->employee_id)
+            ->where('office', $dean_office->id)
+            ->where('from_office', $Accounting_office->id)
             ->whereIn('status', ['Processing', 'On Queue', 'On-hold'])
             ->count();
 
@@ -80,7 +89,7 @@ class FacultyTrackingController extends Controller
             else{
                 $college = 'No Assigned College';
             }
-            return view('administration.faculty_tracking', compact('user', 'college', 'adminCount', 'budgtCount', 'deanCount', 'acctCount', 'cashCount', 'releaseCount', 'EmailCount'));
+            return view('administration.faculty_tracking', compact('user', 'college', 'adminCount', 'budgtCount', 'deanCount', 'acctCount', 'cashCount', 'releaseCount', 'EmailCount', 'deanCountTwo'));
         }else{
 
             abort(403, 'Unauthorized action.');
@@ -238,10 +247,12 @@ class FacultyTrackingController extends Controller
 
         $query = array();
         $dean_office = Office::where('name', 'Dean')->first();
+        $BO_office = Office::where('name', 'Budget Office')->first();
         $query = Transaction::with(['honorarium', 'createdBy'])
         ->whereNull('deleted_at')
         ->where('employee_id', $request->user_id)
         ->where('office', $dean_office->id)
+        ->where('from_office', $BO_office->id)
         ->whereIn('status', ['Processing', 'On Queue', 'On-hold']);
         // ->orWhere('status', 'On-hold');
 
@@ -309,12 +320,13 @@ class FacultyTrackingController extends Controller
 
         $query = array();
         $dean_office = Office::where('name', 'Dean')->first();
+        $acct_office = Office::where('name', 'Accounting')->first();
         $query = Transaction::with(['honorarium', 'createdBy'])
         ->whereNull('deleted_at')
         ->where('employee_id', $request->user_id)
         ->where('office', $dean_office->id)
+        ->where('from_office', $acct_office->id)
         ->whereIn('status', ['Processing', 'On Queue', 'On-hold']);
-        // ->orWhere('status', 'On-hold');
 
         $transactions = $query->get();
         $ibu_dbcon = DB::connection('ibu_test');

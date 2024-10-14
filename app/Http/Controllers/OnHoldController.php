@@ -343,6 +343,12 @@ class OnHoldController extends Controller
         ->where('batch_id', $request->batch_id)
         ->get();
 
+        $hasForCompliance = $transactions->where('requiremnet_status', 'For Compliance')->isNotEmpty();
+
+        if($hasForCompliance){
+            return response()->json(['success' => false, 'message' => 'This batch still has for compliance item(s)']);
+
+        }
 
         if ($transactions->isEmpty()) {
             return response()->json(['success' => false, 'message' => 'No transactions found with status Processing']);
@@ -405,7 +411,6 @@ class OnHoldController extends Controller
             ]);
 
         }
-
 
         $batchId = $request->batch_id;
 

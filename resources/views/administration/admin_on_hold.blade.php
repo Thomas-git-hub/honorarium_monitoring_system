@@ -250,7 +250,9 @@
                         text: response.message,
                     });
                     $('#facultyTable').DataTable().ajax.reload();
-                    // $('#proceed').modal('show');
+                    $('#proceed').modal('show');
+
+                    window.location.href = '/history';
                     // @if(Auth::user()->usertype->name === 'Cashiers')
                     // window.location.href = `/cashier_in_queue`;
                     // @else

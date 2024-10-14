@@ -139,6 +139,7 @@ Route::middleware(['auth_check', '419'])->group(function () {
         Route::get('/faculty/bugs', [FacultyTrackingController::class, 'AdminList'])->name('faculty.bugs');
         Route::get('/faculty/budget-office', [FacultyTrackingController::class, 'BudgetList'])->name('faculty.budget-office');
         Route::get('/faculty/dean_office', [FacultyTrackingController::class, 'DeanList'])->name('faculty.dean_office');
+        Route::get('/faculty/dean_office/accounting', [FacultyTrackingController::class, 'DeanListTwo'])->name('faculty.dean_office_two');
         Route::get('/faculty/accounting', [FacultyTrackingController::class, 'AccountList'])->name('faculty.accounting');
         Route::get('/faculty/cashier', [FacultyTrackingController::class, 'CashierList'])->name('faculty.cashier');
         Route::get('/faculty/honorarium_released', [FacultyTrackingController::class, 'honorarium_released'])->name('faculty.honorarium_released');
