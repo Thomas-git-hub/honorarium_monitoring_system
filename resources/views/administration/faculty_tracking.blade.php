@@ -55,7 +55,7 @@
                 </button>
             </li>
             <li class="nav-item">
-                <button type="button" class="btn-label-warning text-warning nav-link office-btn" data-route="{{ route('faculty.dean_office') }}" role="tab">
+                <button type="button" class="btn-label-warning text-warning nav-link office-btn" data-route="{{ route('faculty.dean_office_two') }}" role="tab">
                     <span class="d-none d-sm-block"><i class="tf-icons bx bxs-graduation bx-sm me-1_5 align-text-bottom"></i>
                         Deans Office
                         <span class="badge rounded-pill badge-center position-absolute h-px-20 w-px-20 bg-danger ms-1 pt-50">{{$deanCount ?? 0}}</span>

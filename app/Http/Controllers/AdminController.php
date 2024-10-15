@@ -340,7 +340,7 @@ class AdminController extends Controller
             ->first();
 
             $office = Office::where('id', $OnHoldData->office)->first();
-            
+
             return view('administration.admin_on_hold', compact('OnHold', 'EmailCount', 'TransactionCount', 'OnHoldData', 'office'));
 
         }
