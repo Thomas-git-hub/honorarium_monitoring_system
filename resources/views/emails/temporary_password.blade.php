@@ -309,7 +309,7 @@
                                 <p style="line-height: 140%;">Please do not share your password with anyone. We recommend that you change your password immediately after logging in to the BUGS Honorarium Monitoring System.<br><br></p>
                                 <p style="line-height: 140%;">Please contact the system administrator if you encounter any problems logging into the system.</p>
                                 <p style="line-height: 140%;">&nbsp;</p>
-                                <p style="line-height: 140%;">Where to contact:<br>✉️ <a rel="noreferrer">bu-icto@bicol-u.edu.ph</a></p>
+                                <p style="line-height: 140%;">Where to contact:<br>✉️ <a rel="noreferrer" href="https://icto.bicol-u.edu.ph/">bu-icto@bicol-u.edu.ph</a></p>
                               </div>
 
                             </td>

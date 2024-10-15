@@ -270,6 +270,8 @@
     </div>
 </div>
 
+@include('administration.email_toast')
+
 @endsection
 
 @section('components.specific_page_scripts')
