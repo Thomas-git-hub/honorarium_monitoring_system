@@ -291,7 +291,10 @@
                                     {{ $document }},&nbsp;
                                 @endforeach)</strong>.</span></p>
                                 <p style="line-height: 140%;">&nbsp;</p>
+
+                                {{-- Please replace the line 296, with the message from the email toaster. --}}
                                 <p style="line-height: 140%;">Please visit&nbsp; {{$emailData['office_name']}} Office to comply requirements.</p>
+
                               </div>
 
                             </td>

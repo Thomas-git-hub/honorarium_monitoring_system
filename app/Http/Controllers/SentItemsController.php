@@ -130,4 +130,6 @@ class SentItemsController extends Controller
 
             ->make(true);
     }
+
+
 }

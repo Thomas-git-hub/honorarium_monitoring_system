@@ -174,10 +174,11 @@
                     search: "", // Remove the default search label
                     searchPlaceholder: "Search..." // Set the placeholder text
                 },
+                order: [[3, 'desc']], // Sort by the 4th column (Date) in descending order
                 columns: [
                     {
                         data: 'id',
-                        orderable: false,
+                        orderable: true,
                         render: function(data, type, row) {
                             return '<input type="checkbox" class="form-check-input row-checkbox" value="' + row.id + '">';
                         }

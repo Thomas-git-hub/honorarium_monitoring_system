@@ -116,7 +116,7 @@
 
 
                // Redirect to another page with full details (example)
-               window.location.href = `/admin_open_email?id=${rowData.id}`;
+               window.location.href = `/open_sent_items?id=${rowData.id}`;
            });
 
            // Toggle Check All/Uncheck All button click event
