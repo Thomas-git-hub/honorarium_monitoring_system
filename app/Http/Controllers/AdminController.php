@@ -223,7 +223,6 @@ class AdminController extends Controller
         $logs->user_id = $transaction->created_by;
         $logs->save();
 
-
         return response()->json(['success' => true, 'message' => 'Form submitted successfully.']);
     }
 

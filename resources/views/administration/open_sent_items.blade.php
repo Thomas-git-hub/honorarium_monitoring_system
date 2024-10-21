@@ -11,7 +11,7 @@
                     <div class="card-body">
                         {{-- <a class="" href="/admin_email"><i class='bx bx-left-arrow-alt text-primary' id="" style="font-size: 2em; cursor: pointer;"></i></a> --}}
                         <div class="row mt-4"><h2 class="fw-light">{{ $data->subject}}</h2></div>
-                        <div class="row"><small>{{$data->employee->first_name. ' ' .$data->employee->last_name}} <div class="fst-italic">({{$data->employee->email}})</div></small></div>
+                        <div class="row"><small>{{$to_user}} <div class="fst-italic">({{$user_email}})</div></small></div>
                     </div>
                     <div class="card-body">
                         <p class="border-bottom">{!! $data->message !!}</p>
@@ -41,9 +41,9 @@
 @section('components.specific_page_scripts')
 <script>
      $(function () {
-        var send_to_id = {!! json_encode($data->employee->employee_id) !!};
-        var facultyName = {!! json_encode($data->employee->first_name) !!};
-        var facultyEmail = {!! json_encode($data->employee->email) !!};
+        var send_to_id = {!! json_encode($to_user_id) !!};
+        var facultyName = {!! json_encode($to_user) !!};
+        var facultyEmail = {!! json_encode($user_email) !!};
         console.log(send_to_id);
 
         $('#user_id').val(send_to_id);

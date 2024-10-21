@@ -27,6 +27,46 @@ class SentItemsController extends Controller
 
         return view('administration.sent_items', compact('EmailCount', 'TransactionCount'));
     }
+    public function open_sent_items(Request $request){
+
+        $id = $request->input('id');
+        $ibu_dbcon = DB::connection('ibu_test');
+        $data = Emailing::with(['employee', 'send_to_employee'])->where('id', $id)->first();
+
+        $employeeDetails = $ibu_dbcon->table('employee')
+        ->where('id', $data->to_user)
+        ->first();
+
+        $employee_user = $ibu_dbcon->table('employee_user')
+        ->where('id', $data->to_user)
+        ->first();
+
+        if (!empty($employeeDetails->employee_fname)) {
+            $to_user = ucfirst($employeeDetails->employee_fname) . ' ' . ucfirst($employeeDetails->employee_lname);
+            $user_email = $employee_user->email;
+            $to_user_id = $employee_user->id;
+        }else{
+            $to_user =  $data->send_to_employee->first_name . ' ' . $data->send_to_employee->last_name;
+            $user_email = $data->send_to_employee->email;
+            $to_user_id =  $data->send_to_employee->employee_id; 
+        }
+        
+       
+       
+
+        $pendingMails = Emailing::where('status', 'Unread')->where('to_user', Auth::user()->employee_id);
+        $EmailCount = $pendingMails->count();
+
+        $TransactionCount = Transaction::with(['honorarium', 'createdBy'])
+        ->whereNull('deleted_at')
+        ->where('status', 'On Queue')
+        ->where('office', Auth::user()->office_id)
+        ->count();
+
+        $docuJson = json_decode($data->documentation);
+
+        return view('administration.open_sent_items', compact('data', 'docuJson', 'EmailCount', 'TransactionCount', 'to_user', 'user_email', 'to_user_id'));
+    }
 
     public function send_reply(Request $request){
         $validator = Validator::make($request->all(), [
