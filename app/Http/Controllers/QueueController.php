@@ -229,7 +229,7 @@ class QueueController extends Controller
 
                             <p>Office of: <strong>{$office->name}</strong></p>
 
-                            <p>For further information or clarification regarding your honorarium, please visit the Administration Office.</p>
+                            <p>Kindly visit the {$office->name} Office to submit the missing documents for compliance</p>
                         </div>
                     ";
 
@@ -438,11 +438,25 @@ class QueueController extends Controller
                 Mail::to($employee->email)->send(new TransactionStatusChanged($emailData));
             }
 
+             // Define the email message content as a string
+             $emailMessage = '
+             <div>
+                 Hi ' . $employeedetails->employee_fname . ', 🖐<br><br>
+                 Your transaction has been updated.<br><br>
+                 <ul>
+                     <li>Your Honorarium is now on: ' . $office->name . '</li>
+                     <li>Date of Transaction: ' . now()->format('F j, Y') . '</li>
+                     <li>Transaction Status: On Queue</li>
+                     <li>Honorarium: ' . $transaction->honorarium->name . '</li>
+                 </ul>
+             </div>
+             ';
+
             $email = new Emailing();
             $email->transaction_id = $transaction->id;
             $email->subject = 'Transaction Processing';
             $email->to_user = $employeedetails->id;
-            $email->message = '';
+            $email->message = $emailMessage;
             $email->status = 'Unread';
             $email->created_by = Auth::user()->id;
             $email->save();
@@ -520,11 +534,25 @@ class QueueController extends Controller
                 Mail::to($employee->email)->send(new TransactionStatusChanged($emailData));
             }
 
+             // Define the email message content as a string
+             $emailMessage = '
+             <div>
+                 Hi ' . $employeedetails->employee_fname . ', 🖐<br><br>
+                 Your transaction has been updated.<br><br>
+                 <ul>
+                     <li>Your Honorarium is now on: ' . $office->name . '</li>
+                     <li>Date of Transaction: ' . now()->format('F j, Y') . '</li>
+                     <li>Transaction Status: On Queue</li>
+                     <li>Honorarium: ' . $transaction->honorarium->name . '</li>
+                 </ul>
+             </div>
+             ';
+
             $email = new Emailing();
             $email->transaction_id = $transaction->id;
             $email->subject = 'Transaction Processing';
             $email->to_user = $employeedetails->id;
-            $email->message = 'The transaction for your honorarium will be acknowledged by the Budget Office. Please wait for further updates.';
+            $email->message = $emailMessage;
             $email->status = 'Unread';
             $email->created_by = Auth::user()->id;
             $email->save();
