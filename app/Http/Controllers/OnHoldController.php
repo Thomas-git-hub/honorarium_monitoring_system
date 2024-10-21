@@ -25,7 +25,7 @@ class OnHoldController extends Controller
         ->where('batch_id', '=', $request->batch_id)
         ->where('batch_status', 'Batch On Hold')
         ->get();
-        $ibu_dbcon = DB::connection('ibu_test');
+        $ibu_dbcon = DB::connection('ors_pgsql');
 
         $months = [
             1 => 'January',
@@ -168,7 +168,7 @@ class OnHoldController extends Controller
 
     public function UpdateToProceed(Request $request){
 
-        $ibu_dbcon = DB::connection('ibu_test');
+        $ibu_dbcon = DB::connection('ors_pgsql');
 
         // Fetch all transactions with status 'On-hold'
         $transaction = Transaction::whereNull('deleted_at')
@@ -336,7 +336,7 @@ class OnHoldController extends Controller
 
     public function proceed_on_hold(Request $request)
     {
-        $ibu_dbcon = DB::connection('ibu_test');
+        $ibu_dbcon = DB::connection('ors_pgsql');
 
         $transactions = Transaction::whereNull('deleted_at')
         ->where('batch_status', 'Batch On Hold')
