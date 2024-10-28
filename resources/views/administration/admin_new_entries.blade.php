@@ -543,6 +543,7 @@
         $('#emailTextArea').val('Kindly visit the Administration Office to submit the missing documents for compliance.');
 
         $('#facultySelect').on('select2:select', function(e) {
+            var userOfficeId = "{{ Auth::user()->office->name }}";
             var selectedOption = $(this).select2('data')[0]; // Get the selected option data
             var facultyName = `${selectedOption.employee_fname} ${selectedOption.employee_lname}`;
             var facultyEmail = selectedOption.email; // Get the email from the selected data
@@ -552,7 +553,7 @@
             $('#user_id').val(facultyId);
             $('.card-body .send_to').html(`<b>To:&nbsp;</b> ${facultyName}&nbsp;<small class="text-secondary" style="font-style: italic;">${facultyEmail}</small>`);
             $('#floatingInput').val('Transaction On-Hold');
-            $('#emailTextArea').val('Please come to the Administration Office for compliance');
+            $('#emailTextArea').val(`Kindly visit the ${userOfficeId} Office to submit the missing documents for compliance.`);
         });
 
         $('#facultySelect').select2({

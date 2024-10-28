@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Jobs\SendTransactionEmailsJob;
+use App\Mail\On_Hold_Email;
 use App\Mail\On_Hold_Email_two;
 use App\Mail\TransactionStatusChanged;
 use App\Models\Acknowledgement;
@@ -23,114 +24,10 @@ use Yajra\DataTables\DataTables;
 class QueueController extends Controller
 {
 
-    // public function proceedToBudgetOffice(Request $request)
-    // {
-    //     $ibu_dbcon = DB::connection('ors_pgsql');
-
-    //     $usertype = Auth::user()->usertype->name;
-
-    //     if($usertype === 'Admin' || $usertype === 'Superadmin'){
-    //         $office = Office::where('name', 'Budget Office')->first();
-    //     }
-    //     elseif($usertype === 'Budget Office' || $usertype === 'Accounting' ){
-    //         $office = Office::where('name', 'Dean')->first();
-    //     }
-    //     elseif($usertype === 'Dean' ){
-    //         $office = Office::where('name', 'Accounting')->first();
-    //     }elseif($usertype === 'Cashiers'){
-    //         $office = Office::where('name', 'Faculty')->first();
-    //     }else{
-    //         return response()->json(['success' => false, 'message' => 'No office Found']);
-    //     }
-
-    //     // Fetch all transactions with status 'Processing'
-    //     $transactions = Transaction::with(['honorarium', 'office'])
-    //     ->whereNull('deleted_at')
-    //     ->where('status', 'Processing')
-    //     ->orwhere('status', 'On-hold')
-    //     ->where('batch_id', '!=', NULL)
-    //     ->where('office', Auth::user()->office_id)
-    //     ->where('created_by', Auth::user()->id)
-    //     ->get();
-
-    //     if ($transactions->isEmpty()) {
-    //         return response()->json(['success' => false, 'message' => 'No transactions found with status Processing']);
-    //     }
-
-
-    //     $transaction_update = Transaction::whereNull('deleted_at')
-    //     ->where('status', 'Processing')
-    //     ->where('office', Auth::user()->office_id)
-    //     ->where('created_by', Auth::user()->id)
-    //     ->update([
-    //         'status' => 'On Queue',
-    //         'office' => $office->id,
-    //         'created_by' => Auth::user()->id,
-    //         'updated_at' => now(),
-    //     ]);
-
-    //     $transaction_update = Transaction::whereNull('deleted_at')
-    //     ->where('status', 'On-hold')
-    //     ->where('office', Auth::user()->office_id)
-    //     ->where('created_by', Auth::user()->id)
-    //     ->update([
-    //         'office' => $office->id,
-    //         'created_by' => Auth::user()->id,
-    //         'updated_at' => now(),
-    //     ]);
-
-    //     //Emailing each transaction
-    //     foreach ($transactions as $transaction) {
-    //         if ($transaction->status === 'Processing'){
-    //             $logs = new Activity_logs();
-    //             $logs->trans_id = $transaction->id;
-    //             $logs->office_id = Auth::user()->office_id;
-    //             $logs->user_id = Auth::user()->id;
-    //             $logs->save();
-
-    //             $employee = $ibu_dbcon->table('employee_user')
-    //             ->where('id', $transaction->employee_id)
-    //             ->first();
-    //             $employeedetails = $ibu_dbcon->table('employee')
-    //             ->where('id', $transaction->employee_id)
-    //             ->first();
-
-    //             if (!empty($employee->email)) {
-    //                 $emailData = [
-    //                     'transaction_id' => $transaction->id,
-    //                     'employee_fname' => $employeedetails->employee_fname,
-    //                     'employee_lname' => $employeedetails->employee_lname,
-    //                     'status' => 'On Queue',
-    //                     'created_at' => now()->format('F j, Y'),
-    //                     'honorarium' => $transaction->honorarium->name,
-    //                     'office' => $office->name,
-    //                 ];
-
-    //                 Mail::to($employee->email)->send(new TransactionStatusChanged($emailData));
-    //                 sleep(1);
-    //             }
-
-    //             $email = new Emailing();
-    //             $email->transaction_id = $transaction->id;
-    //             $email->subject = 'Transaction Processing';
-    //             $email->to_user = $employeedetails->id;
-    //             $email->message = 'The transaction for your honorarium will be acknowledged by the Budget Office. Please wait for further updates.';
-    //             $email->status = 'Unread';
-    //             $email->created_by = Auth::user()->id;
-    //             $email->save();
-
-    //         }
-
-    //     }
-
-    //     $batchId = $transaction->batch_id;
-
-    //     return response()->json(['success' => true, 'batch_id'=> $batchId, 'message' => 'Emails sent and transactions updated.']);
-    // }
 
     public function proceedToBudgetOffice(Request $request)
     {
-        $ibu_dbcon = DB::connection('ors_pgsql');
+        $ibu_dbcon = DB::connection('ibu_test');
 
         // Fetch all transactions with status 'Processing' or 'On-hold'
         $transactions = Transaction::with(['honorarium', 'office'])
@@ -166,6 +63,7 @@ class QueueController extends Controller
                 ->where('created_by', Auth::user()->id)
                 ->update([
                     'from_office' =>  Auth::user()->office_id,
+                    'is_complete' => '1',
                     'batch_status' => 'Batch On Hold',
                     'requirement_status' => 'Complete',
                     'office' => $office->id,
@@ -180,6 +78,7 @@ class QueueController extends Controller
                 ->where('created_by', Auth::user()->id)
                 ->update([
                     'from_office' =>  Auth::user()->office_id,
+                    'is_complete' => '0',
                     'batch_status' => 'Batch On Hold',
                     'office' => $office->id,
                     'updated_at' => now(),
@@ -261,6 +160,7 @@ class QueueController extends Controller
                 ->where('created_by', Auth::user()->id)
                 ->update([
                     'status' => 'On Queue',
+                    'is_complete' => '1',
                     'from_office' =>  Auth::user()->office_id,
                     'office' => $office->id,
                     'created_by' => Auth::user()->id,
@@ -327,16 +227,16 @@ class QueueController extends Controller
 
         $batchId = $transactions->first()->batch_id;
 
-        return response()->json(['success' => true, 'batch_id'=> $batchId, 'message' => 'Emails sent and transactions updated.']);
+        return response()->json(['success' => true, 'batch_id'=> $batchId, 'message' => 'Transaction proceeded successfully']);
     }
 
     public function proceed(Request $request)
     {
-        $ibu_dbcon = DB::connection('ors_pgsql');
+        $ibu_dbcon = DB::connection('ibu_test');
 
         // Fetch all transactions with status 'Processing'
         $transactions = Transaction::whereNull('deleted_at')
-        ->where('status', 'Processing')
+        ->whereIn('status', ['On-hold', 'Processing'])
         ->where('office', Auth::user()->office_id)
         ->where('created_by', Auth::user()->id)
         ->where('batch_id', $request->batch_id)
@@ -367,6 +267,10 @@ class QueueController extends Controller
             return response()->json(['success' => false, 'message' => 'No office Found']);
         }
 
+
+
+
+
         $ack = new Acknowledgement();
         $ack->batch_id= $request->batch_id;
         $ack->office_id = Auth::user()->office_id;
@@ -383,6 +287,7 @@ class QueueController extends Controller
             ->where('batch_id', $request->batch_id)
             ->update([
                 'status' => 'Complete',
+                'is_complete' => '1',
                 'from_office' =>  Auth::user()->office_id,
                 'office' => $office->id,
                 'created_by' => Auth::user()->id,
@@ -398,6 +303,7 @@ class QueueController extends Controller
             ->where('batch_id', $request->batch_id)
             ->update([
                 'status' => 'On Queue',
+                'is_complete' => '1',
                 'from_office' =>  Auth::user()->office_id,
                 'office' => $office->id,
                 'created_by' => Auth::user()->id,
@@ -466,9 +372,155 @@ class QueueController extends Controller
         return response()->json(['success' => true, 'batch_id'=> $batchId, 'message' => 'Emails sent and transactions updated.']);
     }
 
+    public function on_hold_batch(Request $request){
+
+        $ibu_dbcon = DB::connection('ibu_test');
+
+        // Fetch all transactions with status 'Processing' or 'On-hold'
+        $transactions = Transaction::with(['honorarium', 'office'])
+            ->where('batch_status', '<>', 'Batch On Hold')
+            ->whereNull('deleted_at')
+            ->where(function($query) {
+                $query->where('status', 'Processing')
+                    ->orWhere('status', 'On-hold');
+            })
+            ->where('batch_id', $request->batch_id)
+            ->where('office', Auth::user()->office_id)
+            ->where('created_by', Auth::user()->id)
+            ->get();
+
+        if ($transactions->isEmpty()) {
+            return response()->json(['success' => false, 'message' => 'No transactions found with status Processing or On-hold']);
+        }
+
+         // Check if any transaction has 'On-hold' status
+         $hasOnHold = $transactions->where('status', 'On-hold')->isNotEmpty();
+
+         // If there is any 'On-hold' transaction, update all transactions in the batch
+        if ($hasOnHold) {
+
+            $usertype = Auth::user()->usertype->name;
+
+            if($usertype === 'Administrator' || $usertype === 'Superadmin'){
+                $office = Office::where('name', 'Budget Office')->first();
+            }
+            elseif($usertype === 'Budget Office' || $usertype === 'Accounting' ){
+                $office = Office::where('name', 'Dean')->first();
+            }
+            elseif($usertype === 'Dean' ){
+                $office = Office::where('name', 'Accounting')->first();
+
+            }elseif($usertype === 'Cashiers'){
+                $office = Office::where('name', 'Faculty')->first();
+
+            }elseif($usertype === 'Accounting' ){
+                $office = Office::where('name', 'Dean')->first();
+            }
+            else{
+                return response()->json(['success' => false, 'message' => 'No office Found']);
+            }
+
+            $batchId = $transactions->first()->batch_id;
+
+
+            Transaction::where('batch_id', $batchId)
+                ->whereNull('deleted_at')
+                ->where('batch_id', $request->batch_id)
+                ->where('status', 'Processing')
+                ->where('batch_status', '<>', 'Batch On Hold')
+                ->where('office', Auth::user()->office_id)
+                ->where('created_by', Auth::user()->id)
+                ->update([
+                    'from_office' =>  Auth::user()->office_id,
+                    'is_complete' => '1',
+                    'batch_status' => 'Batch On Hold',
+                    'requirement_status' => 'Complete',
+                    'office' => $office->id,
+                    'updated_at' => now(),
+            ]);
+
+            Transaction::where('batch_id', $batchId)
+                ->whereNull('deleted_at')
+                ->where('batch_id', $request->batch_id)
+                ->where('status', 'On-hold')
+                ->where('batch_status', '<>', 'Batch On Hold')
+                ->where('office', Auth::user()->office_id)
+                ->where('created_by', Auth::user()->id)
+                ->update([
+                    'from_office' =>  Auth::user()->office_id,
+                    'is_complete' => '0',
+                    'batch_status' => 'Batch On Hold',
+                    'office' => $office->id,
+                    'updated_at' => now(),
+            ]);
+
+
+              // Emailing each transaction
+            foreach ($transactions as $transaction) {
+                $logs = new Activity_logs();
+                $logs->trans_id = $transaction->id;
+                $logs->office_id = Auth::user()->office_id;
+                $logs->user_id = Auth::user()->id;
+                $logs->save();
+
+                $employee = $ibu_dbcon->table('employee_user')
+                ->where('id', $transaction->employee_id)
+                ->first();
+                $employeedetails = $ibu_dbcon->table('employee')
+                    ->where('id', $transaction->employee_id)
+                    ->first();
+
+                if ($transaction->status === 'Processing') {
+                    if (!empty($employee->email)) {
+                        $emailData = [
+                            'employee_fname' => $employeedetails->employee_fname,
+                            'employee_lname' => $employeedetails->employee_lname,
+                            'subject' => 'Transaction On-Hold ',
+                            'sender_email' => Auth::user()->email, // Add sender email
+                            'office_name' => $office->name,
+                            'created_at' => now()->format('F j, Y'),
+                            'created_by' => Auth::user()->first_name. ' ' .Auth::user()->last_name,
+                        ];
+
+                        Mail::to($employee->email)->send(new On_Hold_Email_two($emailData));
+                        sleep(1);
+                    }
+
+                    $emailMessage = "
+                        <div>
+                            <p>Hi {$employeedetails->employee_fname} {$employeedetails->employee_lname}, 🖐</p>
+
+                            <p><strong>Your honorarium transaction has been placed on hold due to incomplete requirements from one of the faculty members involved in the same transaction.</strong></p>
+
+                            <p>Date On-Hold: <strong>" . now()->format('F j, Y') . "</strong></p>
+
+                            <p>On-Hold by: <strong>" . Auth::user()->first_name . ' ' . Auth::user()->last_name . "</strong></p>
+
+                            <p>Office of: <strong>{$office->name}</strong></p>
+
+                            <p>Kindly visit the {$office->name} Office to submit the missing documents for compliance</p>
+                        </div>
+                    ";
+
+                    $email = new Emailing();
+                    $email->transaction_id = $transaction->id;
+                    $email->subject = 'Batch Transaction On-hold';
+                    $email->to_user = $employeedetails->id;
+                    $email->message = $emailMessage;
+                    $email->status = 'Unread';
+                    $email->created_by = Auth::user()->id;
+                    $email->save();
+                }
+
+            }
+            return response()->json(['success' => true, 'batch_id'=> $batchId, 'message' => 'Batch Transaction Successfully Placed On Hold']);
+        }
+    }
+
+
     public function proceedToCashier(Request $request)
     {
-        $ibu_dbcon = DB::connection('ors_pgsql');
+        $ibu_dbcon = DB::connection('ibu_test');
 
         // Fetch all transactions with status 'Processing'
         $transactions = Transaction::whereNull('deleted_at')
@@ -567,6 +619,7 @@ class QueueController extends Controller
         ->where('batch_id', $request->batch_id)
         ->update([
             'status' => 'On Queue',
+            'is_complete' => '1',
             'from_office' =>  Auth::user()->office_id,
             'office' => $office->id,
             'created_by' => Auth::user()->id,
@@ -615,56 +668,76 @@ class QueueController extends Controller
 
         // Find the transaction by ID
         $transaction = Transaction::find($request->id);
-        $ibu_dbcon = DB::connection('ors_pgsql');
+        $ibu_dbcon = DB::connection('ibu_test');
 
         $office = Office::where('id', $transaction->office)->first();
-        // dd($transaction->employee_id);
 
         if (!$transaction) {
             return response()->json(['success' => false, 'message' => 'Transaction not found.'], 404);
         }
 
-        $employee = $ibu_dbcon->table('employee_user')
-                ->where('id', $transaction->employee_id)
-                ->first();
-        $employeedetails = $ibu_dbcon->table('employee')
-                ->where('id', $transaction->employee_id)
-                ->first();
-        // dd($employee->email);
-
-        if (!empty($employee->email)) {
-            $emailData = [
-                'transaction_id' => $transaction->id,
-                'employee_fname' => $employeedetails->employee_fname,
-                'employee_lname' => $employeedetails->employee_lname,
-                'status' => 'On Hold',
-                'created_at' => now()->format('F j, Y'),
-                'honorarium' => $transaction->honorarium->name,
-                'office' => $office->name,
-            ];
-
-            Mail::to($employee->email)->send(new TransactionStatusChanged($emailData));
-        }
-
         $transaction->status = 'On-hold';
+        $transaction->is_complete =  0;
         $transaction->from_office = Auth::user()->office_id;
         $transaction->created_by = Auth::user()->id;
         $transaction->updated_at = now();
         $transaction->save();
 
+        $logs = new Activity_logs();
+        $logs->trans_id = $transaction->id;
+        $logs->office_id = Auth::user()->office_id;
+        $logs->user_id = Auth::user()->id;
+        $logs->save();
+
+        $employee = $ibu_dbcon->table('employee_user')
+        ->where('id', $transaction->employee_id)
+        ->first();
+        $employeedetails = $ibu_dbcon->table('employee')
+                ->where('id', $transaction->employee_id)
+                ->first();
+
+        if (!empty($employee->email)) {
+
+            $emailData = [
+                'user_id' => $request->user_id,
+                'employee_fname' => $employeedetails->employee_fname,
+                'employee_lname' => $employeedetails->employee_lname,
+                'subject' => $request->subject,
+                'message' => $request->message,
+                'sender_email' => Auth::user()->email, // Add sender email
+                'documents' => $request->input('documentation', []),
+                'office_name' => $office->name,
+            ];
+
+            Mail::to($employee->email)->send(new On_Hold_Email($emailData));
+        }
+
+        $emailMessage = "
+        <div>
+            <p>Hi {$employeedetails->employee_fname} {$employeedetails->employee_lname}, 🖐</p>
+            <p>Your transaction has been put <strong>On-Hold</strong> by <strong><em>{$office->name}</em> due to missing requirements</strong></p>
+            <ul>";
+        $emailMessage .= "
+                </ul>
+                <p>{$request->message}</p>
+
+            </div>
+        ";
+        $documentationJson = json_encode($request->input('documentation', []));
+
+        // Process form data
         $email = new Emailing();
-        $email->transaction_id = $request->id;
-        $email->subject = 'Transaction Status Changed';
-        $email->to_user = $employeedetails->id;
-        $email->message = 'Your transaction has been on hold';
+        $email->subject = $request->subject;
+        $email->to_user = $request->user_id;
+        $email->message = $emailMessage;
         $email->status = 'Unread';
         $email->created_by = Auth::user()->id;
+        $email->documentation = $documentationJson;
         $email->save();
 
-        return response()->json(['success' => true, 'message' => 'Transaction updated successfully.']);
+        return response()->json(['success' => true, 'message' => 'Transaction updated successfully to On Hold.']);
 
     }
-
 
     public function list(Request $request)
     {
@@ -763,12 +836,14 @@ class QueueController extends Controller
                 if(Auth::user()->usertype->name === 'Admin' || Auth::user()->usertype->name === 'Superadmin'){
                     return Transaction::whereNull('deleted_at')
                     ->where('batch_id', $data->batch_id)
-                    ->where('status','!=', 'On-hold')
+                    // ->where('status','!=', 'On-hold')
+                    ->whereIn('status', ['Processing', 'On-hold'])
                     ->count();
                 }
                 else{
                     return Transaction::whereNull('deleted_at')
-                    ->where('batch_id', $data->batch_id)->where('status', 'Processing')
+                    ->where('batch_id', $data->batch_id)
+                    ->whereIn('status', ['Processing', 'On-hold'])
                     ->where('office', Auth::user()->office_id)
                     ->count();
                 }
@@ -779,7 +854,6 @@ class QueueController extends Controller
             })
             ->make(true);
     }
-
 
     public function OpenOnQueue(Request $request){
         // return view('administration.open_on_queue');
@@ -793,13 +867,18 @@ class QueueController extends Controller
         $TransCount = Transaction::with(['honorarium', 'createdBy'])
         ->whereNull('deleted_at')
         ->where('office', Auth::user()->office_id)
-        ->where('status', 'Processing')
+        ->whereIn('status', ['Processing', 'On-hold'])
         ->where('batch_id', $batch_id)
         ->count();
 
+        $hasOnHoldStatus = Transaction::where('batch_id', $batch_id)
+        ->where('office', Auth::user()->office_id)
+        ->where('status', 'On-hold')
+        ->exists();
+
         $office = Office::where('id', $acknowledgements->office_id)->first();
 
-        return view('administration.open_on_queue', compact('batch_id', 'acknowledgements', 'office', 'TransCount'));
+        return view('administration.open_on_queue', compact('batch_id', 'acknowledgements', 'office', 'TransCount', 'hasOnHoldStatus'));
     }
 
     public function open_list(Request $request){
@@ -821,14 +900,14 @@ class QueueController extends Controller
                                     ->whereNull('deleted_at')
                                     ->where('office',  $office->id)
                                     ->where('batch_id', $request->batch_id)
-                                    ->where('status', 'Processing');
+                                    ->whereIn('status', ['On-hold', 'Processing']);
 
 
         }elseif(Auth::user()->usertype->name === 'Dean'){
             $office = Office::where('name', 'Dean')->first();
             $query = Transaction::with(['honorarium', 'createdBy'])
                                     ->whereNull('deleted_at')
-                                    ->where('status', 'Processing')
+                                    ->whereIn('status', ['On-hold', 'Processing'])
                                     ->where('batch_id', $request->batch_id)
                                     ->where('office',  $office->id);
 
@@ -836,14 +915,14 @@ class QueueController extends Controller
             $office = Office::where('name', 'Accounting')->first();
             $query = Transaction::with(['honorarium', 'createdBy'])
                                     ->whereNull('deleted_at')
-                                    ->where('status', 'Processing')
+                                    ->whereIn('status', ['On-hold', 'Processing'])
                                     ->where('batch_id', $request->batch_id)
                                     ->where('office',  $office->id);
 
         }
 
         $transactions = $query->get();
-        $ibu_dbcon = DB::connection('ors_pgsql');
+        $ibu_dbcon = DB::connection('ibu_test');
 
         $months = [
             1 => 'January',
@@ -864,11 +943,27 @@ class QueueController extends Controller
                 ->addColumn('id', function($data) {
                     return $data->id;
                 })
+
+                ->addColumn('employee_id', function($data) {
+                    return $data->employee_id;
+                })
+
+                ->addColumn('status', function($data) {
+                    return $data->status;
+                })
+
                 ->addColumn('faculty', function($data) use($ibu_dbcon) {
                     $employeeDetails = $ibu_dbcon->table('employee')
                     ->where('id', $data->employee_id)
                     ->first();
                     return ucfirst($employeeDetails->employee_fname) . ' ' . ucfirst($employeeDetails->employee_lname);
+                })
+
+                ->addColumn('email', function($data) use($ibu_dbcon) {
+                    $employeeDetails = $ibu_dbcon->table('employee_user')
+                    ->where('id', $data->employee_id)
+                    ->first();
+                    return $employeeDetails ->email;
                 })
                 ->addColumn('id_number', function($data) use($ibu_dbcon) {
                     // $employeeDetails = $ibu_dbcon->table('employee')
@@ -940,9 +1035,6 @@ class QueueController extends Controller
                 ->make(true);
 
     }
-
-
-
 
 
 }

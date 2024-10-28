@@ -34,7 +34,7 @@ class SendEmailController extends Controller
             return response()->json(['success' => false,'errors' => $validator->errors()], 422);
         }
 
-        $ibu_dbcon = DB::connection('ors_pgsql');
+        $ibu_dbcon = DB::connection('ibu_test');
 
         $employee = $ibu_dbcon->table('employee_user')
                 ->where('id', $request->user_id)
@@ -65,11 +65,12 @@ class SendEmailController extends Controller
         $emailMessage = "
         <div>
             <p>Hi {$employeedetails->employee_fname} {$employeedetails->employee_lname}, 🖐</p>
-            <p>Your transaction has been put <strong>On-Hold</strong> by <strong><em>{$office->name}</em></strong></p>
+            <p>Your transaction has been put <strong>On-Hold</strong> by <strong><em>{$office->name}</em> due to missing requirements</strong></p>
             <ul>";
         $emailMessage .= "
                 </ul>
-                <p>Please visit {$office->name} Office to comply with the requirements.</p>
+                <p>{$request->message}</p>
+
             </div>
         ";
         $documentationJson = json_encode($request->input('documentation', []));
@@ -141,7 +142,7 @@ class SendEmailController extends Controller
                   ->orWhere('deleted_by', '!=', Auth::user()->employee_id); // Show only emails not deleted by the user
         })
         ->get();
-        $ibu_dbcon = DB::connection('ors_pgsql');
+        $ibu_dbcon = DB::connection('ibu_test');
 
         $months = [
             1 => 'January',

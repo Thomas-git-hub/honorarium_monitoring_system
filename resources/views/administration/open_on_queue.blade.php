@@ -136,54 +136,6 @@
 </div>
 {{-- EDIT MODAL END --}}
 
-{{-- MESSAGE MODAL START --}}
-<!-- Modal -->
-<div class="modal fade" id="onHoldMessage" data-bs-backdrop="static" tabindex="-1">
-    <div class="modal-dialog modal-xl" id="onHoldModalDialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title gap-1 d-flex align-items-center" id="backDropModalTitle"><i class='bx bxs-hand'></i>Hold Transaction</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-            <form id="emailReply">
-                <div class="d-flex justify-content-end gap-2">
-                    <!-- Spinner -->
-                    <div class="spinner-border text-primary" role="status" id="spinner" style="display: none;">
-                        <span class="visually-hidden">Loading...</span>
-                    </div>
-                    <!-- Success Message -->
-                    <div class="text-success d-flex flex-row gap-2" id="emailSuccess" style="display: none !important;">
-                        <b>Sent</b><i class='bx bx-check-circle fs-3'></i>
-                    </div>
-                    <!-- Failed Message -->
-                    <div class="text-danger d-flex flex-row gap-2" id="emailFailed" style="display: none !important;">
-                        <b>Failed</b><i class='bx bx-x-circle fs-3'></i>
-                    </div>
-                </div>
-                <div>
-                    <p><b><small>To:</small></b> John Doe Duridut&nbsp;<small style="font-style: italic;">johndoe@bicol-u.edu.ph</small></p>
-                </div>
-                <div class="mb-4">
-                    <label for="defaultInput" class="form-label">Subject</label>
-                    <input id="defaultInput" class="form-control" type="text" placeholder="Subject"/>
-                </div>
-                <div>
-                    <textarea class="form-control" id="exampleFormControlTextarea1" rows="3" placeholder="Message" style="border: none;"></textarea>
-                </div>
-                <div class="border-top mt-3">
-                    <div class=" d-flex flex-row justify-content-end mt-3 gap-2">
-                        <button type="button" class="btn btn-label-danger border-none" data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-custom-class="tooltip-danger" title="Discard email" id="removeEmailReply"><i class='bx bxs-trash-alt'></i></button>
-                        <button type="button" class="btn btn-primary me-1 mb-1" id="sendButton"><i class='bx bxs-send'>&nbsp;</i>Send</button>
-                    </div>
-                </div>
-            </form>
-        </div>
-      </div>
-    </div>
-</div>
-{{-- MESSAGE MODAL END --}}
-
 <!-- Remarks Modal -->
 <div class="modal fade" id="remarksModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
@@ -239,22 +191,19 @@
 <div class="row mt-2">
     <div class="col">
         <div class="row mb-2">
+            @if($hasOnHoldStatus)
+
+            <div class="col-md mx-auto d-flex justify-content-end">
+                <button type="button" class="btn btn-danger gap-1" id="onHoldTransactionButton">On Hold<i class='bx bx-chevrons-right'></i></button>
+            </div>
+
+            @else
             <div class="col-md mx-auto d-flex justify-content-end">
                 <button type="button" class="btn btn-primary gap-1 d-none" id="proceedTransactionButton">Proceed<i class='bx bx-chevrons-right'></i></button>
             </div>
-        </div>
+            @endif
 
-        {{-- UNCOMMENT IF NEEDED --}}
-        {{-- <div class="row mb-2">
-            <div class="col-md d-flex justify-content-end">
-                <div class="col-md mx-auto d-flex justify-content-end">
-                    <button type="button" class="btn btn-primary gap-1 d-none" id="proceedAccountingButton">Proceed to Accounting<i class='bx bx-chevrons-right'></i></button>
-                </div>
-                <div class="col-md mx-auto d-flex justify-content-end">
-                    <button type="button" class="btn btn-primary gap-1 d-none" id="proceedCashierButton">Proceed to Cashier<i class='bx bx-chevrons-right'></i></button>
-                </div>
-            </div>
-        </div> --}}
+        </div>
 
         <div class="card custom-card">
             <div class="card-body">
@@ -299,6 +248,8 @@
             },
             columns: [
                 { data: 'id', name: 'id', title: 'ID', visible: false},
+                { data: 'employee_id', name: 'employee_id', title: 'employee_id', visible: false},
+                { data: 'email', name: 'email', title: 'email', visible: false},
                 { data: 'batch_id', name: 'batch_id', title: 'Tracking Number'},
                 { data: 'date_of_trans', name: 'date_of_trans', title: 'Date Received' },
                 { data: 'faculty', name: 'faculty', title: 'Faculty' },
@@ -306,6 +257,7 @@
                 { data: 'academic_rank', name: 'academic_rank', title: 'Academic Rank' },
                 { data: 'college', name: 'college', title: 'College' },
                 { data: 'honorarium', name: 'honorarium', title: 'Honorarium' },
+                { data: 'status', name: 'status', title: 'Status' },
                 { data: 'sem', name: 'sem', title: 'Semester' },
                 { data: 'year', name: 'year', title: 'Semester Year' },
                 { data: 'month.month_name', name: 'month', title: 'Month Of' },
@@ -388,66 +340,6 @@
             $('#editEntryModal').modal('show');
         });
 
-        // Handle On-Hold button click
-        // $('#sendButton').on('click', function(e) {
-        //     e.preventDefault();
-        //     var row = $(this).closest('tr');
-        //     var rowData = table.row(row).data();
-
-        //     Swal.fire({
-        //         title: 'You are about to Hold this Transaction',
-        //         text: "The transaction will be put on hold.",
-        //         icon: 'warning',
-        //         showCancelButton: true,
-        //         confirmButtonColor: '#3085d6',
-        //         cancelButtonColor: '#d33',
-        //         confirmButtonText: 'Continue',
-        //         cancelButtonText: 'Cancel'
-        //     }).then((result) => {
-        //         if (result.isConfirmed) {
-        //             $.ajax({
-        //                 url: '{{ route('admin_on_queue.change_to_onhold') }}',
-        //                 type: 'POST',
-        //                 data: {
-        //                     id: rowData.id,
-        //                     _token: $('meta[name="csrf-token"]').attr('content') // Include CSRF token
-        //                 },
-        //                 beforeSend: function() {
-        //                     Swal.fire({
-        //                         title: 'Processing...',
-        //                         html: '<div class="spinner-grow text-primary" role="status" style="width: 3rem; height: 3rem;"></div>',
-        //                         showConfirmButton: false,
-        //                         allowOutsideClick: false
-        //                     });
-        //                 },
-        //                 success: function(response) {
-        //                     if (response.success) {
-        //                         Swal.fire(
-        //                             'On-hold!',
-        //                             response.message,
-        //                             'success'
-        //                         );
-        //                         // Refresh the DataTable to reflect changes
-        //                         table.ajax.reload(null, false);
-        //                     } else {
-        //                         Swal.fire(
-        //                             'Error!',
-        //                             response.message,
-        //                             'error'
-        //                         );
-        //                     }
-        //                 },
-        //                 error: function(xhr, status, error) {
-        //                     Swal.fire(
-        //                         'Error!',
-        //                         'An error occurred while updating the transaction.',
-        //                         'error'
-        //                     );
-        //                 }
-        //             });
-        //         }
-        //     });
-        // });
 
         $('#facultyTable').on('click', '.remarks-btn', function() {
             var row = $(this).closest('tr');
@@ -457,6 +349,95 @@
             $('#remarksText').text(rowData.remark.replace(/<[^>]+>/g, ''));
         });
 
+        $('#facultyTable').on('click', '.on-hold-btn', function() {
+            var userOfficeId = "{{ Auth::user()->office->name }}";
+            var row = $(this).closest('tr');
+            var rowData = table.row(row).data();
+            var facultyName = rowData.faculty;
+            var facultyEmail = rowData.email
+            var facultyId = rowData.employee_id;
+            var transaction_id = rowData.id;
+
+            // Update the hidden input and the To: container
+            $('#trans_id').val(transaction_id);
+            $('#user_id').val(facultyId);
+            $('.card-body .send_to').html(`<b>To:&nbsp;</b> ${facultyName}&nbsp;<small class="text-secondary" style="font-style: italic;">${facultyEmail}</small>`);
+            $('#floatingInput').val('Transaction On-Hold');
+            $('#emailTextArea').val(`Kindly visit the ${userOfficeId} to submit the missing documents for compliance.`);
+        });
+
+        $('#sendButton').on('click', function(e) {
+            e.preventDefault();
+            var row = $(this).closest('tr');
+            var rowData = table.row(row).data();
+
+            var facultyId = $('#user_id').val();
+            var subject =  $('#floatingInput').val();
+            var trans_id = $('#trans_id').val();
+
+            Swal.fire({
+                title: 'You are about to Hold this Transaction',
+                text: "The transaction will be put on hold.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Continue',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: '{{ route('admin_on_queue.change_to_onhold') }}',
+                        type: 'POST',
+                        data: {
+                            id: trans_id,
+                            user_id: facultyId,
+                            subject : subject,
+                            _token: $('meta[name="csrf-token"]').attr('content') // Include CSRF token
+                        },
+                        beforeSend: function() {
+                            Swal.fire({
+                                title: 'Processing...',
+                                html: '<div class="spinner-grow text-primary" role="status" style="width: 3rem; height: 3rem;"></div>',
+                                showConfirmButton: false,
+                                allowOutsideClick: false
+                            });
+                        },
+                        success: function(response) {
+                            if (response.success) {
+                                Swal.fire({
+                                title: 'On-hold!',
+                                text: response.message,
+                                icon: 'success',
+                                confirmButtonText: 'Okay'
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    // Reload the page
+                                    location.reload();
+                                    // Alternatively, reload just the table if the page reload is not necessary
+                                    table.ajax.reload(null, false);
+                                }
+                            });
+
+                            } else {
+                                Swal.fire(
+                                    'Error!',
+                                    response.message,
+                                    'error'
+                                );
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            Swal.fire(
+                                'Error!',
+                                'An error occurred while updating the transaction.',
+                                'error'
+                            );
+                        }
+                    });
+                }
+            });
+        });
 
 
     });
@@ -519,46 +500,6 @@
         $('#proceedTransactionButton').removeClass('d-none');
         @endif
 
-
-        // Handle Proceed button click
-        // $('#proceed_transaction').off('click').on('click', function() {
-        //     $.ajax({
-        //         url: '{{ route('admin_on_queue.proceedToBudgetOffice') }}',
-        //         method: 'POST',
-        //         data: {
-        //             _token: $('meta[name="csrf-token"]').attr('content'),
-        //         },
-        //         success: function(response) {
-        //             if(response.success){
-        //                 $('#proceed').modal('hide');
-        //                 Swal.fire({
-        //                     icon: 'success',
-        //                     title: 'Success',
-        //                     text: response.message,
-        //                 });
-        //             }else{
-        //                 $('#proceed').modal('hide');
-        //                 Swal.fire({
-        //                     icon: 'error',
-        //                     title: 'Oh no!',
-        //                     text: response.message,
-        //                 });
-
-        //             }
-        //             $('#facultyTable').DataTable().ajax.reload();
-        //         },
-        //         error: function(xhr) {
-        //             // Handle error
-        //             $('#proceed').modal('hide');
-        //             Swal.fire({
-        //                 icon: 'error',
-        //                 title: 'Error',
-        //                 text: 'There was a problem updating the transactions.',
-        //             });
-        //         }
-        //     });
-        // });
-
         // Replace Bootstrap modal with SweetAlert2
         $('#proceedTransactionButton').off('click').on('click', function() {
             $.ajax({
@@ -572,68 +513,68 @@
                     Swal.fire({
                         icon: 'question',
                         html: `
-        <p class="text-success fw-bold fs-4">You are about to send Honorarium Transactions to the next Office.</p>
-        <p class="text-muted">"Proceeding with this transaction indicates that every individual has submitted all necessary requirements for their honorarium."</p>
-        ${response.canProceedToCashier ? '<button id="proceedToCashier" class="btn btn-success mt-3">Proceed to Cashier</button>' : ''}
-    `,
-    showCancelButton: true,
-    confirmButtonText: response.canProceedToCashier ? '' : 'Proceed to @if(Auth::user()->usertype->name === "Dean") Accounting @elseif(Auth::user()->usertype->name === "Accounting") Dean @else next Office @endif',
-    cancelButtonText: 'Cancel',
-    customClass: {
-        confirmButton: 'btn btn-primary gap-1',
-        cancelButton: 'btn btn-label-danger'
-    },
-    buttonsStyling: false,
-    showConfirmButton: !response.canProceedToCashier
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            // AJAX request to proceed with the transaction
-                            $.ajax({
-                                url: '{{ route('admin_on_queue.proceed') }}',
-                                method: 'POST',
-                                data: {
-                                    batch_id: batchId,
-                                    _token: $('meta[name="csrf-token"]').attr('content'),
-                                },
-                                beforeSend: function() {
-                                    Swal.fire({
-                                        title: 'Processing...',
-                                        html: '<div class="spinner-grow text-primary" role="status" style="width: 3rem; height: 3rem;"></div>',
-                                        showConfirmButton: false,
-                                        allowOutsideClick: false
-                                    });
-                                },
-                                success: function(response) {
-                                    if (response.success) {
-                                        Swal.fire({
-                                            icon: 'success',
-                                            title: 'Transaction forwarded successfully',
-                                            html: `<h4 class="text-success">Tracking Number:<b>${response.batch_id}</b></h4><small class="text-danger">Note: Always attach the tracking number on the documents.</small>`,
-                                            text: response.message,
-                                        }).then((result) => {
-                                            if (result.isConfirmed) {
-                                                window.location.href = '/history';
+                            <p class="text-success fw-bold fs-4">You are about to send Honorarium Transactions to the next Office.</p>
+                            <p class="text-muted">"Proceeding with this transaction indicates that every individual has submitted all necessary requirements for their honorarium."</p>
+                            ${response.canProceedToCashier ? '<button id="proceedToCashier" class="btn btn-success mt-3">Proceed to Cashier</button>' : ''}
+                        `,
+                        showCancelButton: true,
+                        confirmButtonText: response.canProceedToCashier ? '' : 'Proceed to @if(Auth::user()->usertype->name === "Dean") Accounting @elseif(Auth::user()->usertype->name === "Accounting") Dean @else next Office @endif',
+                        cancelButtonText: 'Cancel',
+                        customClass: {
+                            confirmButton: 'btn btn-primary gap-1',
+                            cancelButton: 'btn btn-label-danger'
+                        },
+                        buttonsStyling: false,
+                        showConfirmButton: !response.canProceedToCashier
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    // AJAX request to proceed with the transaction
+                                    $.ajax({
+                                        url: '{{ route('admin_on_queue.proceed') }}',
+                                        method: 'POST',
+                                        data: {
+                                            batch_id: batchId,
+                                            _token: $('meta[name="csrf-token"]').attr('content'),
+                                        },
+                                        beforeSend: function() {
+                                            Swal.fire({
+                                                title: 'Processing...',
+                                                html: '<div class="spinner-grow text-primary" role="status" style="width: 3rem; height: 3rem;"></div>',
+                                                showConfirmButton: false,
+                                                allowOutsideClick: false
+                                            });
+                                        },
+                                        success: function(response) {
+                                            if (response.success) {
+                                                Swal.fire({
+                                                    icon: 'success',
+                                                    title: 'Transaction forwarded successfully',
+                                                    html: `<h4 class="text-success">Tracking Number:<b>${response.batch_id}</b></h4><small class="text-danger">Note: Always attach the tracking number on the documents.</small>`,
+                                                    text: response.message,
+                                                }).then((result) => {
+                                                    if (result.isConfirmed) {
+                                                        window.location.href = '/history';
+                                                    }
+                                                });
+                                            } else {
+                                                Swal.fire({
+                                                    icon: 'error',
+                                                    title: 'Something went wrong',
+                                                    text: response.message,
+                                                });
                                             }
-                                        });
-                                    } else {
-                                        Swal.fire({
-                                            icon: 'error',
-                                            title: 'Something went wrong',
-                                            text: response.message,
-                                        });
-                                    }
-                                    $('#facultyTable').DataTable().ajax.reload();
-                                },
-                                error: function(xhr) {
-                                    Swal.fire({
-                                        icon: 'error',
-                                        title: 'Error',
-                                        text: 'There was a problem updating the transactions.',
+                                            $('#facultyTable').DataTable().ajax.reload();
+                                        },
+                                        error: function(xhr) {
+                                            Swal.fire({
+                                                icon: 'error',
+                                                title: 'Error',
+                                                text: 'There was a problem updating the transactions.',
+                                            });
+                                        }
                                     });
                                 }
                             });
-                        }
-                    });
                 },
                 error: function(xhr) {
                     Swal.fire({
@@ -642,6 +583,55 @@
                         text: 'There was a problem checking the batch status.',
                     });
                 }
+            });
+        });
+
+        $('#onHoldTransactionButton').off('click').on('click', function() {
+            $.ajax({
+                url: '{{ route('admin_on_queue.on_hold_batch') }}',
+                method: 'POST',
+                data: {
+                    batch_id: batchId,
+                    _token: $('meta[name="csrf-token"]').attr('content')
+                },
+                beforeSend: function() {
+                    Swal.fire({
+                        title: 'Processing...',
+                        html: '<div class="spinner-grow text-primary" role="status" style="width: 3rem; height: 3rem;"></div>',
+                        showConfirmButton: false,
+                        allowOutsideClick: false
+                    });
+                },
+                success: function(response) {
+                    if (response.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Transaction Successfully Placed on Hold',
+                                html: `<h4 class="text-success">Tracking Number:<b>${response.batch_id}</b></h4><small class="text-danger">Note: Always attach the tracking number on the documents.</small>`,
+                                // text: response.message,
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    window.location.href = '/main_on_hold';
+                                }
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Something went wrong',
+                                text: response.message,
+                            });
+                        }
+                        $('#facultyTable').DataTable().ajax.reload();
+
+                },
+                error: function(xhr) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'There was a problem checking the batch status.',
+                    });
+                },
+
             });
         });
 

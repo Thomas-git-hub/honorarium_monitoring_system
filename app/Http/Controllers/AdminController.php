@@ -103,7 +103,7 @@ class AdminController extends Controller
 
         if(Auth::user()->usertype->name === 'Administrator' || Auth::user()->usertype->name === 'SuperAdmin'){
             $today = Carbon::today();
-            $employeeIds = DB::connection('ors_pgsql')->table('employee_user')->pluck('id');
+            $employeeIds = DB::connection('ibu_test')->table('employee_user')->pluck('id');
             $newAccountsToday = DB::connection('mysql')->table('users')
                 ->whereDate('created_at', $today)
                 ->whereNull('deleted_at')
@@ -133,11 +133,11 @@ class AdminController extends Controller
         $EmailCount = $pendingMails->count();
 
         $id = $request->query('id');
-        $ibu_dbcon = DB::connection('ors_pgsql');
+        $ibu_dbcon = DB::connection('ibu_test');
         $user = $ibu_dbcon->table('employee')->where('id', $id )->first();
         // Transaction::findOrFail($id);
 
-        $collegeDetails = DB::connection('ors_pgsql')->table('college')
+        $collegeDetails = DB::connection('ibu_test')->table('college')
                 ->where('id', $user->college_id)
                 ->first();
 
@@ -280,7 +280,7 @@ class AdminController extends Controller
 
             $TransactionCount = Transaction::with(['honorarium', 'createdBy'])
             ->whereNull('deleted_at')
-            ->where('status', 'On Queue')
+            ->whereIn('status', ['On Queue'])
             ->where('office', Auth::user()->office_id)
             ->count();
 
@@ -398,7 +398,7 @@ class AdminController extends Controller
         // }
 
         $transactions = $query->get();
-        $ibu_dbcon = DB::connection('ors_pgsql');
+        $ibu_dbcon = DB::connection('ibu_test');
 
         $months = [
             1 => 'January',

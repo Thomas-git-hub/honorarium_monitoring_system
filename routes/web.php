@@ -103,6 +103,7 @@ Route::middleware(['auth_check', '419'])->group(function () {
 
         Route::post('/admin_on_queue/proceed_to_budget-office', [QueueController::class, 'proceedToBudgetOffice'])->name('admin_on_queue.proceedToBudgetOffice');
         Route::post('/admin_on_queue/proceed', [QueueController::class, 'proceed'])->name('admin_on_queue.proceed');
+        Route::post('/admin_on_queue/on_hold_batch', [QueueController::class, 'on_hold_batch'])->name('admin_on_queue.on_hold_batch');
         Route::post('/admin_on_queue/proceed_to_cashier', [QueueController::class, 'proceedToCashier'])->name('admin_on_queue.proceedToCashier');
         Route::match(['post', 'put'], 'admin_on_queue/update', [QueueController::class, 'update'])->name('admin_on_queue.update');
         Route::match(['post', 'put'], 'admin_on_queue/change_to_onhold', [QueueController::class, 'change_to_onhold'])->name('admin_on_queue.change_to_onhold');

@@ -48,11 +48,11 @@ class SentItemsController extends Controller
         }else{
             $to_user =  $data->send_to_employee->first_name . ' ' . $data->send_to_employee->last_name;
             $user_email = $data->send_to_employee->email;
-            $to_user_id =  $data->send_to_employee->employee_id; 
+            $to_user_id =  $data->send_to_employee->employee_id;
         }
-        
-       
-       
+
+
+
 
         $pendingMails = Emailing::where('status', 'Unread')->where('to_user', Auth::user()->employee_id);
         $EmailCount = $pendingMails->count();
@@ -80,7 +80,7 @@ class SentItemsController extends Controller
         }
 
 
-        $ibu_dbcon = DB::connection('ors_pgsql');
+        $ibu_dbcon = DB::connection('ibu_test');
 
         $employee = $ibu_dbcon->table('employee_user')
         ->where('id', $request->user_id)
@@ -127,7 +127,7 @@ class SentItemsController extends Controller
                   ->orWhere('deleted_by', '!=', Auth::user()->employee_id); // Show only emails not deleted by the user
         })
         ->get();
-        $ibu_dbcon = DB::connection('ors_pgsql');
+        $ibu_dbcon = DB::connection('ibu_test');
 
         $months = [
             1 => 'January',
