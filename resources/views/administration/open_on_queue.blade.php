@@ -375,68 +375,55 @@
             var subject =  $('#floatingInput').val();
             var trans_id = $('#trans_id').val();
 
-            Swal.fire({
-                title: 'You are about to Hold this Transaction',
-                text: "The transaction will be put on hold.",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Continue',
-                cancelButtonText: 'Cancel'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    $.ajax({
-                        url: '{{ route('admin_on_queue.change_to_onhold') }}',
-                        type: 'POST',
-                        data: {
-                            id: trans_id,
-                            user_id: facultyId,
-                            subject : subject,
-                            _token: $('meta[name="csrf-token"]').attr('content') // Include CSRF token
-                        },
-                        beforeSend: function() {
-                            Swal.fire({
-                                title: 'Processing...',
-                                html: '<div class="spinner-grow text-primary" role="status" style="width: 3rem; height: 3rem;"></div>',
-                                showConfirmButton: false,
-                                allowOutsideClick: false
-                            });
-                        },
-                        success: function(response) {
-                            if (response.success) {
-                                Swal.fire({
-                                title: 'On-hold!',
-                                text: response.message,
-                                icon: 'success',
-                                confirmButtonText: 'Okay'
-                            }).then((result) => {
-                                if (result.isConfirmed) {
-                                    // Reload the page
-                                    location.reload();
-                                    // Alternatively, reload just the table if the page reload is not necessary
-                                    table.ajax.reload(null, false);
-                                }
-                            });
-
-                            } else {
-                                Swal.fire(
-                                    'Error!',
-                                    response.message,
-                                    'error'
-                                );
-                            }
-                        },
-                        error: function(xhr, status, error) {
-                            Swal.fire(
-                                'Error!',
-                                'An error occurred while updating the transaction.',
-                                'error'
-                            );
+            $.ajax({
+                url: '{{ route('admin_on_queue.change_to_onhold') }}',
+                type: 'POST',
+                data: {
+                    id: trans_id,
+                    user_id: facultyId,
+                    subject : subject,
+                    _token: $('meta[name="csrf-token"]').attr('content') // Include CSRF token
+                },
+                beforeSend: function() {
+                    Swal.fire({
+                        title: 'Processing...',
+                        html: '<div class="spinner-grow text-primary" role="status" style="width: 3rem; height: 3rem;"></div>',
+                        showConfirmButton: false,
+                        allowOutsideClick: false
+                    });
+                },
+                success: function(response) {
+                    if (response.success) {
+                        Swal.fire({
+                        title: 'On-hold!',
+                        text: response.message,
+                        icon: 'success',
+                        confirmButtonText: 'Okay'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            // Reload the page
+                            window.location.href = `/open_on_queue?id=${batchId}`;
                         }
                     });
+
+                    } else {
+                        Swal.fire(
+                            'Error!',
+                            response.message,
+                            'error'
+                        );
+                    }
+                },
+                error: function(xhr, status, error) {
+                    Swal.fire(
+                        'Error!',
+                        'An error occurred while updating the transaction.',
+                        'error'
+                    );
                 }
             });
+
+           
         });
 
 

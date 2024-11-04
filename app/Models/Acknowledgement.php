@@ -29,12 +29,12 @@ class Acknowledgement extends Model
 
     public function user()
     {
-        return $this->belongsTo(User::class, 'user_id', 'id');
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     public function transaction()
     {
-        return $this->belongsTo(User::class, 'trans_id');
+        return $this->belongsTo(Transaction::class, 'batch_id', 'batch_id');
     }
 
 

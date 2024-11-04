@@ -248,13 +248,16 @@ class OnHoldController extends Controller
         $acknowledgements = collect(); // Initialize an empty collection
         DB::statement("SET SQL_MODE=''");
 
-
-        $acknowledgements = Acknowledgement::with(['user', 'office', 'transaction'])
-        ->select('batch_id', 'office_id', 'created_at', 'user_id', 'updated_at')
-        ->groupBy('batch_id')
-        ->get();
-
         if(Auth::user()->usertype->name === 'Administrator' || Auth::user()->usertype->name === 'Superadmin'){
+
+            $acknowledgements = Acknowledgement::with(['user', 'office', 'transaction'])
+            ->select('batch_id', 'office_id', 'created_at', 'user_id', 'updated_at')
+            ->whereHas('transaction', function ($query) {
+                $query->where('status', 'On-hold');
+            })
+            ->groupBy('batch_id')
+            ->get();
+
             // Filter out acknowledgements with a transaction count of 0
             $filteredAcknowledgements = $acknowledgements->filter(function ($acknowledgement) {
                 $countTran = Transaction::whereNull('deleted_at')
@@ -264,8 +267,13 @@ class OnHoldController extends Controller
                 return $countTran > 0; // Only keep acknowledgements with a transaction count greater than 0
             });
 
-
         }else{
+
+            $acknowledgements = Acknowledgement::with(['user', 'office', 'transaction'])
+            ->select('batch_id', 'office_id', 'created_at', 'user_id', 'updated_at')
+            ->where('office_id', Auth::user()->office_id)
+            ->groupBy('batch_id')
+            ->get();
            // Filter out acknowledgements with a transaction count of 0
             $filteredAcknowledgements = $acknowledgements->filter(function ($acknowledgement) {
                 $countTran = Transaction::whereNull('deleted_at')
@@ -285,8 +293,13 @@ class OnHoldController extends Controller
                 return $data->batch_id;
             })
             ->addColumn('office', function ($data) {
-                return $data->user->first_name . ' ' . $data->user->last_name . ' ' .
-                    '(' . $data->office->name . ')';
+                $office_of = Transaction::whereNull('deleted_at')
+                ->with(['createdBy', 'office_from'])
+                ->where('batch_id', $data->batch_id)
+                ->where('batch_status', 'Batch On Hold')
+                ->first();
+                return $office_of->createdBy->first_name . ' ' . $office_of->createdBy->last_name . ' ' .
+                    '(' . $office_of->office_from->name . ')';
             })
             ->addColumn('count_transaction', function ($data) {
                 return Transaction::whereNull('deleted_at')
@@ -296,7 +309,12 @@ class OnHoldController extends Controller
                 ->count();
             })
             ->addColumn('hold_by', function ($data) {
-                return $data->user->first_name. ' ' .$data->user->middle_name. ' ' .$data->user->last_name;
+                $hold_by = Transaction::whereNull('deleted_at')
+                ->with(['createdBy'])
+                ->where('batch_id', $data->batch_id)
+                ->where('batch_status', 'Batch On Hold')
+                ->first();
+                return $hold_by->createdBy->first_name. ' ' .$hold_by->createdBy->middle_name. ' ' .$hold_by->createdBy->last_name;
             })
 
             ->addColumn('sent', function($data) {

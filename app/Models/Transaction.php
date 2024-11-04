@@ -31,4 +31,8 @@ class Transaction extends Model
     {
         return $this->belongsTo(Office::class);
     }
+    public function office_from()
+    {
+        return $this->belongsTo(Office::class, 'from_office', 'id');
+    }
 }

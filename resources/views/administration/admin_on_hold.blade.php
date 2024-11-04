@@ -139,7 +139,7 @@
             { data: 'created_by', name: 'created_by', title: 'Created By' },
             { data: 'sent', name: 'sent', title: 'Sent' },
             { data: 'requirement_status', name: 'requirement_status', title: 'Requirements' },
-            @if(Auth::user()->office_id === $OnHoldData->createdBy->office_id)
+            @if(Auth::user()->office->name === 'BUGS Administration')
 
             {
                 data: 'complied_on',
@@ -157,9 +157,7 @@
                     return '<div class="d-flex flex-row" data-id="' + row.id + '">' + addButton + '</div>';
                 }
             }
-            @else
-                { data: 'complied_on', name: 'complied_on', title: 'Complied On' },
-
+          
             @endif
 
         ],
