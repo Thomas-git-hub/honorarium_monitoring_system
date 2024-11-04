@@ -362,6 +362,7 @@
             pageLength: 100,
             paging: true, // abled pagination
             dom: '<"top"lf>rt<"bottom"ip>',
+            order: [[4, 'desc']], // Sort by the 'date' column in descending order
             language: {
                 search: "", // Remove the default search label
                 searchPlaceholder: "Search..." // Set the placeholder text

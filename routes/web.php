@@ -151,7 +151,7 @@ Route::middleware(['auth_check', '419'])->group(function () {
         Route::get('/faculty_tracking', [FacultyTrackingController::class, 'faculty_tracking'])->name('faculty_tracking');
 
         // New Route as of Nov 4
-        Route::get('/thesis/new-entries', [ThesisNewEntriesController::class, 'thesisNewEntries'])->name('thesis.newEntries');
+        Route::get('/thesis_new_entries', [ThesisNewEntriesController::class, 'thesisNewEntries'])->name('thesis.newEntries');
     // });
 
     //END SUPERADMIN ACCESS

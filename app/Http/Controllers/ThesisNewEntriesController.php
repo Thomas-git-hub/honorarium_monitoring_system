@@ -8,6 +8,6 @@ class ThesisNewEntriesController extends Controller
 {
     public function thesisNewEntries()
     {
-        return view('administration/thesis_new_entries');
+        return view('administration.thesis_new_entries');
     }
 }

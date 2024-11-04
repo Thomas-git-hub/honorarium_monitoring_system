@@ -66,6 +66,7 @@
                    search: "", // Remove the default search label
                    searchPlaceholder: "Search..." // Set the placeholder text
                },
+               order: [[3, 'desc']], // Sort by the 'date' column in descending order
                columns: [
                     {
                         data: 'id',

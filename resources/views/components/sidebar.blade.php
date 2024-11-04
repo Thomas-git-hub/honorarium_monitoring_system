@@ -57,7 +57,7 @@
             </a>
         </li>
         <li class="menu-item {{ request()->is('thesis_new_entries') ? 'active' : '' }}">
-            <a href="/thesis/new-entries" class="menu-link">
+            <a href="/thesis_new_entries" class="menu-link">
                 <i class='menu-icon tf-icons bx bx-plus-circle'></i>
               <div class="text-truncate" data-i18n="Page 2">Thesis New Entries</div>
             </a>
