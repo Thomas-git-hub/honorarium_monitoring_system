@@ -48,6 +48,28 @@
         </li>
 
         <li class="menu-item">
+            <div style="margin-left: 5%; margin-top: 5%; color: #b4b0c4;">Thesis Transaction</div>
+        </li>
+        <li class="menu-item {{ request()->is('thesis_acknowledgement') ? 'active' : '' }}">
+            <a href="" class="menu-link">
+                <i class='menu-icon tf-icons bx bx-archive-in'></i>
+              <div class="text-truncate" data-i18n="Page 2">Acknowledgement</div>
+            </a>
+        </li>
+        <li class="menu-item {{ request()->is('thesis_new_entries') ? 'active' : '' }}">
+            <a href="/thesis/new-entries" class="menu-link">
+                <i class='menu-icon tf-icons bx bx-plus-circle'></i>
+              <div class="text-truncate" data-i18n="Page 2">Thesis New Entries</div>
+            </a>
+        </li>
+        <li class="menu-item {{ request()->is('thesis_in_queue') ? 'active' : '' }}">
+            <a href="" class="menu-link">
+                <i class='menu-icon tf-icons bx bx-list-ol' ></i>
+              <div class="text-truncate" data-i18n="Page 2">Thesis In Queue</div>
+            </a>
+        </li>
+
+        <li class="menu-item">
           <div style="margin-left: 5%; margin-top: 5%; color: #b4b0c4;">Transaction</div>
         </li>
 

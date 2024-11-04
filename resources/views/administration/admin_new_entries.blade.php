@@ -186,7 +186,7 @@
                     </div>
                 </div>
                 <div class="">
-                    <small class="text-danger">Transactions with incomplete requirements will not proceed to the next office.</small>
+                    <small class="text-danger">If a batch transaction includes an On-Hold transaction, the entire batch will be placed on hold, including transactions that have complete requirements.</small>
                     <button class="btn btn-primary w-100" id="proceedTransactionButton">Proceed to next office</button>
                 </div>
 

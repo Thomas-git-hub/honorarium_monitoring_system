@@ -30,7 +30,7 @@ class SentItemsController extends Controller
     public function open_sent_items(Request $request){
 
         $id = $request->input('id');
-        $ibu_dbcon = DB::connection('ibu_test');
+        $ibu_dbcon = DB::connection('ors_pgsql');
         $data = Emailing::with(['employee', 'send_to_employee'])->where('id', $id)->first();
 
         $employeeDetails = $ibu_dbcon->table('employee')
@@ -80,7 +80,7 @@ class SentItemsController extends Controller
         }
 
 
-        $ibu_dbcon = DB::connection('ibu_test');
+        $ibu_dbcon = DB::connection('ors_pgsql');
 
         $employee = $ibu_dbcon->table('employee_user')
         ->where('id', $request->user_id)
@@ -127,7 +127,7 @@ class SentItemsController extends Controller
                   ->orWhere('deleted_by', '!=', Auth::user()->employee_id); // Show only emails not deleted by the user
         })
         ->get();
-        $ibu_dbcon = DB::connection('ibu_test');
+        $ibu_dbcon = DB::connection('ors_pgsql');
 
         $months = [
             1 => 'January',

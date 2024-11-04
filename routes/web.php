@@ -19,6 +19,7 @@ use App\Http\Controllers\UserManagementController;
 use App\Http\Controllers\CashierQueueController;
 use App\Http\Controllers\FacultyDashboardController;
 use App\Http\Controllers\FacultyTrackingController;
+use App\Http\Controllers\ThesisNewEntriesController;
 
 //START NO AUTHENTICATED ACCESS
 Route::middleware(['guest', '419'])->group(function () {
@@ -148,6 +149,9 @@ Route::middleware(['auth_check', '419'])->group(function () {
 
         Route::get('/faculty_dashboard', [FacultyDashboardController::class, 'faculty_dashboard'])->name('faculty_dashboard');
         Route::get('/faculty_tracking', [FacultyTrackingController::class, 'faculty_tracking'])->name('faculty_tracking');
+
+        // New Route as of Nov 4
+        Route::get('/thesis/new-entries', [ThesisNewEntriesController::class, 'thesisNewEntries'])->name('thesis.newEntries');
     // });
 
     //END SUPERADMIN ACCESS
