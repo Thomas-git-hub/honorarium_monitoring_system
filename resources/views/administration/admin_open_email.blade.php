@@ -27,7 +27,10 @@
 
                         @endif
                         <!-- End Offcanvas -->
-                        <button class="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasEnd" aria-controls="offcanvasEnd"><i class='bx bx-reply' >&nbsp;</i>Reply</button>
+
+                       
+                        <button class="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasEnd" aria-controls="offcanvasEnd"  @if($data->message === 'Transaction was Acknowledged') disabled @endif><i class='bx bx-reply' >&nbsp;</i>Reply</button>
+
                     </div>
                 </div>
             </div>

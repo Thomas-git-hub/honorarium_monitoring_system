@@ -103,7 +103,7 @@ class AdminController extends Controller
 
         if(Auth::user()->usertype->name === 'Administrator' || Auth::user()->usertype->name === 'SuperAdmin'){
             $today = Carbon::today();
-            $employeeIds = DB::connection('ors_pgsql')->table('employee_user')->pluck('id');
+            $employeeIds = DB::connection('ibu_test')->table('employee_user')->pluck('id');
             $newAccountsToday = DB::connection('mysql')->table('users')
                 ->whereDate('created_at', $today)
                 ->whereNull('deleted_at')
@@ -133,11 +133,11 @@ class AdminController extends Controller
         $EmailCount = $pendingMails->count();
 
         $id = $request->query('id');
-        $ibu_dbcon = DB::connection('ors_pgsql');
+        $ibu_dbcon = DB::connection('ibu_test');
         $user = $ibu_dbcon->table('employee')->where('id', $id )->first();
         // Transaction::findOrFail($id);
 
-        $collegeDetails = DB::connection('ors_pgsql')->table('college')
+        $collegeDetails = DB::connection('ibu_test')->table('college')
                 ->where('id', $user->college_id)
                 ->first();
 
@@ -338,9 +338,18 @@ class AdminController extends Controller
             ->where('batch_id', $batch_id)
             ->first();
 
+            $OnHoldTransaction = Transaction::with(['createdBy', 'office'])
+            ->whereNull('deleted_at')
+            ->where('batch_status', 'Batch On Hold')
+            ->where('batch_id', $batch_id)
+            ->get();
+
+            $hasForCompliance = $OnHoldTransaction->where('requirement_status', 'For Compliance')->isNotEmpty();
+            
+
             $office = Office::where('id', $OnHoldData->office)->first();
 
-            return view('administration.admin_on_hold', compact('OnHold', 'EmailCount', 'TransactionCount', 'OnHoldData', 'office'));
+            return view('administration.admin_on_hold', compact('OnHold', 'EmailCount', 'TransactionCount', 'OnHoldData', 'office', 'hasForCompliance'));
 
         }
     }
@@ -398,7 +407,7 @@ class AdminController extends Controller
         // }
 
         $transactions = $query->get();
-        $ibu_dbcon = DB::connection('ors_pgsql');
+        $ibu_dbcon = DB::connection('ibu_test');
 
         $months = [
             1 => 'January',

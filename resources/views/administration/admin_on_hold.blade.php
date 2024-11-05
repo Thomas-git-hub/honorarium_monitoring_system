@@ -69,11 +69,11 @@
 </div>
 
 
-@if(Auth::user()->office_id === $OnHoldData->createdBy->office_id)
+@if(Auth::user()->office->name === 'BUGS Administration')
 
 <div class="row mb-3">
     <div class="col-md mx-auto d-flex justify-content-end">
-        <button type="button" class="btn btn-primary gap-1 ProceedAcknowledge " id="ProceedAcknowledge">Proceed Transaction<i class='bx bx-chevrons-right'></i></button>
+        <button type="button" class="btn btn-primary gap-1 ProceedAcknowledge " id="ProceedAcknowledge" >Proceed Transaction<i class='bx bx-chevrons-right'></i></button>
     </div>
 </div>
 
@@ -102,6 +102,13 @@
 {{--FACULTY DATATABLES START --}}
 
 <script>
+
+
+    var hasForCompliance = {!! json_encode($hasForCompliance) !!};
+
+    @if($hasForCompliance)
+    $('#ProceedAcknowledge').prop('disabled', true);
+    @endif
 
     var batchId = {!! json_encode($OnHoldData->batch_id) !!};
     var User = {!! json_encode(Auth::user()) !!};
@@ -188,15 +195,31 @@
                 },
                 success: function(response) {
                     if (response.success) {
-                        alert(response.message);
+                       
+                            Swal.fire({
+                            icon: 'success',
+                            title: 'Success',
+                            text: response.message,
+                        });
+
+                        $('#ProceedAcknowledge').prop('disabled', false);
                         table.ajax.reload();
                     } else {
-                        alert("Failed to update the date. Please try again.");
+
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Warning!',
+                            text: 'Failed to update the date. Please try again.',
+                        });
                     }
                 },
                 error: function(xhr) {
                     console.log(xhr.responseText);
-                    alert("An error occurred. Please try again.");
+                        Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'There was a problem updating the transactions.',
+                    });
                 }
             });
         }
@@ -259,8 +282,8 @@
 
                 }else{
                     Swal.fire({
-                        icon: 'error',
-                        title: 'Oh no!',
+                        icon: 'warning',
+                        title: 'Warning!',
                         text: response.message,
                     });
                     $('#facultyTable').DataTable().ajax.reload();
