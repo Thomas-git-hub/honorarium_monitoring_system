@@ -116,6 +116,7 @@ Route::middleware(['auth_check', '419'])->group(function () {
         Route::get('/cashier_open_queue/open_list', [CashierQueueController::class, 'open_list'])->name('cashier_open_queue.open_list');
         Route::post('/cashier_open_queue/store', [CashierQueueController::class, 'store'])->name('cashier_open_queue.store');
         Route::post('/check-proceed-cashier', [CashierQueueController::class, 'checkIfProceedToCashier'])->name('check.proceed.cashier');
+        Route::post('/cashier-open-queue/store-deduction', [CashierQueueController::class, 'storeDeduction'])->name('cashier_open_queue.store_deduction');
 
 
         Route::get('/for_acknowledgement', [ForAcknowledgementController::class, 'for_acknowledgement'])->name('for_acknowledgement');

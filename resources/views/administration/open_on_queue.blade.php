@@ -246,6 +246,7 @@
                 search: "",
                 searchPlaceholder: "Search..."
             },
+            order: [[4, 'desc']],
             columns: [
                 { data: 'id', name: 'id', title: 'ID', visible: false},
                 { data: 'employee_id', name: 'employee_id', title: 'employee_id', visible: false},
@@ -423,7 +424,7 @@
                 }
             });
 
-           
+
         });
 
 

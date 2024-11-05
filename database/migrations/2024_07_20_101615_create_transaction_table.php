@@ -25,6 +25,11 @@ return new class extends Migration
             $table->string('status');
             $table->string('batch_status')->default('No Findings');
             $table->string('created_by');
+
+            // added last nov 05
+            $table->decimal('deduction', 20, 2)->nullable();
+            $table->string('deduction_remarks')->nullable();
+
             $table->decimal('net_amount', 20, 2)->nullable();
             $table->boolean('is_complete')->default(0);
             $table->longText('remarks')->nullable();

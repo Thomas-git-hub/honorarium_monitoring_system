@@ -293,7 +293,8 @@
                                 <p style="line-height: 140%;">&nbsp;</p>
 
                                 {{-- Please replace the line 296, with the message from the email toaster. --}}
-                                <p style="line-height: 140%;">Kindly visit the &nbsp; {{$emailData['office_name']}} Office to submit the missing documents for compliance.</p>
+                                {{-- <p style="line-height: 140%;">Kindly visit the &nbsp; {{$emailData['office_name']}} Office to submit the missing documents for compliance.</p> --}}
+                                <p style="line-height: 140%;">Kindly visit the Administration Office to submit the missing documents for compliance.</p>
                               </div>
 
                             </td>

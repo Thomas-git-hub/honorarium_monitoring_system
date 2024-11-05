@@ -72,6 +72,7 @@
                 search: "", // Remove the default search label
                 searchPlaceholder: "Search..." // Set the placeholder text
             },
+            order: [[5, 'desc']],
             columns: [
                 { data: 'id', name: 'id', title: 'ID', visible: false},
                 { data: 'faculty', name: 'faculty', title: 'Faculty' },

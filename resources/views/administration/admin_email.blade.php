@@ -6,11 +6,12 @@
             <div class="col-md">
                 <div class="card">
                     <div class="card-body">
-                        <div class="row">
+                        <div class="d-flex justify-content-between">
                             <h4 class="card-title text-secondary">Email</h4>
+                            <div class=""><small><?php echo date('F j, Y'); ?></small></div>
                         </div>
                         {{-- <h4 class="d-flex align-items-center"><i class='bx bxs-envelope' style="font-size: 32px;"></i></h4> --}}
-                        <div class="row">
+                        <div class="row gap-1">
                             <div class="col-md">
                                 <div class="card shadow-none bg-label-success">
                                     <div class="card-header d-flex justify-content-end">
@@ -31,7 +32,7 @@
                             <div class="col-md">
                                 <div class="card shadow-none bg-label-danger">
                                     <div class="card-header d-flex justify-content-end">
-                                        <small class="card-title text-danger d-flex align-items-center gap-1"><i class='bx bxs-calendar'></i> <?php echo date('F j, Y'); ?></small>
+                                        <small class="card-title text-danger d-flex align-items-center gap-1"><i class='bx bxs-envelope'></i></small>
                                     </div>
                                     <div class="card-body text-danger">
                                         <div class="row d-flex align-items-center">

@@ -9,6 +9,9 @@
 
     <div class="row mt-4">
         <div class="col">
+            <div>
+                <button class="btn btn-primary">Transaction Finished</button>
+            </div>
             <div class="card custom-card">
                 <div class="card-body">
                     <div class="table-responsive">

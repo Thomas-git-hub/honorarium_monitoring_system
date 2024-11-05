@@ -170,6 +170,7 @@
                 pageLength: 100,
                 paging: false, // Disable pagination
                 dom: '<"top"f>rt<"bottom"ip>',
+                // responsive: true,
                 language: {
                     search: "", // Remove the default search label
                     searchPlaceholder: "Search..." // Set the placeholder text

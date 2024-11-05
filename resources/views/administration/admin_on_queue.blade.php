@@ -39,6 +39,7 @@
                 search: "", // Remove the default search label
                 searchPlaceholder: "Search..." // Set the placeholder text
             },
+            order: [[3, 'desc']],
             columns: [
                 { data: 'batch_id', name: 'batch_id', title: 'Batch' },
                 { data: 'from', name: 'from', title: 'From' },

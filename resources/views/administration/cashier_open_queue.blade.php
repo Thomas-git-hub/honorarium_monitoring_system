@@ -8,9 +8,9 @@
             <form id="NetForm" >
                 <div class="modal-content">
                     <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Net Amount</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
-                        </button>
+                        <h5 class="modal-title" id="exampleModalLabel">Net Amount</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                            </button>
                     </div>
                     <div class="modal-body">
                         <div class="row mb-2">
@@ -74,6 +74,41 @@
         </div>
     </div>
 
+<!-- Add this new modal after the existing modal -->
+    <div class="modal fade" id="deductionModal" tabindex="-1" aria-labelledby="deductionModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-md" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deductionModalLabel">Add Deduction</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="DeductionForm">
+                    <div class="modal-body">
+                        <input type="hidden" id="deduction_id" name="deduction_id">
+                        <div class="mb-3">
+                            <label for="deductionAmount" class="form-label text-primary">Deduction Amount</label>
+                            <input type="text" class="form-control" id="deductionAmount" placeholder="₱0.00" />
+                            <small class="text-danger" id="deductionAmountError" style="display:none;">
+                                <i class='bx bx-error-circle'></i> Please enter a valid amount with up to two decimal places.
+                            </small>
+                            <div id="netAmountHelp" class="form-text text-info">Enter the exact deduction amount and be sure to double-check the amount entered.</div>
+
+                        </div>
+                        <div class="mb-3">
+                            <label for="deductionRemarks" class="form-label text-primary">Deduction Remarks</label>
+                            <textarea class="form-control" id="deductionRemarks" rows="3"></textarea>
+                            <div id="netAmountHelp" class="form-text text-info">Please specify the reason for the deduction.</div>
+                        </div>
+                    </div>
+                    <div class="modal-footer justify-content-end">
+                        <button type="submit" class="btn btn-primary" id="saveDeductionButton">Save Deduction</button>
+                        <button type="button" class="btn btn-label-danger" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
 {{-- <div class="row mt-4">
     <h4 class="card-title text-secondary">In Queue</h4>
 </div> --}}
@@ -115,6 +150,12 @@
         <div class="row mb-2">
             <div class="col-md mx-auto d-flex justify-content-end">
                 <button type="button" class="btn btn-primary gap-1 d-none" id="proceedTransactionButton">Proceed<i class='bx bx-chevrons-right'></i></button>
+            </div>
+        </div>
+
+        <div class="row mb-2">
+            <div class="col-md mx-auto d-flex justify-content-end">
+                <button class="btn btn-success">Transaction Finished</button>
             </div>
         </div>
 
@@ -189,6 +230,15 @@
                 { data: 'created_by', name: 'created_by', title: 'Created By' },
                 { data: 'contact', name: 'contact', title: 'contact', visible: false },
                 { data: 'netAmount', name: 'netAmount', title: 'netAmount', visible: false },
+                {
+                    data: 'deduction',
+                    name: 'deduction',
+                    title: 'Deduction',
+                    render: function (data, type, row) {
+                        var buttonTitle = data ? '₱' + parseFloat(data).toFixed(2) : 'Add';
+                        return '<button type="button" class="btn btn-sm btn-warning deduction-btn" data-bs-toggle="modal" data-bs-target="#deductionModal">' + buttonTitle + '</button>';
+                    }
+                },
                 {
                     data: 'net_amount',
                     name: 'net_amount',
@@ -456,6 +506,71 @@
                 validValue = validValue.replace(/\.(?=.*\.)/g, '');
             }
             $(this).val(validValue);
+        });
+
+        // Add these handlers after your existing DataTable initialization
+        $('#cashierOpenQueueTable').on('click', '.deduction-btn', function() {
+            var row = $(this).closest('tr');
+            var rowData = table.row(row).data();
+
+            // Populate modal fields
+            $('#deduction_id').val(rowData.id);
+            $('#deductionAmount').val(rowData.deduction || '');
+            $('#deductionRemarks').val(rowData.deduction_remarks || '');
+        });
+
+        // Handle deduction form submission
+        $('#DeductionForm').on('submit', function(e) {
+            e.preventDefault();
+
+            var id = $('#deduction_id').val();
+            var amount = $('#deductionAmount').val().trim();
+            var remarks = $('#deductionRemarks').val().trim();
+            var isValidAmount = /^[0-9]+(\.[0-9]{1,2})?$/.test(amount);
+
+            if (isValidAmount) {
+                $('#deductionAmountError').hide();
+
+                $.ajax({
+                    url: '{{ route('cashier_open_queue.store_deduction') }}', // You'll need to create this route
+                    method: 'POST',
+                    data: {
+                        id: id,
+                        deduction_amount: amount,
+                        deduction_remarks: remarks
+                    },
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(response) {
+                        $('#deductionModal').modal('hide');
+                        table.ajax.reload();
+                        alert('Deduction successfully saved.');
+                    },
+                    error: function(xhr, status, error) {
+                        console.error(xhr.responseText);
+                        alert('An error occurred while saving the deduction. Please try again.');
+                    }
+                });
+            } else {
+                $('#deductionAmountError').show();
+            }
+        });
+
+        // Validate deduction amount input
+        $('#deductionAmount').on('input', function() {
+            var value = $(this).val();
+            var validValue = value.replace(/[^0-9.]/g, '');
+            var decimalCount = (validValue.match(/\./g) || []).length;
+            if (decimalCount > 1) {
+                validValue = validValue.replace(/\.(?=.*\.)/g, '');
+            }
+            $(this).val(validValue);
+        });
+
+        // Hide error on focus
+        $('#deductionAmount').on('focus', function() {
+            $('#deductionAmountError').hide();
         });
 
     });

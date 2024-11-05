@@ -18,6 +18,22 @@ class CashierQueueController extends Controller
         return view('administration.cashier_in_queue');
     }
 
+    public function storeDeduction(Request $request)
+    {
+        $validated = $request->validate([
+            'id' => 'required|exists:transaction,id',
+            'deduction_amount' => 'required|numeric|min:0',
+            'deduction_remarks' => 'required|string'
+        ]);
+
+        Transaction::where('id', $validated['id'])->update([
+            'deduction' => $validated['deduction_amount'],  // Changed from deduction_amount to deduction
+            'deduction_remarks' => $validated['deduction_remarks']
+        ]);
+
+        return response()->json(['success' => true]);
+    }
+
     public function cashier_open_queue(Request $request){
         $batch_id = $request->input('id');
 
