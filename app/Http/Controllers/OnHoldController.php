@@ -372,67 +372,70 @@ class OnHoldController extends Controller
             return response()->json(['success' => false, 'message' => 'No transactions found with status Processing']);
         }
 
-        $usertype = Auth::user()->usertype->name;
+        // $usertype = Auth::user()->usertype->name;
 
-        if($usertype === 'Administrator'){
-            $office = Office::where('name', 'Budget Office')->first();
-        }
-        elseif($usertype === 'Budget Office' || $usertype === 'Accounting' ){
-            $office = Office::where('name', 'Dean')->first();
-        }
-        elseif($usertype === 'Dean' ){
-            $office = Office::where('name', 'Accounting')->first();
-
-        }elseif($usertype === 'Cashiers'){
-            $office = Office::where('name', 'Faculty')->first();
-
-        }elseif($usertype === 'Accounting' ){
-            $office = Office::where('name', 'Dean')->first();
-        }
-        else{
-            return response()->json(['success' => false, 'message' => 'No office Found']);
-        }
-
-        $ack = new Acknowledgement();
-        $ack->batch_id= $request->batch_id;
-        $ack->office_id = Auth::user()->office_id;
-        $ack->user_id = Auth::user()->id;
-        $ack->save();
-
-        // Update the status to 'On Queue'
-        if($usertype === 'Cashiers' ){
-
-            Transaction::whereNull('deleted_at')
-            ->where('batch_status', 'Batch On Hold')
-            ->where('batch_id', $request->batch_id)
-            ->update([
-                'batch_status' => 'No Findings',
-                'status' => 'Complete',
-                'requirement_status' => 'Complete',
-                'office' => $office->id,
-                'created_by' => Auth::user()->id,
-                'updated_at' => now(),
-            ]);
-
-        }else{
-
-            Transaction::whereNull('deleted_at')
-            ->where('batch_status', 'Batch On Hold')
-            ->where('batch_id', $request->batch_id)
-            ->update([
-                'batch_status' => 'No Findings',
-                'status' => 'On Queue',
-                'requirement_status' => 'Complete',
-                'office' => $office->id,
-                'created_by' => Auth::user()->id,
-                'updated_at' => now(),
-            ]);
-
-        }
+        // $ack = new Acknowledgement();
+        // $ack->batch_id= $request->batch_id;
+        // $ack->office_id = Auth::user()->office_id;
+        // $ack->user_id = Auth::user()->id;
+        // $ack->save();
 
         $batchId = $request->batch_id;
 
         foreach ($transactions as $transaction) {
+
+            if($transaction->office_from->name === 'Administrator'){
+                $office = Office::where('name', 'Budget Office')->first();
+            }
+            elseif($transaction->office_from->name === 'Budget Office' || $transaction->office_from->name === 'Accounting' ){
+                $office = Office::where('name', 'Dean')->first();
+            }
+            elseif($transaction->office_from->name === 'Dean' ){
+                $office = Office::where('name', 'Accounting')->first();
+    
+            }elseif($transaction->office_from->name === 'Cashiers'){
+                $office = Office::where('name', 'Faculty')->first();
+    
+            }elseif($transaction->office_from->name === 'Accounting' ){
+                $office = Office::where('name', 'Dean')->first();
+            }
+            else{
+                return response()->json(['success' => false, 'message' => 'No office Found']);
+            }
+
+            if($transaction->office_from->name === 'Cashiers' ){
+
+                Transaction::whereNull('deleted_at')
+                ->where('id', $transaction->id)
+                ->where('batch_status', 'Batch On Hold')
+                ->where('batch_id', $request->batch_id)
+                ->update([
+                    'batch_status' => 'No Findings',
+                    'status' => 'Complete',
+                    'requirement_status' => 'Complete',
+                    'office' => $office->id,
+                    'created_by' => Auth::user()->id,
+                    'updated_at' => now(),
+                ]);
+    
+            }else{
+    
+                Transaction::whereNull('deleted_at')
+                ->where('id', $transaction->id)
+                ->where('batch_status', 'Batch On Hold')
+                ->where('batch_id', $request->batch_id)
+                ->update([
+                    'batch_status' => 'No Findings',
+                    'status' => 'On Queue',
+                    'requirement_status' => 'Complete',
+                    'office' => $office->id,
+                    'created_by' => Auth::user()->id,
+                    'updated_at' => now(),
+                ]);
+    
+            }
+    
+
             $logs = new Activity_logs();
             $logs->trans_id = $transaction->id;
             $logs->office_id = Auth::user()->office_id;
