@@ -338,6 +338,10 @@ class AdminController extends Controller
             ->where('batch_id', $batch_id)
             ->first();
 
+            if(empty($OnHoldData)){
+                return redirect()->route('main_on_hold');
+            }
+
             $OnHoldTransaction = Transaction::with(['createdBy', 'office'])
             ->whereNull('deleted_at')
             ->where('batch_status', 'Batch On Hold')
