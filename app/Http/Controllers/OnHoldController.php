@@ -25,7 +25,7 @@ class OnHoldController extends Controller
         ->where('batch_id', '=', $request->batch_id)
         ->where('batch_status', 'Batch On Hold')
         ->get();
-        $ibu_dbcon = DB::connection('ibu_test');
+        $ibu_dbcon = DB::connection('ors_pgsql');
 
         $months = [
             1 => 'January',
@@ -168,7 +168,7 @@ class OnHoldController extends Controller
 
     public function UpdateToProceed(Request $request){
 
-        $ibu_dbcon = DB::connection('ibu_test');
+        $ibu_dbcon = DB::connection('ors_pgsql');
 
         // Fetch all transactions with status 'On-hold'
         $transaction = Transaction::whereNull('deleted_at')
@@ -354,7 +354,7 @@ class OnHoldController extends Controller
 
     public function proceed_on_hold(Request $request)
     {
-        $ibu_dbcon = DB::connection('ibu_test');
+        $ibu_dbcon = DB::connection('ors_pgsql');
 
         $transactions = Transaction::whereNull('deleted_at')
         ->where('batch_status', 'Batch On Hold')
@@ -392,10 +392,10 @@ class OnHoldController extends Controller
             }
             elseif($transaction->office_from->name === 'Dean' ){
                 $office = Office::where('name', 'Accounting')->first();
-    
+
             }elseif($transaction->office_from->name === 'Cashiers'){
                 $office = Office::where('name', 'Faculty')->first();
-    
+
             }elseif($transaction->office_from->name === 'Accounting' ){
                 $office = Office::where('name', 'Dean')->first();
             }
@@ -417,9 +417,9 @@ class OnHoldController extends Controller
                     'created_by' => Auth::user()->id,
                     'updated_at' => now(),
                 ]);
-    
+
             }else{
-    
+
                 Transaction::whereNull('deleted_at')
                 ->where('id', $transaction->id)
                 ->where('batch_status', 'Batch On Hold')
@@ -432,9 +432,9 @@ class OnHoldController extends Controller
                     'created_by' => Auth::user()->id,
                     'updated_at' => now(),
                 ]);
-    
+
             }
-    
+
 
             $logs = new Activity_logs();
             $logs->trans_id = $transaction->id;
