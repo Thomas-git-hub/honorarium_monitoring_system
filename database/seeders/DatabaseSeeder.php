@@ -24,6 +24,9 @@ class DatabaseSeeder extends Seeder
             UserTypeSeeder::class,
             OfficeSeeder::class,
             UserSeeder::class,
+            DefenseSeeder::class,
+            DegreeSeeder::class,
+            DefensePositionSeeder::class,
         ]);
     }
 }
