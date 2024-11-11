@@ -63,6 +63,10 @@
                         <label for="defense_time" class="form-label">Defense Time</label>
                         <input type="time" class="form-control" id="defense_time" name="defense_time" required />
                     </div>
+                    <div class="col-md">
+                        <label for="or_number" class="form-label">OR#</label>
+                        <input type="" class="form-control" id="or_number" name="or_number" required />
+                    </div>
                 </div>
 
                 {{-- Degree & Defense Section --}}
