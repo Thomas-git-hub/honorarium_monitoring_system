@@ -42,6 +42,8 @@ Route::middleware(['auth_check', '419'])->group(function () {
     // Route::put('/profile/update', [ProfileController::class, 'profile_update'])->name('profile.update');
     Route::match(['post', 'put'], 'profile/update', [ProfileController::class, 'profile_update'])->name('profile.update');
     Route::post('/logout', [UserController::class, 'logout'])->name('logout');
+    Route::post('/profile/change-password', [ProfileController::class, 'changePassword'])->name('password.change');
+
 
     Route::middleware(['faculty'])->group(function () {
         Route::get('/admin_dashboard', [AdminController::class, 'admin_dashboard'])->name("admin_dashboard");

@@ -221,41 +221,49 @@
             </div>
 
             <div class="card shadow border border-primary mt-4" id="changePasswordField" style="display:none;">
-                <div class="card-body">
-                        <small class="card-text d-flex align-items-center text-uppercase text-muted small gap-1">
-                            <i class='bx bxs-key text-dark'></i> Change Password
-                        </small>
-                        <ul class="list-unstyled my-3 py-1">
-                            <div class="col-md">
-                                <div class="row">
-                                    <div class="col-md">
-                                        <div class="mb-3">
-                                            <label for="defaultFormControlInput" class="form-label">Present Password</label>
-                                            <input type="text" name="email" class="form-control" id="presentPassword" placeholder="password" aria-describedby="defaultFormControlHelp" />
+                <form id="changePasswordForm">
+                    @csrf
+                    <div class="card-body">
+                        <input type="hidden" name="user_id" value="{{Auth::user()->id}}">
+                            <small class="card-text d-flex align-items-center text-uppercase text-muted small gap-1">
+                                <i class='bx bxs-key text-dark'></i> Change Password
+                            </small>
+                            <ul class="list-unstyled my-3 py-1">
+                                <div class="col-md">
+                                    <div class="row">
+                                        <div class="col-md">
+                                            <div class="mb-3">
+                                                <label for="defaultFormControlInput" class="form-label">Present Password</label>
+                                                <input type="password" name="current_password" class="form-control" id="current_password" placeholder="password" aria-describedby="defaultFormControlHelp" />
+                                                <div id="current_passwordError" class="invalid-feedback"></div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md">
+                                            <div class="mb-3">
+                                                <label for="defaultFormControlInput" class="form-label">New Password</label>
+                                                <input type="password" name="new_password" class="form-control" id="new_password" placeholder="password" aria-describedby="defaultFormControlHelp" />
+                                                <div id="new_passwordError" class="invalid-feedback"></div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md">
+                                            <div class="mb-3">
+                                                <label for="defaultFormControlInput" class="form-label">Re-type New Password</label>
+                                                <input type="password" name="new_password_confirmation" class="form-control" id="new_password_confirmation" placeholder="password" aria-describedby="defaultFormControlHelp" />
+                                                <div id="new_password_confirmationError" class="invalid-feedback"></div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="row">
-                                    <div class="col-md">
-                                        <div class="mb-3">
-                                            <label for="defaultFormControlInput" class="form-label">New Password</label>
-                                            <input type="text" name="email" class="form-control" id="newPassword" placeholder="password" aria-describedby="defaultFormControlHelp" />
-                                        </div>
-                                    </div>
-                                    <div class="col-md">
-                                        <div class="mb-3">
-                                            <label for="defaultFormControlInput" class="form-label">Re-type New Password</label>
-                                            <input type="text" name="email" class="form-control" id="retypePassword" placeholder="password" aria-describedby="defaultFormControlHelp" />
-                                        </div>
-                                    </div>
-                                </div>
+                            </ul>
+                            <div class="d-flex justify-content-end gap-2">
+                                <button type="submit" class="btn btn-primary gap-1" id="saveChangePassword">Save</button>
+                                <button type="submit" class="btn btn-label-danger gap-1" id="cancelChangePassword">Cancel</button>
                             </div>
-                        </ul>
-                        <div class="d-flex justify-content-end gap-2">
-                            <button type="submit" class="btn btn-primary gap-1" id="saveChangePassword">Save</button>
-                            <button type="submit" class="btn btn-label-danger gap-1" id="cancelChangePassword">Cancel</button>
-                        </div>
-                </div>
+                    </div>
+                </form>
             </div>
 
             <div class="card shadow-none mt-4">
@@ -283,63 +291,63 @@
 @section('components.specific_page_scripts')
 
 <script>
-$('#updateDetailsBtn').click(function() {
-    $('#profileDetails').hide();
-    $('#updateProfileDetails').show();
-});
-
-$('#cancel').click(function() {
-    $('#profileDetails').show();
-    $('#updateProfileDetails').hide();
-});
-
-$('#changePasswordBtn').click(function() {
-    $('#changePasswordField').show();
-    $('#changePasswordDiv').hide();
-});
-
-
-
-$(document).ready(function() {
-    $('#cancelChangePassword').click(function(e) {
-        e.preventDefault(); // Prevent form submission if needed
-
-        // Hide the change password field
-        $('#changePasswordField').hide();
-        $('#changePasswordDiv').show();
-
-        // Clear the password fields
-        $('#presentPassword').val('');
-        $('#newPassword').val('');
-        $('#retypePassword').val('');
+    $('#updateDetailsBtn').click(function() {
+        $('#profileDetails').hide();
+        $('#updateProfileDetails').show();
     });
-});
+
+    $('#cancel').click(function() {
+        $('#profileDetails').show();
+        $('#updateProfileDetails').hide();
+    });
+
+    $('#changePasswordBtn').click(function() {
+        $('#changePasswordField').show();
+        $('#changePasswordDiv').hide();
+    });
 
 
-$(document).ready(function() {
-    // Function to toggle visibility of the small tags
-    function toggleNotes() {
-        // Loop through each input and its corresponding small tag
-        $('#updateProfileForm input').each(function() {
-            let inputField = $(this);
-            let note = inputField.siblings('.note'); // Get the corresponding small tag
 
-            if (inputField.val().trim() !== '') {
-                note.hide();  // Hide the note if the field has a value
-            } else {
-                note.show();  // Show the note if the field is empty
-            }
+    $(document).ready(function() {
+        $('#cancelChangePassword').click(function(e) {
+            e.preventDefault(); // Prevent form submission if needed
+
+            // Hide the change password field
+            $('#changePasswordField').hide();
+            $('#changePasswordDiv').show();
+
+            // Clear the password fields
+            $('#presentPassword').val('');
+            $('#newPassword').val('');
+            $('#retypePassword').val('');
         });
-    }
-
-    // Initial call to toggleNotes when the page loads
-    toggleNotes();
-
-    // Call toggleNotes function whenever an input field is changed
-    $('#updateProfileForm input').on('input', function() {
-        toggleNotes();
     });
-});
+
+
+    $(document).ready(function() {
+        // Function to toggle visibility of the small tags
+        function toggleNotes() {
+            // Loop through each input and its corresponding small tag
+            $('#updateProfileForm input').each(function() {
+                let inputField = $(this);
+                let note = inputField.siblings('.note'); // Get the corresponding small tag
+
+                if (inputField.val().trim() !== '') {
+                    note.hide();  // Hide the note if the field has a value
+                } else {
+                    note.show();  // Show the note if the field is empty
+                }
+            });
+        }
+
+        // Initial call to toggleNotes when the page loads
+        toggleNotes();
+
+        // Call toggleNotes function whenever an input field is changed
+        $('#updateProfileForm input').on('input', function() {
+            toggleNotes();
+        });
+    });
 </script>
 
 
@@ -454,9 +462,46 @@ $(document).ready(function() {
         });
     });
 });
+</script>
+
+<script>
+    $(document).ready(function(){
+
+        $('#changePasswordForm').on('submit', function(e) {
+            e.preventDefault();
+            var formData = $(this).serialize();
+
+            $.ajax({
+                url: '{{ route('password.change') }}', 
+                method: 'POST',
+                data: formData,
+                success: function(response) {
+                    if (response.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success!',
+                            text: response.message,
+                            showConfirmButton: true,
+                        });
+                        $('#changePasswordForm')[0].reset();
+                    } else {
+                        var errors = response.errors;
+                        Object.keys(errors).forEach(function(key) {
+                            var inputField = $('#changePasswordForm [name=' + key + ']');
+                            inputField.addClass('is-invalid');
+                            $('#changePasswordForm #' + key + 'Error').text(errors[key][0]);
+                        });
+                    }
+                },
+                error: function(xhr) {
+                    hideLoader();
+                    console.log(xhr.responseText);
+                }
+            });
+        });
 
 
-
+    })
 </script>
 
 
