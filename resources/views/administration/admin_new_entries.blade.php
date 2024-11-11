@@ -13,7 +13,7 @@
                 <div class="row">
                     <div class="card shadow-none bg-label-success">
                         <div class="card-header d-flex justify-content-end">
-                            <small class="card-title text-success d-flex align-items-center gap-1"><i class='bx bxs-calendar'></i>August 2, 2024</small>
+                            <small class="card-title text-success d-flex align-items-center gap-1"><i class='bx bxs-calendar'></i>{{ date('F j, Y') }}</small>
                         </div>
                         <div class="card-body text-success">
                             <div class="row d-flex align-items-center">

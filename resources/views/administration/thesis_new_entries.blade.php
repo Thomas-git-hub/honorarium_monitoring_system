@@ -1,8 +1,274 @@
 @extends('components.app')
 
 @section('content')
-    <div class="row mt-2">
-        <h4 class="card-title text-secondary">Thesis New Entries</h4>
+
+  <!-- Modal -->
+  <div class="modal fade" id="editThesisEntiresModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel1">Modal title</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+
+            <div>
+                <div class="row mt-2">
+                    <label for="student" class="form-label">Student Name</label>
+                </div>
+                <div id="inputGroupStudentDiv">
+                    <div class="row" id="inputGroupStudentRow">
+                        <div class="col-md">
+                            <input type="text" class="form-control" name="student_first_name" placeholder="First Name" />
+                        </div>
+                        <div class="col-md">
+                            <input type="text" class="form-control" name="student_middle_name" placeholder="Middle Name" />
+                        </div>
+                        <div class="col-md">
+                            <input type="text" class="form-control" name="student_suffix" placeholder="Suffix. (optional)" />
+                        </div>
+                        <div class="col-md">
+                            <input type="text" class="form-control" name="student_last_name" placeholder="Last Name" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-4">
+                <div class="col-md">
+                    <label for="defense_date" class="form-label">Defense Date</label>
+                    <input type="date" class="form-control" id="defense_date" name="defense_date" required />
+                </div>
+                <div class="col-md">
+                    <label for="defense_time" class="form-label">Defense Time</label>
+                    <input type="time" class="form-control" id="defense_time" name="defense_time" required />
+                </div>
+                <div class="col-md">
+                    <label for="or_number" class="form-label">OR#</label>
+                    <input type="" class="form-control" id="or_number" name="or_number" required />
+                </div>
+            </div>
+
+            <div class="row mt-2">
+                <div class="col-md">
+                    <label for="degree" class="form-label">Select Degree</label>
+                    <select class="form-select" id="degree" name="degree" required>
+                        <option value="">Select Degree</option>
+                        <option value="masteral">Masteral</option>
+                        <option value="doctoral">Doctoral</option>
+                    </select>
+                </div>
+                <div class="col-md">
+                    <label for="defense" class="form-label">Select Defense</label>
+                    <select class="form-select" id="defense" name="defense_type" required>
+                        <option value="">Select Defense</option>
+                        <option value="proposal">Proposal</option>
+                        <option value="pre-oral">Pre-Oral</option>
+                        <option value="final">Final</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="row mt-2">
+                <div class="col-md">
+                    <label for="adviser" class="form-label">Select Adviser</label>
+                    <select class="form-select" id="editAdviser" name="adviser_id" required>
+                        <option value="">Search/Select Adviser</option>
+                    </select>
+                </div>
+                <div class="col-md">
+                    <label for="chairperson" class="form-label">Select Chairperson</label>
+                    <select class="form-select" id="editChairperson" name="chairperson_id" required>
+                        <option value="">Search/Select Chairperson</option>
+                    </select>
+                </div>
+            </div>
+
+            <div>
+                <div class="row mt-4">
+                    <label for="member" class="form-label">Member 1</label>
+                </div>
+                <div class="row">
+                    <div class="col-md">
+                        <select class="form-select degree" name="" required>
+                            <option value="">Select Member Type</option>
+                            <option value="internal">Internal Member</option>
+                            <option value="external">External Member</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mt-2" id="editGroupMemberDiv">
+                    <div class="row" id="editGroupMemberRow">
+                        <div class="col-md">
+                            <input type="text" class="form-control" name="member_first_name" placeholder="First Name" />
+                        </div>
+                        <div class="col-md">
+                            <input type="text" class="form-control" name="member_middle_name" placeholder="Middle Name" />
+                        </div>
+                        <div class="col-md">
+                            <input type="text" class="form-control" name="member_suffix" placeholder="Suffix. (optional)" />
+                        </div>
+                        <div class="col-md">
+                            <input type="text" class="form-control" name="member_last_name" placeholder="Last Name" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <div class="row mt-4">
+                    <label for="member" class="form-label">Member 2</label>
+                </div>
+                <div class="row">
+                    <div class="col-md">
+                        <select class="form-select degree" name="" required>
+                            <option value="">Select Member Type</option>
+                            <option value="internal">Internal Member</option>
+                            <option value="external">External Member</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mt-2" id="editGroupMemberDiv">
+                    <div class="row" id="editGroupMemberRow">
+                        <div class="col-md">
+                            <input type="text" class="form-control" name="member_first_name" placeholder="First Name" />
+                        </div>
+                        <div class="col-md">
+                            <input type="text" class="form-control" name="member_middle_name" placeholder="Middle Name" />
+                        </div>
+                        <div class="col-md">
+                            <input type="text" class="form-control" name="member_suffix" placeholder="Suffix. (optional)" />
+                        </div>
+                        <div class="col-md">
+                            <input type="text" class="form-control" name="member_last_name" placeholder="Last Name" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <div class="row mt-4">
+                    <label for="member" class="form-label">Member 3</label>
+                </div>
+                <div class="row">
+                    <div class="col-md">
+                        <select class="form-select degree" name="" required>
+                            <option value="">Select Member Type</option>
+                            <option value="internal">Internal Member</option>
+                            <option value="external">External Member</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mt-2" id="editGroupMemberDiv">
+                    <div class="row" id="editGroupMemberRow">
+                        <div class="col-md">
+                            <input type="text" class="form-control" name="member_first_name" placeholder="First Name" />
+                        </div>
+                        <div class="col-md">
+                            <input type="text" class="form-control" name="member_middle_name" placeholder="Middle Name" />
+                        </div>
+                        <div class="col-md">
+                            <input type="text" class="form-control" name="member_suffix" placeholder="Suffix. (optional)" />
+                        </div>
+                        <div class="col-md">
+                            <input type="text" class="form-control" name="member_last_name" placeholder="Last Name" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <div class="row mt-4">
+                    <label for="member" class="form-label">Member 4</label>
+                </div>
+                <div class="row">
+                    <div class="col-md">
+                        <select class="form-select degree" name="" required>
+                            <option value="">Select Member Type</option>
+                            <option value="internal">Internal Member</option>
+                            <option value="external">External Member</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mt-2" id="editGroupMemberDiv">
+                    <div class="row" id="editGroupMemberRow">
+                        <div class="col-md">
+                            <input type="text" class="form-control" name="member_first_name" placeholder="First Name" />
+                        </div>
+                        <div class="col-md">
+                            <input type="text" class="form-control" name="member_middle_name" placeholder="Middle Name" />
+                        </div>
+                        <div class="col-md">
+                            <input type="text" class="form-control" name="member_suffix" placeholder="Suffix. (optional)" />
+                        </div>
+                        <div class="col-md">
+                            <input type="text" class="form-control" name="member_last_name" placeholder="Last Name" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-4">
+                <label for="recorder" class="form-label">Recorder</label>
+            </div>
+            <div id="editGroupRecorderDiv">
+                <div class="row" id="editGroupRecorderRow">
+                    <div class="col-md">
+                        <input type="text" class="form-control" name="recorder_first_name" placeholder="First Name" />
+                    </div>
+                    <div class="col-md">
+                        <input type="text" class="form-control" name="recorder_middle_name" placeholder="Middle Name" />
+                    </div>
+                    <div class="col-md">
+                        <input type="text" class="form-control" name="recorder_suffix" placeholder="Suffix. (optional)" />
+                    </div>
+                    <div class="col-md">
+                        <input type="text" class="form-control" name="recorder_last_name" placeholder="Last Name" />
+                    </div>
+                </div>
+            </div>
+
+
+
+
+
+
+
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-success">Save changes</button>
+          <button type="button" class="btn btn-label-danger" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+    <div class="row mt-4 gap-3">
+        <div class="col">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <h4 class="card-title text-secondary">Thesis New Entries</h4>
+                    </div>
+
+                    <div class="row">
+                        <div class="card shadow-none bg-label-success">
+                            <div class="card-header d-flex justify-content-end">
+                                <small class="card-title text-success d-flex align-items-center gap-1"><i class='bx bxs-calendar'></i>{{ date('F j, Y') }}</small>
+                            </div>
+                            <div class="card-body text-success">
+                                <div class="row d-flex align-items-center">
+                                    <div class="col-md d-flex align-items-center gap-3">
+                                        <h1 class="text-success text-center d-flex align-items-center" id="onQueue" style="font-size: 48px;">10</h1>
+                                        <h5 class="card-title text-success">Outgoing Defenses Added</h5>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     {{-- form --}}
@@ -204,9 +470,9 @@
                 </div>
 
                 {{-- Action Buttons --}}
-                <div class="row mt-3">
+                <div class="row mt-5">
                     <div class="col-md d-flex justify-content-end">
-                        <button type="submit" class="btn btn-primary" id="saveFormButton">Save</button>
+                        <button type="submit" class="btn btn-primary" id="saveFormButton">Save Entry</button>
                         <button type="button" class="btn btn-label-danger ms-2" id="cancelFormButton">Cancel</button>
                     </div>
                 </div>
@@ -289,48 +555,65 @@ $(document).ready(function() {
 
     // DataTable initialization
     const thesisTable = $('#thesisEntriesTable').DataTable({
-        data: [], // Initialize empty
         columns: [
-            { data: 'studentName', title: 'Student Name' },
-            { data: 'orNumber', title: 'OR Number' },
+            { data: 'student', name: 'student', title: 'Student' },
+            { data: 'defense_date', name: 'defense_date', title: 'Defense Date' },
+            { data: 'defense_time', name: 'defense_time', title: 'Defense Time' },
+            { data: 'OR#', name: 'OR#', title: 'OR#' },
+            { data: 'degree', name: 'degree', title: 'Degree' },
+            { data: 'defense', name: 'defense', title: 'Defense' },
+            { data: 'adviser', name: 'adviser', title: 'Adviser' },
+            { data: 'chairperson', name: 'chairperson', title: 'Chairperson' },
+            { data: 'member_1', name: 'member_1', title: 'Member 1' },
+            { data: 'member_2', name: 'member_2', title: 'Member 2' },
+            { data: 'member_3', name: 'member_3', title: 'Member 3' },
+            { data: 'member_4', name: 'member_4', title: 'Member 4' },
+            { data: 'recorder', name: 'recorder', title: 'Recorder' },
+            { data: 'created_by', name: 'created_by', title: 'Created By' },
+            { data: 'created_on', name: 'created_on', title: 'Created On' },
+            { data: 'created_at', name: 'created_at', title: 'Date' },
             {
-                data: 'faculties',
-                title: 'Faculty Count',
-                render: data => `${data.length} <i class="fas fa-chevron-down"></i>`
+                data: 'id',
+                title: 'Action',
+                orderable: false,
+                searchable: false,
+                render: function(data) {
+                    return `
+                        <div class="d-flex">
+                            <button type="button" class="btn btn-icon me-2 btn-label-success" data-bs-toggle="modal" data-bs-target="#editThesisEntiresModal">
+                                <span class="tf-icons bx bx-pencil bx-22px"></span>
+                            </button>
+                            <button type="button" class="btn btn-icon me-2 btn-label-danger">
+                                <span class="tf-icons bx bxs-trash bx-22px"></span>
+                            </button>
+                        </div>
+                    `;
+                }
             }
         ],
-        rowCallback: row => $(row).css('cursor', 'pointer')
-    });
-
-    // Handle row expansion
-    $('#thesisEntriesTable tbody').on('click', 'tr', function() {
-        const row = thesisTable.row(this);
-        const data = row.data();
-
-        if (row.child.isShown()) {
-            row.child.hide();
-            $(this).find('i').removeClass('fa-chevron-up').addClass('fa-chevron-down');
-        } else {
-            const facultyTable = $('<table class="table table-sm">').append(
-                $('<thead>').append(
-                    $('<tr>').append(
-                        $('<th>').text('Faculty'),
-                        $('<th>').text('Position')
-                    )
-                ),
-                $('<tbody>').append(
-                    data.faculties.map((faculty, index) =>
-                        $('<tr>').append(
-                            $('<td>').text(faculty),
-                            $('<td>').text(data.positions[index])
-                        )
-                    )
-                )
-            );
-
-            row.child(facultyTable).show();
-            $(this).find('i').removeClass('fa-chevron-down').addClass('fa-chevron-up');
-        }
+        order: [[15, 'desc']], // Sort by date created by default
+        responsive: false,
+        data: [{ // Sample data row
+            id: 1,
+            student: 'John Doe',
+            defense_date: '2024-01-15',
+            defense_time: '14:30',
+            'OR#': '12345',
+            degree: 'Master of Science',
+            defense: 'Final Defense',
+            adviser: 'Dr. Jane Smith',
+            chairperson: 'Dr. Robert Johnson',
+            member_1: 'Prof. Mary Williams',
+            member_2: 'Dr. James Brown',
+            member_3: 'Dr. Sarah Davis',
+            member_4: 'Prof. Michael Wilson',
+            recorder: 'Ms. Emily Taylor',
+            created_by: 'Admin User',
+            created_on: '2024-01-10',
+            created_at: '2024-01-10 09:00:00',
+            faculties: ['Dr. Jane Smith', 'Dr. Robert Johnson', 'Prof. Mary Williams'],
+            positions: ['Adviser', 'Chairperson', 'Member']
+        }]
     });
 
     // Enhanced search functionality
@@ -366,6 +649,36 @@ $(document).ready(function() {
         // Reset all member/student/recorder sections to search view
         $('.inputGroupStudentDiv, .inputGroupMemberDiv, .inputGroupRecorderDiv').hide();
         $('.searchStudentDiv, .searchMemberDiv, .searchRecorderDiv').show();
+    });
+
+    // Function to capitalize first letter of each word
+    function capitalizeWords(str) {
+        return str.replace(/\b\w/g, function(txt) { return txt.toUpperCase(); });
+    }
+
+    // Apply auto-capitalization to name input fields
+    $('#thesisEntryForm').on('input', 'input[type="text"]', function() {
+        if ($(this).attr('placeholder') && $(this).attr('placeholder').includes('Name')) {
+            $(this).val(capitalizeWords($(this).val()));
+        }
+    });
+
+
+    // Prevent form submission on enter key
+    $('#thesisEntryForm').on('keypress', function(e) {
+        return e.which !== 13;
+    });
+
+    // Initialize date picker
+    $('input[name="defense_date"]').datepicker({
+        format: 'yyyy-mm-dd',
+        autoclose: true
+    });
+
+    // Initialize time picker
+    $('input[name="defense_time"]').timepicker({
+        showMeridian: true,
+        minuteStep: 1
     });
 });
 </script>
