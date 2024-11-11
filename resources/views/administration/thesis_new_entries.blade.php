@@ -11,203 +11,207 @@
             <h5 class="card-title">New Thesis Entry Form</h5>
         </div>
         <div class="card-body">
-            {{-- Student Section --}}
-            <div class="row mt-2">
-                <label for="student" class="form-label">Student Name</label>
-            </div>
-            <div id="searchStudentDiv">
-                <div class="row" id="searchStudentRow">
-                    <div class="col-md-10">
-                        <select class="form-select" id="student" name="student">
-                            <option value="">Search/Select Student</option>
-                        </select>
-                    </div>
-                    <div class="col-md-2">
-                        <button class="btn btn-label-primary w-100" id="addStudentButton">
-                            <i class='bx bx-user-plus'></i>Add Student
-                        </button>
-                    </div>
+            <form id="thesisEntryForm" method="POST" action="">
+                @csrf
+                {{-- Student Section --}}
+                <div class="row mt-2">
+                    <label for="student" class="form-label">Student Name</label>
                 </div>
-            </div>
-            <div id="inputGroupStudentDiv" style="display: none">
-                <div class="row" id="inputGroupStudentRow">
-                    <div class="col-md">
-                        <button class="btn btn-label-warning d-flex justify content-end w-100" id="cancelStudentButton">
-                            <i class='bx bx-search-alt'></i>Search
-                        </button>
-                    </div>
-                    <div class="col-md">
-                        <input type="text" class="form-control" name="first_name" placeholder="First Name" />
-                    </div>
-                    <div class="col-md">
-                        <input type="text" class="form-control" name="middle_name" placeholder="Middle Name" />
-                    </div>
-                    <div class="col-md">
-                        <input type="text" class="form-control" name="suffix" placeholder="Suffix. (optional)" />
-                    </div>
-                    <div class="col-md">
-                        <input type="text" class="form-control" name="last_name" placeholder="Last Name" />
-                    </div>
-                </div>
-            </div>
-
-            {{-- Defense Details Section --}}
-            <div class="row mt-5">
-                <div class="col-md">
-                    <label for="defense_date" class="form-label">Defense Date</label>
-                    <input type="date" class="form-control" id="defense_date" name="defense_date" />
-                </div>
-                <div class="col-md">
-                    <label for="defense_time" class="form-label">Defense Time</label>
-                    <input type="time" class="form-control" id="defense_time" name="defense_time" />
-                </div>
-            </div>
-
-            <div class="row mt-2">
-                <div class="col-md">
-                    <label for="degree" class="form-label">Select Degree</label>
-                    <select class="form-select" id="degree" name="degree">
-                        <option value="">Select Degree</option>
-                        <option value="masteral">Masteral</option>
-                        <option value="doctoral">Doctoral</option>
-                    </select>
-                </div>
-                <div class="col-md">
-                    <label for="defense" class="form-label">Select Defense</label>
-                    <select class="form-select" id="defense" name="defense">
-                        <option value="">Select Defense</option>
-                        <option value="proposal">Proposal</option>
-                        <option value="pre-oral">Pre-Oral</option>
-                        <option value="final">Final</option>
-                    </select>
-                </div>
-            </div>
-
-            {{-- Adviser & Chairperson Section --}}
-            <div class="row mt-4">
-                <div class="col-md">
-                    <label for="adviser" class="form-label">Select Adviser</label>
-                    <select class="form-select" id="adviser" name="adviser">
-                        <option value="">Search/Select Adviser</option>
-                    </select>
-                </div>
-                <div class="col-md">
-                    <label for="chairperson" class="form-label">Select Chairperson</label>
-                    <select class="form-select" id="chairperson" name="chairperson">
-                        <option value="">Search/Select Chairperson</option>
-                    </select>
-                </div>
-            </div>
-
-            {{-- Members Section --}}
-            <div class="mt-5">
-                @for ($i = 1; $i <= 4; $i++)
-                    <div class="row mt-2">
-                        <label class="form-label">Member {{ $i }}</label>
-                    </div>
-                    <div class="memberFormField" id="memberFormField_{{ $i }}">
-                        <div class="row">
-                            <div class="col-md">
-                                <select class="form-select degree" name="member_type_{{ $i }}">
-                                    <option value="">Select Member Type</option>
-                                    <option value="internal">Internal Member</option>
-                                    <option value="external">External Member</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="mt-2 searchMemberDiv">
-                            <div class="row searchMemberRow">
-                                <div class="col-md-10">
-                                    <select class="form-select member" name="member_{{ $i }}">
-                                        <option value="">Search/Select Member</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-2">
-                                    <button class="btn btn-label-primary w-100 addMemberButton">
-                                        <i class='bx bx-user-plus'></i>Create Member
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="mt-2 inputGroupMemberDiv" style="display: none">
-                            <div class="row inputGroupMemberRow">
-                                <div class="col-md">
-                                    <button class="btn btn-label-warning w-100 cancelMemberButton">
-                                        <i class='bx bx-search-alt'></i>Search a Member
-                                    </button>
-                                </div>
-                                <div class="col-md">
-                                    <input type="text" class="form-control" name="member_{{ $i }}_first_name" placeholder="First Name" />
-                                </div>
-                                <div class="col-md">
-                                    <input type="text" class="form-control" name="member_{{ $i }}_middle_name" placeholder="Middle Name" />
-                                </div>
-                                <div class="col-md">
-                                    <input type="text" class="form-control" name="member_{{ $i }}_suffix" placeholder="Suffix (optional)" />
-                                </div>
-                                <div class="col-md">
-                                    <input type="text" class="form-control" name="member_{{ $i }}_last_name" placeholder="Last Name" />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                @endfor
-            </div>
-
-            {{-- Recorder Section --}}
-            <div class="row mt-5">
-                <label for="recorder" class="form-label">Recorder</label>
-            </div>
-            <div class="recorderFormField">
-                <div class="searchRecorderDiv">
-                    <div class="row searchRecorderRow">
+                <div id="searchStudentDiv">
+                    <div class="row" id="searchStudentRow">
                         <div class="col-md-10">
-                            <select class="form-select recorder" name="recorder">
-                                <option value="">Search/Select Recorder</option>
+                            <select class="form-select" id="student" name="student_id">
+                                <option value="">Search/Select Student</option>
                             </select>
                         </div>
                         <div class="col-md-2">
-                            <button class="btn btn-label-primary w-100 addRecorderButton">
-                                <i class='bx bx-user-plus'></i>Create Recorder
+                            <button type="button" class="btn btn-label-primary w-100" id="addStudentButton">
+                                <i class='bx bx-user-plus'></i>Add Student
                             </button>
                         </div>
                     </div>
                 </div>
-                <div class="mt-2 inputGroupRecorderDiv" style="display: none">
-                    <div class="row inputGroupRecorderRow">
+                <div id="inputGroupStudentDiv" style="display: none">
+                    <div class="row" id="inputGroupStudentRow">
                         <div class="col-md">
-                            <button class="btn btn-label-warning w-100 cancelRecorderButton">
-                                <i class='bx bx-search-alt'></i>Search a Recorder
+                            <button type="button" class="btn btn-label-warning d-flex justify content-end w-100" id="cancelStudentButton">
+                                <i class='bx bx-search-alt'></i>Search
                             </button>
                         </div>
                         <div class="col-md">
-                            <input type="text" class="form-control" name="recorder_first_name" placeholder="First Name" />
+                            <input type="text" class="form-control" name="student_first_name" placeholder="First Name" />
                         </div>
                         <div class="col-md">
-                            <input type="text" class="form-control" name="recorder_middle_name" placeholder="Middle Name" />
+                            <input type="text" class="form-control" name="student_middle_name" placeholder="Middle Name" />
                         </div>
                         <div class="col-md">
-                            <input type="text" class="form-control" name="recorder_suffix" placeholder="Suffix (optional)" />
+                            <input type="text" class="form-control" name="student_suffix" placeholder="Suffix. (optional)" />
                         </div>
                         <div class="col-md">
-                            <input type="text" class="form-control" name="recorder_last_name" placeholder="Last Name" />
+                            <input type="text" class="form-control" name="student_last_name" placeholder="Last Name" />
                         </div>
                     </div>
                 </div>
-            </div>
 
-            {{-- Action Buttons --}}
-            <div class="row mt-3">
-                <div class="col-md d-flex justify-content-end">
-                    <button type="submit" class="btn btn-primary" id="saveFormButton">Save</button>
-                    <button type="button" class="btn btn-label-danger ms-2" id="cancelFormButton">Cancel</button>
+                {{-- Defense Details Section --}}
+                <div class="row mt-5">
+                    <div class="col-md">
+                        <label for="defense_date" class="form-label">Defense Date</label>
+                        <input type="date" class="form-control" id="defense_date" name="defense_date" required />
+                    </div>
+                    <div class="col-md">
+                        <label for="defense_time" class="form-label">Defense Time</label>
+                        <input type="time" class="form-control" id="defense_time" name="defense_time" required />
+                    </div>
                 </div>
-            </div>
+
+                {{-- Degree & Defense Section --}}
+                <div class="row mt-2">
+                    <div class="col-md">
+                        <label for="degree" class="form-label">Select Degree</label>
+                        <select class="form-select" id="degree" name="degree" required>
+                            <option value="">Select Degree</option>
+                            <option value="masteral">Masteral</option>
+                            <option value="doctoral">Doctoral</option>
+                        </select>
+                    </div>
+                    <div class="col-md">
+                        <label for="defense" class="form-label">Select Defense</label>
+                        <select class="form-select" id="defense" name="defense_type" required>
+                            <option value="">Select Defense</option>
+                            <option value="proposal">Proposal</option>
+                            <option value="pre-oral">Pre-Oral</option>
+                            <option value="final">Final</option>
+                        </select>
+                    </div>
+                </div>
+
+                {{-- Adviser & Chairperson Section --}}
+                <div class="row mt-4">
+                    <div class="col-md">
+                        <label for="adviser" class="form-label">Select Adviser</label>
+                        <select class="form-select" id="adviser" name="adviser_id" required>
+                            <option value="">Search/Select Adviser</option>
+                        </select>
+                    </div>
+                    <div class="col-md">
+                        <label for="chairperson" class="form-label">Select Chairperson</label>
+                        <select class="form-select" id="chairperson" name="chairperson_id" required>
+                            <option value="">Search/Select Chairperson</option>
+                        </select>
+                    </div>
+                </div>
+
+                {{-- Members Section --}}
+                <div class="mt-5">
+                    @for ($i = 1; $i <= 4; $i++)
+                        <div class="row mt-2">
+                            <label class="form-label">Member {{ $i }}</label>
+                        </div>
+                        <div class="memberFormField" id="memberFormField_{{ $i }}">
+                            <div class="row">
+                                <div class="col-md">
+                                    <select class="form-select degree" name="member_type_{{ $i }}" required>
+                                        <option value="">Select Member Type</option>
+                                        <option value="internal">Internal Member</option>
+                                        <option value="external">External Member</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="mt-2 searchMemberDiv">
+                                <div class="row searchMemberRow">
+                                    <div class="col-md-10">
+                                        <select class="form-select member" name="member_{{ $i }}_id">
+                                            <option value="">Search/Select Member</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <button type="button" class="btn btn-label-primary w-100 addMemberButton">
+                                            <i class='bx bx-user-plus'></i>Create Member
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-2 inputGroupMemberDiv" style="display: none">
+                                <div class="row inputGroupMemberRow">
+                                    <div class="col-md">
+                                        <button type="button" class="btn btn-label-warning w-100 cancelMemberButton">
+                                            <i class='bx bx-search-alt'></i>Search a Member
+                                        </button>
+                                    </div>
+                                    <div class="col-md">
+                                        <input type="text" class="form-control" name="member_{{ $i }}_first_name" placeholder="First Name" />
+                                    </div>
+                                    <div class="col-md">
+                                        <input type="text" class="form-control" name="member_{{ $i }}_middle_name" placeholder="Middle Name" />
+                                    </div>
+                                    <div class="col-md">
+                                        <input type="text" class="form-control" name="member_{{ $i }}_suffix" placeholder="Suffix (optional)" />
+                                    </div>
+                                    <div class="col-md">
+                                        <input type="text" class="form-control" name="member_{{ $i }}_last_name" placeholder="Last Name" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @endfor
+                </div>
+
+                {{-- Recorder Section --}}
+                <div class="row mt-5">
+                    <label for="recorder" class="form-label">Recorder</label>
+                </div>
+                <div class="recorderFormField">
+                    <div class="searchRecorderDiv">
+                        <div class="row searchRecorderRow">
+                            <div class="col-md-10">
+                                <select class="form-select recorder" name="recorder_id" required>
+                                    <option value="">Search/Select Recorder</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <button type="button" class="btn btn-label-primary w-100 addRecorderButton">
+                                    <i class='bx bx-user-plus'></i>Create Recorder
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-2 inputGroupRecorderDiv" style="display: none">
+                        <div class="row inputGroupRecorderRow">
+                            <div class="col-md">
+                                <button type="button" class="btn btn-label-warning w-100 cancelRecorderButton">
+                                    <i class='bx bx-search-alt'></i>Search a Recorder
+                                </button>
+                            </div>
+                            <div class="col-md">
+                                <input type="text" class="form-control" name="recorder_first_name" placeholder="First Name" />
+                            </div>
+                            <div class="col-md">
+                                <input type="text" class="form-control" name="recorder_middle_name" placeholder="Middle Name" />
+                            </div>
+                            <div class="col-md">
+                                <input type="text" class="form-control" name="recorder_suffix" placeholder="Suffix (optional)" />
+                            </div>
+                            <div class="col-md">
+                                <input type="text" class="form-control" name="recorder_last_name" placeholder="Last Name" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Action Buttons --}}
+                <div class="row mt-3">
+                    <div class="col-md d-flex justify-content-end">
+                        <button type="submit" class="btn btn-primary" id="saveFormButton">Save</button>
+                        <button type="button" class="btn btn-label-danger ms-2" id="cancelFormButton">Cancel</button>
+                    </div>
+                </div>
+            </form>
         </div>
     </div>
 
     {{-- new entry button --}}
-    <div class="row mt-3">
+    <div class="row mt-4">
         <div class="col-md d-flex justify-content-end">
             <button class="btn btn-primary" id="addNewThesisEntryButton">Add New Entry</button>
         </div>

@@ -36,7 +36,7 @@ return new class extends Migration
             $table->foreign('degree_id')->references('id')->on('thesis_degree');
             $table->foreign('defense_id')->references('id')->on('thesis_defense');
 
-            
+
         });
     }
 
