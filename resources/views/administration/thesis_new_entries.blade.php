@@ -91,7 +91,7 @@
                 </div>
 
                 {{-- Adviser & Chairperson Section --}}
-                <div class="row mt-4">
+                <div class="row mt-2">
                     <div class="col-md">
                         <label for="adviser" class="form-label">Select Adviser</label>
                         <select class="form-select" id="adviser" name="adviser_id" required>
