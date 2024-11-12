@@ -52,7 +52,7 @@
                         <div class="row mt-2">
                             <div class="col-md">
                                 <label for="degree" class="form-label">Select Degree</label>
-                                <select class="form-select" id="degree" name="degree" required>
+                                <select class="form-select" id="editDegree" name="degree" required>
                                     <option value="">Select Degree</option>
                                     <option value="masteral">Masteral</option>
                                     <option value="doctoral">Doctoral</option>
@@ -60,11 +60,9 @@
                             </div>
                             <div class="col-md">
                                 <label for="defense" class="form-label">Select Defense</label>
-                                <select class="form-select" id="defense" name="defense_type" required>
+                                <select class="form-select" id="editDefense" name="defense_type" required>
                                     <option value="">Select Defense</option>
-                                    <option value="proposal">Proposal</option>
-                                    <option value="pre-oral">Pre-Oral</option>
-                                    <option value="final">Final</option>
+                                    
                                 </select>
                             </div>
                         </div>
@@ -522,6 +520,42 @@
 <script>
     $(document).ready(function() {
 
+         // Load defense types
+         $.ajax({
+            url: '{{ route('thesis.getDefenseTypes') }}',
+            type: 'GET',
+            dataType: 'json',
+            success: function(data) {
+                let defenseSelect = $('#defense, #editDefense');
+                defenseSelect.empty();
+                defenseSelect.append('<option value="">Select Defense...</option>');
+                data.forEach(function(item) {
+                    defenseSelect.append(`<option value="${item.id}">${item.name}</option>`);
+                });
+            },
+            error: function(xhr, status, error) {
+                console.error('Error loading defense types:', error);
+            }
+        });
+
+        // Load degrees
+        $.ajax({
+            url: '{{ route('thesis.getDegrees') }}',
+            type: 'GET',
+            dataType: 'json',
+            success: function(data) {
+                let degreeSelect = $('#degree, #editDegree');
+                degreeSelect.empty();
+                degreeSelect.append('<option value="">Select Degree...</option>');
+                data.forEach(function(item) {
+                    degreeSelect.append(`<option value="${item.id}">${item.name}</option>`);
+                });
+            },
+            error: function(error) {
+                console.error('Error loading degrees:', error);
+            }
+        });
+
         $('#student').select2({
             placeholder: 'Search Student...',
             allowClear: true,
@@ -627,41 +661,7 @@
             });
         }
 
-        // Load defense types
-        $.ajax({
-            url: '{{ route('thesis.getDefenseTypes') }}',
-            type: 'GET',
-            dataType: 'json',
-            success: function(data) {
-                let defenseSelect = $('#defense');
-                defenseSelect.empty();
-                defenseSelect.append('<option value="">Select Defense Type...</option>');
-                data.forEach(function(item) {
-                    defenseSelect.append(`<option value="${item.id}">${item.name}</option>`);
-                });
-            },
-            error: function(xhr, status, error) {
-                console.error('Error loading defense types:', error);
-            }
-        });
-
-        // Load degrees
-        $.ajax({
-            url: '{{ route('thesis.getDegrees') }}',
-            type: 'GET',
-            dataType: 'json',
-            success: function(data) {
-                let degreeSelect = $('#degree');
-                degreeSelect.empty();
-                degreeSelect.append('<option value="">Select Degree...</option>');
-                data.forEach(function(item) {
-                    degreeSelect.append(`<option value="${item.id}">${item.name}</option>`);
-                });
-            },
-            error: function(error) {
-                console.error('Error loading degrees:', error);
-            }
-        });
+       
 
         // Handle form toggles
         const formToggles = [
