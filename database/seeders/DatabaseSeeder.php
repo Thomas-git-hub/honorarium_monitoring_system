@@ -27,6 +27,9 @@ class DatabaseSeeder extends Seeder
             DefenseSeeder::class,
             DegreeSeeder::class,
             DefensePositionSeeder::class,
+            StudentSeeder::class,
+            MemberSeeder::class,
+            RecorderSeeder::class,
         ]);
     }
 }

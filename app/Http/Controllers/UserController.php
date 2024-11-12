@@ -51,11 +51,11 @@ class UserController extends Controller
             return response()->json(['success' => false, 'message' => 'User already has an account'], 200);
         }
 
-        $user = DB::connection('ors_pgsql')->table('employee_user')->where('email', $request->email)->first();
+        $user = DB::connection('ibu_test')->table('employee_user')->where('email', $request->email)->first();
 
         if ($user) {
 
-            $employeeDetails = DB::connection('ors_pgsql')->table('employee')
+            $employeeDetails = DB::connection('ibu_test')->table('employee')
             ->where('id', $user->id)
             ->first();
 
@@ -141,7 +141,7 @@ class UserController extends Controller
     public function list(Request $request)
     {
 
-        $ibu_dbcon = DB::connection('ors_pgsql');
+        $ibu_dbcon = DB::connection('ibu_test');
 
         $employeeIds =  $ibu_dbcon->table('employee')->pluck('id');
 
@@ -227,12 +227,12 @@ class UserController extends Controller
             })
 
             ->editColumn('created_at', function($user) use($ibu_dbcon) {
-                return $user->created_at? $user->created_at->format('m/d/Y') : now();
+                return $user->created_at->format('m/d/Y');
             })
 
             ->editColumn('college', function($user) {
                 if($user->college_id){
-                    $collegeDetails = DB::connection('ors_pgsql')->table('college')
+                    $collegeDetails = DB::connection('ibu_test')->table('college')
                     ->where('id', $user->college_id)
                     ->first();
                     return $collegeDetails->college_shortname;
@@ -257,7 +257,7 @@ class UserController extends Controller
         $searchTerm = ucfirst($searchTerm);
 
         // Join the 'employee' and 'employee_user' tables to get the email
-        $faculties = DB::connection('ors_pgsql')
+        $faculties = DB::connection('ibu_test')
                     ->table('employee')
                     ->join('employee_user', 'employee.id', '=', 'employee_user.id')
                     ->join('college', 'employee.college_id', '=', 'college.id')

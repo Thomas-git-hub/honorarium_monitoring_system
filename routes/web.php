@@ -155,6 +155,20 @@ Route::middleware(['auth_check', '419'])->group(function () {
 
         // New Route as of Nov 4
         Route::get('/thesis_new_entries', [ThesisNewEntriesController::class, 'thesisNewEntries'])->name('thesis.newEntries');
+        Route::get('/getStudent', [ThesisNewEntriesController::class, 'getStudent'])->name('thesis.getStudent');
+        Route::get('/getMembers', [ThesisNewEntriesController::class, 'getMembers'])->name('thesis.getMembers');
+        Route::get('/getDegrees', [ThesisNewEntriesController::class, 'getDegrees'])->name('thesis.getDegrees');
+        Route::get('/getRecorder', [ThesisNewEntriesController::class, 'getRecorder'])->name('thesis.getRecorder');
+        Route::get('/getDefenseTypes', [ThesisNewEntriesController::class, 'getDefenseTypes'])->name('thesis.getDefenseTypes');
+        Route::post('/thesis/store', [ThesisNewEntriesController::class, 'store'])->name('thesis.store');
+        Route::get('/thesis/list', [ThesisNewEntriesController::class, 'list'])->name('thesis.list');
+
+        Route::get('/thesis/check-data', [ThesisNewEntriesController::class, 'checkData'])->name('thesis.checkData');
+
+        
+
+
+
     // });
 
     //END SUPERADMIN ACCESS
@@ -162,4 +176,6 @@ Route::middleware(['auth_check', '419'])->group(function () {
 });
 
 //END AUTHENTICATED ACCESS
+
+// Add this route with your other thesis routes
 

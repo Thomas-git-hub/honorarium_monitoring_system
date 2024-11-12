@@ -11,4 +11,18 @@ class Member extends Model
 
     protected $table = 'thesis_member';
 
+    protected $fillable = [
+        'first_name',
+        'middle_name',
+        'last_name',
+        'suffix',
+        'member_type',
+        'status',
+        'created_by',
+        'updated_by',
+        'created_at',
+        'updated_at',
+       
+    ];
+
 }
