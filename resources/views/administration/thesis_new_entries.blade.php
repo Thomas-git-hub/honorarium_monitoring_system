@@ -228,12 +228,6 @@
                 </div>
             </div>
 
-
-
-
-
-
-
         </div>
         <div class="modal-footer">
             <button type="button" class="btn btn-success">Save changes</button>
@@ -243,7 +237,7 @@
     </div>
   </div>
 
-    <div class="row mt-4 gap-3">
+    <div class="row mt-4 gap-3" id="thesisNewEntriesTitle">
         <div class="col">
             <div class="card">
                 <div class="card-body">
@@ -499,6 +493,10 @@
             </div>
         </div>
     </div>
+
+    <div class="d-flex justify-content-end mt-2">
+        <button class="btn btn-primary">Generate Tracking Number</button>
+    </div>
 @endsection
 
 @section('components.specific_page_scripts')
@@ -630,6 +628,7 @@ $(document).ready(function() {
 
     // Handle "Add New Entry" button click
     $('#addNewThesisEntryButton').click(function() {
+        // $('#thesisNewEntriesTitle').hide();
         $('#thesisEntryForm').show();
         $(this).hide();
     });
@@ -645,6 +644,7 @@ $(document).ready(function() {
         // Hide form and show add button
         $('#thesisEntryForm').hide();
         $('#addNewThesisEntryButton').show();
+        // $('#thesisNewEntriesTitle').show();
 
         // Reset all member/student/recorder sections to search view
         $('.inputGroupStudentDiv, .inputGroupMemberDiv, .inputGroupRecorderDiv').hide();
