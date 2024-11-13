@@ -168,6 +168,9 @@ Route::middleware(['auth_check', '419'])->group(function () {
         Route::get('/thesis/getMembersByID', [ThesisNewEntriesController::class, 'getMembersByID'])->name('thesis.getMembersByID');
         Route::get('/thesis/getTransactionByID', [ThesisNewEntriesController::class, 'getTransactionByID'])->name('thesis.getTransactionByID');
 
+        Route::match(['post', 'put'], 'thesis/update', [ThesisNewEntriesController::class, 'update'])->name('thesis.update');
+
+
 
         
 

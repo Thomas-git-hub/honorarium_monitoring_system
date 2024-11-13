@@ -351,7 +351,7 @@ class ThesisNewEntriesController extends Controller
         if ($lastBatch) {
             // Extract the number before the dash
             $batchParts = explode(' - ', $lastBatch->tracking_number);
-            $lastNumber = intval($batchParts[0]);
+            $lastNumber = preg_replace('/\D/', '', $batchParts[0]);
         }
 
         // Increment the batch number
@@ -362,7 +362,7 @@ class ThesisNewEntriesController extends Controller
         $date = now()->format('mdy');
 
         // Generate the new tracking_number
-        $newBatchId = "00{$newNumber} - {$date}";
+        $newBatchId = "THS{$newNumber} - {$date}";
 
         foreach ($transactions as $transaction) {
             $transaction->tracking_number = $newBatchId;
@@ -420,11 +420,35 @@ class ThesisNewEntriesController extends Controller
         $id = $request->id;
 
         $thesisEntry = ThesisTransaction::findOrFail($id);
+        $ibu_dbcon = DB::connection('ibu_test');
 
         $student = Student::where('id',  $thesisEntry->student_id)->first();
         $defense = Defense::where('id',  $thesisEntry->defense_id)->first();
         $degree = Degree::where('id',  $thesisEntry->degree_id)->first();
         $recorder = Recorder::where('id',  $thesisEntry->recorder_id)->first();
+
+        $adviser = $ibu_dbcon->table('employee')
+        ->where('id', $thesisEntry->adviser_id)
+        ->first();
+
+        $chairperson = $ibu_dbcon->table('employee')
+        ->where('id', $thesisEntry->chairperson_id)
+        ->first();
+
+        $memberIds = json_decode($thesisEntry->member_ids);
+        $members = Member::whereIn('id', $memberIds)->get();
+
+         // Prepare member data
+        $membersData = $members->map(function ($member) {
+            return [
+                'id' => $member->id,
+                'first_name' => $member->first_name,
+                'middle_name' => $member->middle_name,
+                'last_name' => $member->last_name,
+                'suffix' => $member->suffix,
+                'member_type' => $member->member_type,
+            ];
+        });
 
         return response()->json([
             'thesisEntry' => $thesisEntry,
@@ -432,6 +456,92 @@ class ThesisNewEntriesController extends Controller
             'defense' => $defense,
             'degree' => $degree,
             'recorder' => $recorder,
+            'adviser' => $adviser,
+            'chairperson' => $chairperson,
+            'members' => $membersData,
         ]);
+    }
+
+    public function update(Request $request)
+    {
+        try {
+            DB::beginTransaction();
+
+            $id = $request->thesis_id;
+
+            // Find the thesis entry
+            $thesisEntry = ThesisTransaction::findOrFail($id);
+
+            // Update Student
+            if ($request->student_id) {
+                $student = Student::findOrFail($request->student_id);
+                $student->update([
+                    'first_name' => ucfirst($request->student_first_name),
+                    'middle_name' => ucfirst($request->student_middle_name),
+                    'last_name' => ucfirst($request->student_last_name),
+                    'suffix' => $request->student_suffix,
+                    'updated_by' => Auth::user()->id,
+                ]);
+            }
+
+            // Update Members
+            $member_ids = [];
+            for ($i = 1; $i <= 4; $i++) {
+                $member_id = $request->input("member_id_{$i}");
+                if ($member_id) {
+                    $member = Member::findOrFail($member_id);
+                    $member->update([
+                        'first_name' => ucfirst($request->input("member_first_name_{$i}")),
+                        'middle_name' => ucfirst($request->input("member_middle_name_{$i}")),
+                        'last_name' => ucfirst($request->input("member_last_name_{$i}")),
+                        'suffix' => $request->input("member_suffix_{$i}"),
+                        'member_type' => $request->input("member_type_{$i}"),
+                        'updated_by' => Auth::user()->id,
+                    ]);
+                    $member_ids[] = $member->id;
+                }
+            }
+
+            // Update Recorder
+            if ($request->recorder_id) {
+                $recorder = Recorder::findOrFail($request->recorder_id);
+                $recorder->update([
+                    'first_name' => ucfirst($request->recorder_first_name),
+                    'middle_name' => ucfirst($request->recorder_middle_name),
+                    'last_name' => ucfirst($request->recorder_last_name),
+                    'suffix' => $request->recorder_suffix,
+                    'updated_by' => Auth::user()->id,
+                ]);
+            }
+
+            // Update Thesis Transaction
+            $thesisEntry->update([
+                'degree_id' => $request->degree,
+                'defense_id' => $request->defense_type,
+                'adviser_id' => $request->adviser_id,
+                'chairperson_id' => $request->chairperson_id,
+                'member_ids' => json_encode($member_ids),
+                'or_number' => $request->or_number,
+                'defense_date' => $request->defense_date,
+                'defense_time' => $request->defense_time,
+                'updated_by' => Auth::user()->id,
+                'updated_on' => Auth::user()->office_id,
+            ]);
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Thesis entry updated successfully',
+                'data' => $thesisEntry
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'Error updating thesis entry: ' . $e->getMessage()
+            ], 500);
+        }
     }
 }

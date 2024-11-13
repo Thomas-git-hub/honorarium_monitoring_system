@@ -17,18 +17,21 @@
                                 <label for="student" class="form-label">Student Name</label>
                             </div>
                             <div id="editInputGroupStudentDiv">
+                                <input type="hidden" class="form-control" name="thesis_id" />
+                                <input type="hidden" class="form-control" name="student_id" id="student_id" />
+
                                 <div class="row" id="inputGroupStudentRow">
                                     <div class="col-md">
-                                        <input type="text" class="form-control" name="student_first_name" placeholder="First Name" />
+                                        <input type="text" class="form-control required-field " name="student_first_name" placeholder="First Name" />
                                     </div>
                                     <div class="col-md">
-                                        <input type="text" class="form-control" name="student_middle_name" placeholder="Middle Name" />
+                                        <input type="text" class="form-control required-field" name="student_middle_name" placeholder="Middle Name" />
                                     </div>
                                     <div class="col-md">
-                                        <input type="text" class="form-control" name="student_suffix" placeholder="Suffix. (optional)" />
+                                        <input type="text" class="form-control required-field" name="student_suffix" placeholder="Suffix. (optional)" />
                                     </div>
                                     <div class="col-md">
-                                        <input type="text" class="form-control" name="student_last_name" placeholder="Last Name" />
+                                        <input type="text" class="form-control required-field" name="student_last_name" placeholder="Last Name" />
                                     </div>
                                 </div>
                             </div>
@@ -37,29 +40,29 @@
                         <div class="row mt-4">
                             <div class="col-md">
                                 <label for="defense_date" class="form-label">Defense Date</label>
-                                <input type="date" class="form-control" id="ediDefensedate" name="defense_date" required />
+                                <input type="date" class="form-control required-field" id="ediDefensedate" name="defense_date" required />
                             </div>
                             <div class="col-md">
                                 <label for="defense_time" class="form-label">Defense Time</label>
-                                <input type="time" class="form-control" id="editDefenseTime" name="defense_time" required />
+                                <input type="time" class="form-control required-field" id="editDefenseTime" name="defense_time" required />
                             </div>
                             <div class="col-md">
                                 <label for="or_number" class="form-label">OR#</label>
-                                <input type="" class="form-control" id="orNumber" name="or_number" required />
+                                <input type="" class="form-control required-field" id="orNumber" name="or_number" required />
                             </div>
                         </div>
 
                         <div class="row mt-2">
                             <div class="col-md">
                                 <label for="degree" class="form-label">Select Degree</label>
-                                <select class="form-select" id="editDegree" name="degree" required>
+                                <select class="form-select required-field" id="editDegree" name="degree" required>
                                     <option value="">Select Degree</option>
                                    
                                 </select>
                             </div>
                             <div class="col-md">
                                 <label for="defense" class="form-label">Select Defense</label>
-                                <select class="form-select" id="editDefense" name="defense_type" required>
+                                <select class="form-select required-field" id="editDefense" name="defense_type" required>
                                     <option value="">Select Defense</option>
                                     
                                 </select>
@@ -69,13 +72,13 @@
                         <div class="row mt-2">
                             <div class="col-md">
                                 <label for="adviser" class="form-label">Select Adviser</label>
-                                <select class="form-select" id="editAdviser" name="adviser_id" required>
+                                <select class="form-select required-field" id="editAdviser" name="adviser_id" required>
                                     <option value="">Search/Select Adviser</option>
                                 </select>
                             </div>
                             <div class="col-md">
                                 <label for="chairperson" class="form-label">Select Chairperson</label>
-                                <select class="form-select" id="editChairperson" name="chairperson_id" required>
+                                <select class="form-select required-field" id="editChairperson" name="chairperson_id" required>
                                     <option value="">Search/Select Chairperson</option>
                                 </select>
                             </div>
@@ -87,26 +90,27 @@
                             </div>
                             <div class="row">
                                 <div class="col-md">
-                                    <select class="form-select degree" name="" required>
+                                    <input type="hidden" class="form-control" name="member_id_1" />
+                                    <select class="form-select " name="member_type_1" required>
                                         <option value="">Select Member Type</option>
-                                        <option value="internal">Internal Member</option>
-                                        <option value="external">External Member</option>
+                                        <option value="Internal Member">Internal Member</option>
+                                        <option value="External Member">External Member</option>
                                     </select>
                                 </div>
                             </div>
                             <div class="mt-2" id="editGroupMemberDiv">
                                 <div class="row" id="editGroupMemberRow">
                                     <div class="col-md">
-                                        <input type="text" class="form-control" name="member_first_name" placeholder="First Name" />
+                                        <input type="text" class="form-control" name="member_first_name_1" placeholder="First Name" />
                                     </div>
                                     <div class="col-md">
-                                        <input type="text" class="form-control" name="member_middle_name" placeholder="Middle Name" />
+                                        <input type="text" class="form-control" name="member_middle_name_1" placeholder="Middle Name" />
                                     </div>
                                     <div class="col-md">
-                                        <input type="text" class="form-control" name="member_suffix" placeholder="Suffix. (optional)" />
+                                        <input type="text" class="form-control" name="member_suffix_1" placeholder="Suffix. (optional)" />
                                     </div>
                                     <div class="col-md">
-                                        <input type="text" class="form-control" name="member_last_name" placeholder="Last Name" />
+                                        <input type="text" class="form-control" name="member_last_name_1" placeholder="Last Name" />
                                     </div>
                                 </div>
                             </div>
@@ -118,26 +122,27 @@
                             </div>
                             <div class="row">
                                 <div class="col-md">
-                                    <select class="form-select degree" name="" required>
+                                    <input type="hidden" class="form-control" name="member_id_2" />
+                                    <select class="form-select degree" name="member_type_2" required>
                                         <option value="">Select Member Type</option>
-                                        <option value="internal">Internal Member</option>
-                                        <option value="external">External Member</option>
+                                        <option value="Internal Member">Internal Member</option>
+                                        <option value="External Member">External Member</option>
                                     </select>
                                 </div>
                             </div>
                             <div class="mt-2" id="editGroupMemberDiv">
                                 <div class="row" id="editGroupMemberRow">
                                     <div class="col-md">
-                                        <input type="text" class="form-control" name="member_first_name" placeholder="First Name" />
+                                        <input type="text" class="form-control" name="member_first_name_2" placeholder="First Name" />
                                     </div>
                                     <div class="col-md">
-                                        <input type="text" class="form-control" name="member_middle_name" placeholder="Middle Name" />
+                                        <input type="text" class="form-control" name="member_middle_name_2" placeholder="Middle Name" />
                                     </div>
                                     <div class="col-md">
-                                        <input type="text" class="form-control" name="member_suffix" placeholder="Suffix. (optional)" />
+                                        <input type="text" class="form-control" name="member_suffix_2" placeholder="Suffix. (optional)" />
                                     </div>
                                     <div class="col-md">
-                                        <input type="text" class="form-control" name="member_last_name" placeholder="Last Name" />
+                                        <input type="text" class="form-control" name="member_last_name_2" placeholder="Last Name" />
                                     </div>
                                 </div>
                             </div>
@@ -149,26 +154,27 @@
                             </div>
                             <div class="row">
                                 <div class="col-md">
-                                    <select class="form-select degree" name="" required>
+                                    <input type="hidden" class="form-control" name="member_id_3" />
+                                    <select class="form-select degree" name="member_type_3" required>
                                         <option value="">Select Member Type</option>
-                                        <option value="internal">Internal Member</option>
-                                        <option value="external">External Member</option>
+                                        <option value="Internal Member">Internal Member</option>
+                                        <option value="External Member">External Member</option>
                                     </select>
                                 </div>
                             </div>
                             <div class="mt-2" id="editGroupMemberDiv">
                                 <div class="row" id="editGroupMemberRow">
                                     <div class="col-md">
-                                        <input type="text" class="form-control" name="member_first_name" placeholder="First Name" />
+                                        <input type="text" class="form-control" name="member_first_name_3" placeholder="First Name" />
                                     </div>
                                     <div class="col-md">
-                                        <input type="text" class="form-control" name="member_middle_name" placeholder="Middle Name" />
+                                        <input type="text" class="form-control" name="member_middle_name_3" placeholder="Middle Name" />
                                     </div>
                                     <div class="col-md">
-                                        <input type="text" class="form-control" name="member_suffix" placeholder="Suffix. (optional)" />
+                                        <input type="text" class="form-control" name="member_suffix_3" placeholder="Suffix. (optional)" />
                                     </div>
                                     <div class="col-md">
-                                        <input type="text" class="form-control" name="member_last_name" placeholder="Last Name" />
+                                        <input type="text" class="form-control" name="member_last_name_3" placeholder="Last Name" />
                                     </div>
                                 </div>
                             </div>
@@ -180,26 +186,27 @@
                             </div>
                             <div class="row">
                                 <div class="col-md">
-                                    <select class="form-select degree" name="" required>
+                                    <input type="hidden" class="form-control" name="member_id_4" />
+                                    <select class="form-select degree" name="member_type_4" required>
                                         <option value="">Select Member Type</option>
-                                        <option value="internal">Internal Member</option>
-                                        <option value="external">External Member</option>
+                                        <option value="Internal Member">Internal Member</option>
+                                        <option value="External Member">External Member</option>
                                     </select>
                                 </div>
                             </div>
                             <div class="mt-2" id="editGroupMemberDiv">
                                 <div class="row" id="editGroupMemberRow">
                                     <div class="col-md">
-                                        <input type="text" class="form-control" name="member_first_name" placeholder="First Name" />
+                                        <input type="text" class="form-control" name="member_first_name_4" placeholder="First Name" />
                                     </div>
                                     <div class="col-md">
-                                        <input type="text" class="form-control" name="member_middle_name" placeholder="Middle Name" />
+                                        <input type="text" class="form-control" name="member_middle_name_4" placeholder="Middle Name" />
                                     </div>
                                     <div class="col-md">
-                                        <input type="text" class="form-control" name="member_suffix" placeholder="Suffix. (optional)" />
+                                        <input type="text" class="form-control" name="member_suffix_4" placeholder="Suffix. (optional)" />
                                     </div>
                                     <div class="col-md">
-                                        <input type="text" class="form-control" name="member_last_name" placeholder="Last Name" />
+                                        <input type="text" class="form-control" name="member_last_name_4" placeholder="Last Name" />
                                     </div>
                                 </div>
                             </div>
@@ -211,23 +218,23 @@
                         <div id="editGroupRecorderDiv">
                             <div class="row" id="editGroupRecorderRow">
                                 <div class="col-md">
-                                    <input type="text" class="form-control" name="recorder_first_name" placeholder="First Name" />
+                                    <input type="text" class="form-control required-field" name="recorder_first_name" placeholder="First Name" />
                                 </div>
                                 <div class="col-md">
-                                    <input type="text" class="form-control" name="recorder_middle_name" placeholder="Middle Name" />
+                                    <input type="text" class="form-control required-field" name="recorder_middle_name" placeholder="Middle Name" />
                                 </div>
                                 <div class="col-md">
-                                    <input type="text" class="form-control" name="recorder_suffix" placeholder="Suffix. (optional)" />
+                                    <input type="text" class="form-control required-field" name="recorder_suffix" placeholder="Suffix. (optional)" />
                                 </div>
                                 <div class="col-md">
-                                    <input type="text" class="form-control" name="recorder_last_name" placeholder="Last Name" />
+                                    <input type="text" class="form-control required-field" name="recorder_last_name" placeholder="Last Name" />
                                 </div>
                             </div>
                         </div>
 
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-success">Save changes</button>
+                        <button type="button" class="btn btn-success editSubmitBtn">Save changes</button>
                     <button type="button" class="btn btn-label-danger" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>
@@ -382,8 +389,8 @@
                                 <div class="col-md">
                                     <select class="form-select degree" name="member_type_{{ $i }}">
                                         <option value="">Select Member Type</option>
-                                        <option value="internal">Internal Member</option>
-                                        <option value="external">External Member</option>
+                                        <option value="Internal Member">Internal Member</option>
+                                        <option value="External Member">External Member</option>
                                     </select>
                                     {{-- <div class="invalid-feedback">Please select member type</div> --}}
                                 </div>
@@ -550,6 +557,25 @@
 <script>
     $(document).ready(function() {
 
+         // clear fields when switching actions
+        // Clear the select field with id #student when #addStudentButton is clicked
+        $('#addStudentButton').click(function() {
+            // Clear the selected option in the student dropdown
+            $('#student').val(null).trigger('change'); // Use trigger('change') to update Select2
+        });
+        // Clear the fields with class names f_name, m_name, suffix, and l_name when #cancelStudentButton is clicked
+        $('#cancelStudentButton').click(function() {
+            $('.f_name, .m_name, .suffix, .l_name').val(''); // Clear the input fields
+        });
+        // Clear the select field with class .member when .addMemberButton is clicked
+        $('.addMemberButton').click(function() {
+            $('.member').val(null).trigger('change'); // Clear the select field
+        });
+        // Clear the input fields with specific name attributes when .cancelMemberButton is clicked
+        $('.cancelMemberButton').click(function() {
+            $('input[name*="_first_name"], input[name*="_middle_name"], input[name*="_suffix"], input[name*="_last_name"]').val(''); // Clear the input fields
+        });
+
         $('#student').select2({
             placeholder: 'Search Student...',
             allowClear: true,
@@ -597,6 +623,7 @@
                 cache: true
             }
         });
+
 
         function createSelect2Config(placeholder) {
             return {
@@ -690,26 +717,43 @@
                 console.error('Error loading degrees:', error);
             }
         });
+        
+       // Helper function to configure select2
+        function createSelect2Edit(placeholder) {
+            return {
+                placeholder: placeholder,
+                allowClear: true,
+                width: '100%',
+                dropdownParent: $('#editThesisEntriesModal'),
+                ajax: {
+                    url: '{{ route('getUser') }}',
+                    dataType: 'json',
+                    delay: 250,
+                    data: function(params) {
+                        return {
+                            search: params.term
+                        };
+                    },
+                    processResults: function(data) {
+                        return {
+                            results: data.map(function(user) {
+                                return {
+                                    id: user.id,
+                                    text: user.employee_fname + ' ' + user.employee_lname
+                                };
+                            })
+                        };
+                    }
+                }
+            };
+        }
 
-        // clear fields when switching actions
-        // Clear the select field with id #student when #addStudentButton is clicked
-        $('#addStudentButton').click(function() {
-            // Clear the selected option in the student dropdown
-            $('#student').val(null).trigger('change'); // Use trigger('change') to update Select2
-        });
-        // Clear the fields with class names f_name, m_name, suffix, and l_name when #cancelStudentButton is clicked
-        $('#cancelStudentButton').click(function() {
-            $('.f_name, .m_name, .suffix, .l_name').val(''); // Clear the input fields
-        });
-        // Clear the select field with class .member when .addMemberButton is clicked
-        $('.addMemberButton').click(function() {
-            $('.member').val(null).trigger('change'); // Clear the select field
-        });
-        // Clear the input fields with specific name attributes when .cancelMemberButton is clicked
-        $('.cancelMemberButton').click(function() {
-            $('input[name*="_first_name"], input[name*="_middle_name"], input[name*="_suffix"], input[name*="_last_name"]').val(''); // Clear the input fields
+        // Initialize select2 for adviser and chairperson fields
+        ['editAdviser', 'editChairperson'].forEach(field => {
+            $(`#${field}`).select2(createSelect2Edit('Search by Name/ID Number...'));
         });
 
+       
         // Handle form toggles
         const formToggles = [
             {
@@ -772,10 +816,7 @@
             `)
             .appendTo("head");
 
-        // Validate required fields when form is submitted
-        $('#thesisEntryFormData').on('submit', function(e) {
-
-        });
+       
 
         // Remove error class on input
         $('.required-field').on('input change', function() {
@@ -921,8 +962,32 @@
                     const defense = response.defense;
                     const degree = response.degree;
                     const recorder = response.recorder;
+                    const adviser = response.adviser;
+                    const chairperson = response.chairperson;
+                    const members = response.members;
+
+                    console.log(adviser.id);
+
+                    // Clear existing values before setting new ones
+                    $('#editThesisEntriesModal input[name="thesis_id"]').val('');
+                    $('#editThesisEntriesModal input[name="student_id"]').val('');
+                    $('#editThesisEntriesModal input[name="student_first_name"]').val('');
+                    $('#editThesisEntriesModal input[name="student_middle_name"]').val('');
+                    $('#editThesisEntriesModal input[name="student_last_name"]').val('');
+                    $('#editThesisEntriesModal input[name="student_suffix"]').val('');
+                    $('#editThesisEntriesModal input[name="defense_date"]').val('');
+                    $('#editThesisEntriesModal input[name="defense_time"]').val('');
+                    $('#editThesisEntriesModal input[name="or_number"]').val('');
+                    $('#editThesisEntriesModal select[name="degree"]').val('');
+                    $('#editThesisEntriesModal select[name="defense_type"]').val('');
+                    $('#editThesisEntriesModal input[name="recorder_first_name"]').val('');
+                    $('#editThesisEntriesModal input[name="recorder_middle_name"]').val('');
+                    $('#editThesisEntriesModal input[name="recorder_last_name"]').val('');
+                    $('#editThesisEntriesModal input[name="recorder_suffix"]').val('');
 
                     // Set the values in the modal
+                    $('#editThesisEntriesModal input[name="thesis_id"]').val(thesisEntry.id);
+                    $('#editThesisEntriesModal input[name="student_id"]').val(student.id);
                     $('#editThesisEntriesModal input[name="student_first_name"]').val(student.first_name);
                     $('#editThesisEntriesModal input[name="student_middle_name"]').val(student.middle_name);
                     $('#editThesisEntriesModal input[name="student_last_name"]').val(student.last_name);
@@ -932,21 +997,42 @@
                     $('#editThesisEntriesModal input[name="or_number"]').val(thesisEntry.or_number);
                     $('#editThesisEntriesModal select[name="degree"]').val(degree.id);
                     $('#editThesisEntriesModal select[name="defense_type"]').val(defense.id);
-                    // $('#editThesisEntriesModal select[name="adviser_id"]').val(thesisEntry.adviser_id);
-                    // $('#editThesisEntriesModal select[name="chairperson_id"]').val(thesisEntry.chairperson_id);
                     $('#editThesisEntriesModal input[name="recorder_first_name"]').val(recorder.first_name);
                     $('#editThesisEntriesModal input[name="recorder_middle_name"]').val(recorder.middle_name);
                     $('#editThesisEntriesModal input[name="recorder_last_name"]').val(recorder.last_name);
                     $('#editThesisEntriesModal input[name="recorder_suffix"]').val(recorder.suffix);
 
-                    // Populate members
-                    // const memberIds = JSON.parse(thesisEntry.member_ids);
-                    // memberIds.forEach((memberId, index) => {
-                    //     if (index < 4) { // Assuming you have 4 member fields
-                    //         $(`#editThesisEntriesModal select[name="member_type_${index + 1}"]`).val(thesisEntry.member_type[index]);
-                    //         $(`#editThesisEntriesModal select[name="member_${index + 1}_id"]`).val(memberId);
-                    //     }
-                    // });
+                    // Populate Select2 for adviser and chairperson with selected IDs
+                    const adviserSelect = $('#editThesisEntriesModal select[name="adviser_id"]');
+                    const chairpersonSelect = $('#editThesisEntriesModal select[name="chairperson_id"]');
+
+                    // Set Adviser
+                    adviserSelect.append(new Option(adviser.employee_fname + ' ' + adviser.employee_lname, adviser.id, true, true)).trigger('change');
+            
+                    // Set Chairperson
+                    chairpersonSelect.append(new Option(chairperson.employee_fname + ' ' + chairperson.employee_lname, chairperson.id, true, true)).trigger('change');
+
+                      // Clear member fields before populating
+                    for (let i = 1; i <= 4; i++) {
+                        $(`#editThesisEntriesModal input[name="member_id_${i}"]`).val('');
+                        $(`#editThesisEntriesModal input[name="member_first_name_${i}"]`).val('');
+                        $(`#editThesisEntriesModal input[name="member_middle_name_${i}"]`).val('');
+                        $(`#editThesisEntriesModal input[name="member_last_name_${i}"]`).val('');
+                        $(`#editThesisEntriesModal input[name="member_suffix_${i}"]`).val('');
+                        $(`#editThesisEntriesModal select[name="member_type_${i}"]`).val('');
+                    }
+
+                    // Populate members in the modal
+                    members.forEach((member, index) => {
+                        if (index < 4) { // Assuming you have 4 member fields
+                            $(`#editThesisEntriesModal input[name="member_id_${index + 1}"]`).val(member.id);
+                            $(`#editThesisEntriesModal input[name="member_first_name_${index + 1}"]`).val(member.first_name);
+                            $(`#editThesisEntriesModal input[name="member_middle_name_${index + 1}"]`).val(member.middle_name);
+                            $(`#editThesisEntriesModal input[name="member_last_name_${index + 1}"]`).val(member.last_name);
+                            $(`#editThesisEntriesModal input[name="member_suffix_${index + 1}"]`).val(member.suffix);
+                            $(`#editThesisEntriesModal select[name="member_type_${index + 1}"]`).val(member.member_type);
+                        }
+                    });
 
                     // Show the modal
                     $('#editThesisEntriesModal').modal('show');
@@ -1025,74 +1111,73 @@
             $('.searchStudentDiv, .searchMemberDiv, .searchRecorderDiv').show();
         });
 
-        $(document).ready(function() {
-            $('#thesisEntryFormData').off('submit').on('submit', function(e) {
+      
+        $('#thesisEntryFormData').off('submit').on('submit', function(e) {
 
-                let isValid = true;
+            let isValid = true;
 
-                    // Check all visible required fields
-                    $('.required-field:visible').each(function() {
-                        if (!$(this).val()) {
-                            $(this).addClass('error');
-                            $(this).next('.invalid-feedback').show();
-                            if ($(this).hasClass('select2-hidden-accessible')) {
-                                $(this).next('.select2-container').find('.select2-selection').addClass('error');
-                            }
-                            isValid = false;
-                        } else {
-                            $(this).removeClass('error');
-                            $(this).next('.invalid-feedback').hide();
-                            if ($(this).hasClass('select2-hidden-accessible')) {
-                                $(this).next('.select2-container').find('.select2-selection').removeClass('error');
-                            }
+                // Check all visible required fields
+                $('.required-field:visible').each(function() {
+                    if (!$(this).val()) {
+                        $(this).addClass('error');
+                        $(this).next('.invalid-feedback').show();
+                        if ($(this).hasClass('select2-hidden-accessible')) {
+                            $(this).next('.select2-container').find('.select2-selection').addClass('error');
                         }
-                    });
-
-                    if (!isValid) {
-                        e.preventDefault();
-                        return false;
-                    }
-                e.preventDefault();
-
-                // Get all form data
-                const formData = $(this).serialize();
-                $.ajax({
-                    url: '{{ route("thesis.store") }}',
-                    type: 'POST',
-                    data: formData,
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    },
-                    success: function(response) {
-                        if (response.success) {
-                            $('#thesisTable').DataTable().ajax.reload();
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Success',
-                                text: response.message || 'Thesis entry saved successfully!'
-                            });
-
-                            // Clear the form and reset it if needed
-                            $('#cancelFormButton').click();
-
-                            // Check table data or perform any additional logic
-                            checkTableData();
-
-                            // Reload the DataTable to reflect the new data
-                            $('#thesisEntriesTable').DataTable().ajax.reload();
+                        isValid = false;
+                    } else {
+                        $(this).removeClass('error');
+                        $(this).next('.invalid-feedback').hide();
+                        if ($(this).hasClass('select2-hidden-accessible')) {
+                            $(this).next('.select2-container').find('.select2-selection').removeClass('error');
                         }
-                    },
-                    error: function(xhr) {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: xhr.responseJSON?.message || 'Something went wrong!'
-                        });
                     }
                 });
+
+                if (!isValid) {
+                    e.preventDefault();
+                    return false;
+                }
+            e.preventDefault();
+
+            // Get all form data
+            const formData = $(this).serialize();
+            $.ajax({
+                url: '{{ route("thesis.store") }}',
+                type: 'POST',
+                data: formData,
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function(response) {
+                    if (response.success) {
+                        $('#thesisTable').DataTable().ajax.reload();
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success',
+                            text: response.message || 'Thesis entry saved successfully!'
+                        });
+
+                        // Clear the form and reset it if needed
+                        $('#cancelFormButton').click();
+
+                        // Check table data or perform any additional logic
+                        checkTableData();
+
+                        // Reload the DataTable to reflect the new data
+                        $('#thesisEntriesTable').DataTable().ajax.reload();
+                    }
+                },
+                error: function(xhr) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: xhr.responseJSON?.message || 'Something went wrong!'
+                    });
+                }
             });
         });
-
+    
 
         // Function to capitalize first letter of each word
         function capitalizeWords(str) {
@@ -1173,6 +1258,64 @@
                         icon: 'error',
                         title: 'Error',
                         text: xhr.responseJSON?.message || 'Something went wrong!',
+                    });
+                }
+            });
+        });
+
+        // Handle the submission of the edit form
+        $(document).on('click', '.editSubmitBtn', function() {
+
+            let isValid = true;
+
+            // Check all visible required fields
+            $('.required-field:visible').each(function() {
+                if (!$(this).val()) {
+                    $(this).addClass('error');
+                    $(this).next('.invalid-feedback').show();
+                    if ($(this).hasClass('select2-hidden-accessible')) {
+                        $(this).next('.select2-container').find('.select2-selection').addClass('error');
+                    }
+                    isValid = false;
+                } else {
+                    $(this).removeClass('error');
+                    $(this).next('.invalid-feedback').hide();
+                    if ($(this).hasClass('select2-hidden-accessible')) {
+                        $(this).next('.select2-container').find('.select2-selection').removeClass('error');
+                    }
+                }
+            });
+
+            if (!isValid) {
+               
+                return false;
+            }
+           
+            const formData = $('#editThesisEntriesModal').find('input, select').serialize() ;
+
+            $.ajax({
+                url: `/thesis/update`, // Adjust the URL as necessary
+                type: 'PUT',
+                data: formData,
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function(response) {
+                    if (response.success) {
+                        $('#thesisEntriesTable').DataTable().ajax.reload(); // Reload the DataTable
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success',
+                            text: response.message || 'Thesis entry updated successfully!'
+                        });
+                        $('#editThesisEntriesModal').modal('hide'); // Hide the modal
+                    }
+                },
+                error: function(xhr) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: xhr.responseJSON?.message || 'Something went wrong!'
                     });
                 }
             });
