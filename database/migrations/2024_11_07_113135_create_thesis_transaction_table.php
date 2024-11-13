@@ -22,7 +22,7 @@ return new class extends Migration
             $table->unsignedBigInteger('chairperson_id');
             $table->json('member_ids')->nullable();
             $table->unsignedBigInteger('recorder_id');
-            $table->integer('or_number');
+            $table->string('or_number');
             $table->string('defense_date');
             $table->string('defense_time');
             $table->string('created_by');

@@ -776,30 +776,7 @@
 
         // Validate required fields when form is submitted
         $('#thesisEntryFormData').on('submit', function(e) {
-            let isValid = true;
 
-            // Check all visible required fields
-            $('.required-field:visible').each(function() {
-                if (!$(this).val()) {
-                    $(this).addClass('error');
-                    $(this).next('.invalid-feedback').show();
-                    if ($(this).hasClass('select2-hidden-accessible')) {
-                        $(this).next('.select2-container').find('.select2-selection').addClass('error');
-                    }
-                    isValid = false;
-                } else {
-                    $(this).removeClass('error');
-                    $(this).next('.invalid-feedback').hide();
-                    if ($(this).hasClass('select2-hidden-accessible')) {
-                        $(this).next('.select2-container').find('.select2-selection').removeClass('error');
-                    }
-                }
-            });
-
-            if (!isValid) {
-                e.preventDefault();
-                return false;
-            }
         });
 
         // Remove error class on input
@@ -989,51 +966,71 @@
         // });
 
         $(document).ready(function() {
-    $('#thesisEntryFormData').on('submit', function(e) {
-        e.preventDefault();
+            $('#thesisEntryFormData').off('submit').on('submit', function(e) {
 
-        // Get all form data
-        const formData = $(this).serialize();
-        $.ajax({
-            url: '{{ route("thesis.store") }}',
-            type: 'POST',
-            data: formData,
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            },
-            success: function(response) {
-                if (response.success) {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Success',
-                        text: response.message || 'Thesis entry saved successfully!'
+                let isValid = true;
+
+                    // Check all visible required fields
+                    $('.required-field:visible').each(function() {
+                        if (!$(this).val()) {
+                            $(this).addClass('error');
+                            $(this).next('.invalid-feedback').show();
+                            if ($(this).hasClass('select2-hidden-accessible')) {
+                                $(this).next('.select2-container').find('.select2-selection').addClass('error');
+                            }
+                            isValid = false;
+                        } else {
+                            $(this).removeClass('error');
+                            $(this).next('.invalid-feedback').hide();
+                            if ($(this).hasClass('select2-hidden-accessible')) {
+                                $(this).next('.select2-container').find('.select2-selection').removeClass('error');
+                            }
+                        }
                     });
 
-                    // Clear the form and reset it if needed
-                    $('#cancelFormButton').click();
+                    if (!isValid) {
+                        e.preventDefault();
+                        return false;
+                    }
+                e.preventDefault();
 
-                    // Check table data or perform any additional logic
-                    checkTableData();
+                // Get all form data
+                const formData = $(this).serialize();
+                $.ajax({
+                    url: '{{ route("thesis.store") }}',
+                    type: 'POST',
+                    data: formData,
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Success',
+                                text: response.message || 'Thesis entry saved successfully!'
+                            });
 
-                    // Reload the DataTable to reflect the new data
-                    $('#thesisEntriesTable').DataTable().ajax.reload();
-                }
-            },
-            error: function(xhr) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: xhr.responseJSON?.message || 'Something went wrong!'
+                            // Clear the form and reset it if needed
+                            $('#cancelFormButton').click();
+
+                            // Check table data or perform any additional logic
+                            checkTableData();
+
+                            // Reload the DataTable to reflect the new data
+                            $('#thesisEntriesTable').DataTable().ajax.reload();
+                        }
+                    },
+                    error: function(xhr) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: xhr.responseJSON?.message || 'Something went wrong!'
+                        });
+                    }
                 });
-            }
+            });
         });
-    });
-
-    // Optional: handle save button click if needed
-    $('#saveFormButton').on('click', function() {
-        $('#thesisEntryFormData').submit(); // Trigger form submission
-    });
-});
 
 
         // Function to capitalize first letter of each word

@@ -18,7 +18,11 @@ class ThesisNewEntriesController extends Controller
 {
     public function thesisNewEntries()
     {
-        return view('administration.thesis_new_entries');
+        if(in_array(Auth::user()->usertype->name, ['Dean', 'Superadmin'])) {
+            return view('administration.thesis_new_entries');
+        }else{
+            abort(403, 'Unauthorized action.');
+        }
     }
 
     public function getStudent(Request $request){
@@ -89,7 +93,7 @@ class ThesisNewEntriesController extends Controller
 
             // Handle Student
             $student_id = $request->student_id;
-            if (!$student_id || $request->student_first_name) {
+            if (!$student_id && $request->student_first_name) {
                 // Create new student
                 $student = Student::create([
                     'first_name' => ucfirst($request->student_first_name),
@@ -192,7 +196,7 @@ class ThesisNewEntriesController extends Controller
         $thesisEntries = ThesisTransaction ::with(['student', 'degree', 'defense', 'recorder', 'createdBy', 'createdOn'])
             ->get();
 
-        $ibu_dbcon = DB::connection('ors_pgsql');
+        $ibu_dbcon = DB::connection('ibu_test');
 
 
         return DataTables::of($thesisEntries)

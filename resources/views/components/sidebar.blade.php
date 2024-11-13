@@ -47,6 +47,7 @@
             </a>
         </li>
 
+        @if(in_array(Auth::user()->usertype->name, ['Dean', 'Superadmin']))
         <li class="menu-item">
             <div style="margin-left: 5%; margin-top: 5%; color: #b4b0c4;">Thesis Transaction</div>
         </li>
@@ -74,6 +75,7 @@
                 <div class="text-truncate" data-i18n="Page 2">Thesis Track & Monitor</div>
             </a>
         </li>
+        @endif
 
         <li class="menu-item">
           <div style="margin-left: 5%; margin-top: 5%; color: #b4b0c4;">Transaction</div>
