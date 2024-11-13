@@ -162,8 +162,14 @@ Route::middleware(['auth_check', '419'])->group(function () {
         Route::get('/getDefenseTypes', [ThesisNewEntriesController::class, 'getDefenseTypes'])->name('thesis.getDefenseTypes');
         Route::post('/thesis/store', [ThesisNewEntriesController::class, 'store'])->name('thesis.store');
         Route::get('/thesis/list', [ThesisNewEntriesController::class, 'list'])->name('thesis.list');
-
         Route::get('/thesis/check-data', [ThesisNewEntriesController::class, 'checkData'])->name('thesis.checkData');
+        Route::delete('/thesis/delete/{id}', [ThesisNewEntriesController::class, 'destroy'])->name('thesis.destroy');
+        Route::post('/thesis/generateTrackingNum', [ThesisNewEntriesController::class, 'generateTrackingNum'])->name('thesis.generateTrackingNum');
+        Route::get('/thesis/getMembersByID', [ThesisNewEntriesController::class, 'getMembersByID'])->name('thesis.getMembersByID');
+        Route::get('/thesis/getTransactionByID', [ThesisNewEntriesController::class, 'getTransactionByID'])->name('thesis.getTransactionByID');
+
+
+        
 
         
 

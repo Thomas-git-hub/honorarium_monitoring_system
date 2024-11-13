@@ -54,8 +54,7 @@
                                 <label for="degree" class="form-label">Select Degree</label>
                                 <select class="form-select" id="editDegree" name="degree" required>
                                     <option value="">Select Degree</option>
-                                    <option value="masteral">Masteral</option>
-                                    <option value="doctoral">Doctoral</option>
+                                   
                                 </select>
                             </div>
                             <div class="col-md">
@@ -494,6 +493,7 @@
         <div class="col-md d-flex justify-content-end gap-2">
             <button class="btn btn-label-primary btn-sm" id="refresh">Refresh</button>
             <button class="btn btn-primary" id="addNewThesisEntryButton">Add New Entry</button>
+            <button class="btn btn-success" id="generateTrackingNumberButton">Generate Tracking Number</button>
         </div>
     </div>
 
@@ -510,9 +510,9 @@
         </div>
     </div>
 
-    <div class="d-flex justify-content-end mt-2">
+    {{-- <div class="d-flex justify-content-end mt-2">
         <button class="btn btn-primary" id="generateTrackingNumberButton">Generate Tracking Number</button>
-    </div>
+    </div> --}}
 
     <div class="card border border-primary trackingNumDisplay mt-2" id="trackingNumDisplay" style="display: none;">
         <div class="card-body">
@@ -549,42 +549,6 @@
 @section('components.specific_page_scripts')
 <script>
     $(document).ready(function() {
-
-         // Load defense types
-         $.ajax({
-            url: '{{ route('thesis.getDefenseTypes') }}',
-            type: 'GET',
-            dataType: 'json',
-            success: function(data) {
-                let defenseSelect = $('#defense, #editDefense');
-                defenseSelect.empty();
-                defenseSelect.append('<option value="">Select Defense...</option>');
-                data.forEach(function(item) {
-                    defenseSelect.append(`<option value="${item.id}">${item.name}</option>`);
-                });
-            },
-            error: function(xhr, status, error) {
-                console.error('Error loading defense types:', error);
-            }
-        });
-
-        // Load degrees
-        $.ajax({
-            url: '{{ route('thesis.getDegrees') }}',
-            type: 'GET',
-            dataType: 'json',
-            success: function(data) {
-                let degreeSelect = $('#degree, #editDegree');
-                degreeSelect.empty();
-                degreeSelect.append('<option value="">Select Degree...</option>');
-                data.forEach(function(item) {
-                    degreeSelect.append(`<option value="${item.id}">${item.name}</option>`);
-                });
-            },
-            error: function(error) {
-                console.error('Error loading degrees:', error);
-            }
-        });
 
         $('#student').select2({
             placeholder: 'Search Student...',
@@ -691,7 +655,41 @@
             });
         }
 
-       
+        // Load defense types
+        $.ajax({
+            url: '{{ route('thesis.getDefenseTypes') }}',
+            type: 'GET',
+            dataType: 'json',
+            success: function(data) {
+                let defenseSelect = $('#defense, #editDefense');
+                defenseSelect.empty();
+                defenseSelect.append('<option value="">Select Defense Type...</option>');
+                data.forEach(function(item) {
+                    defenseSelect.append(`<option value="${item.id}">${item.name}</option>`);
+                });
+            },
+            error: function(xhr, status, error) {
+                console.error('Error loading defense types:', error);
+            }
+        });
+
+        // Load degrees
+        $.ajax({
+            url: '{{ route('thesis.getDegrees') }}',
+            type: 'GET',
+            dataType: 'json',
+            success: function(data) {
+                let degreeSelect = $('#degree, #editDegree');
+                degreeSelect.empty();
+                degreeSelect.append('<option value="">Select Degree...</option>');
+                data.forEach(function(item) {
+                    degreeSelect.append(`<option value="${item.id}">${item.name}</option>`);
+                });
+            },
+            error: function(error) {
+                console.error('Error loading degrees:', error);
+            }
+        });
 
         // clear fields when switching actions
         // Clear the select field with id #student when #addStudentButton is clicked
@@ -801,6 +799,43 @@
             }
         });
 
+        window.showMembersAlert = function(id) {
+
+            $.ajax({
+                url: '{{ route("thesis.getMembersByID") }}', // Route to get members by ID
+                type: 'GET',
+                data: { id: id }, // Return the id to the backend
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') // CSRF token for security
+                },
+                success: function(members) {
+
+                    const membersString = Object.keys(members).map(lastName => {
+                        const member = members[lastName];
+                        return `<strong>Member Type:</strong> ${member.member_type}<br><strong>Name:</strong> ${member.first_name} ${lastName}`;
+                    }).join('<br><br>');
+
+                    Swal.fire({
+                        title: 'Member(s)',
+                        html: membersString,
+                        confirmButtonText: 'Got it',
+                        confirmButtonColor: '#007bff',
+                        footer: 'Viewing members for thesis entry.'
+                    });
+                   
+                },
+                error: function(xhr) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: xhr.responseJSON?.message || 'Something went wrong!',
+                    });
+                }
+            });
+           
+        };
+
+        console.log(typeof showMembersAlert); 
 
         // DataTable initialization
         const thesisTable = $('#thesisEntriesTable').DataTable({
@@ -823,10 +858,9 @@
                 { data: 'defense', name: 'defense', title: 'Defense' },
                 { data: 'adviser', name: 'adviser', title: 'Adviser' },
                 { data: 'chairperson', name: 'chairperson', title: 'Chairperson' },
-                // { data: 'member_1', name: 'member_1', title: 'Member 1' },
-                // { data: 'member_2', name: 'member_2', title: 'Member 2' },
-                // { data: 'member_3', name: 'member_3', title: 'Member 3' },
-                // { data: 'member_4', name: 'member_4', title: 'Member 4' },
+                { data: 'membersCount', name: 'membersCount', title: 'Members', render: function(data, type, row) {
+                    return `<a href="#" onclick="showMembersAlert(${row.id})">${data}</a>`;
+                } },
                 { data: 'recorder', name: 'recorder', title: 'Recorder' },
                 { data: 'created_by', name: 'created_by', title: 'Created By' },
                 { data: 'created_on', name: 'created_on', title: 'Created On' },
@@ -839,10 +873,10 @@
                     render: function(data) {
                         return `
                             <div class="d-flex">
-                                <button type="button" class="btn btn-icon me-2 btn-label-success" data-bs-toggle="modal" data-bs-target="#editThesisEntriesModal">
+                                <button type="button" class="btn btn-icon me-2 btn-label-success edit-btn" data-bs-toggle="modal" data-bs-target="#editThesisEntriesModal" data-id="${data}">
                                     <span class="tf-icons bx bx-pencil bx-22px"></span>
                                 </button>
-                                <button type="button" class="btn btn-icon me-2 btn-label-danger">
+                                <button type="button" class="btn btn-icon me-2 btn-label-danger deleteThesisEntry" data-id="${data}">
                                     <span class="tf-icons bx bxs-trash bx-22px"></span>
                                 </button>
                             </div>
@@ -865,6 +899,66 @@
                 checkTableData();
             },
 
+        });
+
+
+        $(document).on('click', '.edit-btn', function() {
+            const thesisId = $(this).data('id'); // Get the thesis ID from the button's data attribute
+
+            $.ajax({
+                url: '{{ route("thesis.getTransactionByID") }}', // Route to get transaction by ID
+                type: 'GET',
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') // CSRF token for security
+                },
+                data: {
+                    id: thesisId // Pass the ID of the transaction
+                },
+                success: function(response) {
+                    // Populate the modal fields with the retrieved data
+                    const thesisEntry = response.thesisEntry;
+                    const student = response.student;
+                    const defense = response.defense;
+                    const degree = response.degree;
+                    const recorder = response.recorder;
+
+                    // Set the values in the modal
+                    $('#editThesisEntriesModal input[name="student_first_name"]').val(student.first_name);
+                    $('#editThesisEntriesModal input[name="student_middle_name"]').val(student.middle_name);
+                    $('#editThesisEntriesModal input[name="student_last_name"]').val(student.last_name);
+                    $('#editThesisEntriesModal input[name="student_suffix"]').val(student.suffix);
+                    $('#editThesisEntriesModal input[name="defense_date"]').val(thesisEntry.defense_date);
+                    $('#editThesisEntriesModal input[name="defense_time"]').val(thesisEntry.defense_time);
+                    $('#editThesisEntriesModal input[name="or_number"]').val(thesisEntry.or_number);
+                    $('#editThesisEntriesModal select[name="degree"]').val(degree.id);
+                    $('#editThesisEntriesModal select[name="defense_type"]').val(defense.id);
+                    // $('#editThesisEntriesModal select[name="adviser_id"]').val(thesisEntry.adviser_id);
+                    // $('#editThesisEntriesModal select[name="chairperson_id"]').val(thesisEntry.chairperson_id);
+                    $('#editThesisEntriesModal input[name="recorder_first_name"]').val(recorder.first_name);
+                    $('#editThesisEntriesModal input[name="recorder_middle_name"]').val(recorder.middle_name);
+                    $('#editThesisEntriesModal input[name="recorder_last_name"]').val(recorder.last_name);
+                    $('#editThesisEntriesModal input[name="recorder_suffix"]').val(recorder.suffix);
+
+                    // Populate members
+                    // const memberIds = JSON.parse(thesisEntry.member_ids);
+                    // memberIds.forEach((memberId, index) => {
+                    //     if (index < 4) { // Assuming you have 4 member fields
+                    //         $(`#editThesisEntriesModal select[name="member_type_${index + 1}"]`).val(thesisEntry.member_type[index]);
+                    //         $(`#editThesisEntriesModal select[name="member_${index + 1}_id"]`).val(memberId);
+                    //     }
+                    // });
+
+                    // Show the modal
+                    $('#editThesisEntriesModal').modal('show');
+                },
+                error: function(xhr) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: xhr.responseJSON?.message || 'Something went wrong!',
+                    });
+                }
+            });
         });
 
         function checkTableData() {
@@ -931,40 +1025,6 @@
             $('.searchStudentDiv, .searchMemberDiv, .searchRecorderDiv').show();
         });
 
-        // $('#thesisEntryFormData').on('submit', function(e) {
-        //     e.preventDefault();
-
-        //     // Get all form data
-        //     const formData = $(this).serialize();
-        //     $.ajax({
-        //         url: '{{ route("thesis.store") }}',
-        //         type: 'POST',
-        //         data: formData,
-        //         headers: {
-        //             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        //         },
-        //         success: function(response) {
-        //             if (response.success) {
-        //                 Swal.fire({
-        //                     icon: 'success',
-        //                     title: 'Success',
-        //                     text: response.message || 'Thesis entry saved successfully!'
-        //                 });
-
-        //                 $('#cancelFormButton').click();
-        //                 checkTableData();
-        //             }
-        //         },
-        //         error: function(xhr) {
-        //             Swal.fire({
-        //                 icon: 'error',
-        //                 title: 'Error',
-        //                 text: xhr.responseJSON?.message || 'Something went wrong!'
-        //             });
-        //         }
-        //     });
-        // });
-
         $(document).ready(function() {
             $('#thesisEntryFormData').off('submit').on('submit', function(e) {
 
@@ -1005,6 +1065,7 @@
                     },
                     success: function(response) {
                         if (response.success) {
+                            $('#thesisTable').DataTable().ajax.reload();
                             Swal.fire({
                                 icon: 'success',
                                 title: 'Success',
@@ -1045,31 +1106,78 @@
             }
         });
 
+        // Handle delete button click
+        $(document).on('click', '.deleteThesisEntry', function() {
+            const thesisId = $(this).data('id');
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: `/thesis/delete/${thesisId}`, // Adjust the URL as necessary
+                        type: 'DELETE',
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        success: function(response) {
+                            if (response.success) {
+                                Swal.fire(
+                                    'Deleted!',
+                                    response.message,
+                                    'success'
+                                );
+                                thesisTable.ajax.reload(); // Reload the DataTable
+                            }
+                        },
+                        error: function(xhr) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: xhr.responseJSON?.message || 'Something went wrong!'
+                            });
+                        }
+                    });
+                }
+            });
+        });
 
-        // Prevent form submission on enter key
-        // $('#thesisEntryForm').on('keypress', function(e) {
-        //     return e.which !== 13;
-        // });
+        // Handle Generate Tracking Number button click
+        $('#generateTrackingNumberButton').click(function() {
+            $.ajax({
+                url: '{{ route("thesis.generateTrackingNum") }}', // Route to generate tracking number
+                type: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') // CSRF token for security
+                },
+                success: function(response) {
+                    if (response.success) {
+                        $('#trackingNumDisplay').show(); // Show tracking number display
+                        $('#batchThesisID').text(response.batch_id); // Update the displayed tracking number
+                        $('#thesisTransCount').text(response.processing_transactions); // Update the displayed tracking number
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: response.message || 'Failed to generate tracking number.',
+                        });
+                    }
+                },
+                error: function(xhr) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: xhr.responseJSON?.message || 'Something went wrong!',
+                    });
+                }
+            });
+        });
 
-        // // Initialize date picker
-        // $('input[name="defense_date"]').datepicker({
-        //     format: 'yyyy-mm-dd',
-        //     autoclose: true
-        // });
-
-        // // Initialize time picker
-        // $('input[name="defense_time"]').timepicker({
-        //     showMeridian: true,
-        //     minuteStep: 1
-        // });
-    });
-
-
-    // Generate Tracking Number hide show
-    $('#generateTrackingNumberButton').click(function() {
-        $('#generateTrackingNumberButton').hide();
-        $('#trackingNumDisplay').show(); // Show the tracking number display
-         // Hide the generate tracking number button
     });
 
     // refresh page

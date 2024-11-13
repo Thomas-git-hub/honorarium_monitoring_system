@@ -29,8 +29,10 @@ return new class extends Migration
             $table->unsignedBigInteger('created_on');
             $table->string('updated_by');
             $table->unsignedBigInteger('updated_on');
-            $table->timestamps();
             $table->string('status');
+            $table->timestamps();
+            $table->softDeletes();
+
 
             $table->foreign('student_id')->references('id')->on('thesis_student');
             $table->foreign('degree_id')->references('id')->on('thesis_degree');

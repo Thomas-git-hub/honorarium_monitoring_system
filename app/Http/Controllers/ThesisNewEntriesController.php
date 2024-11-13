@@ -7,6 +7,7 @@ use App\Models\Degree;
 use App\Models\Member;
 use App\Models\Recorder;
 use App\Models\Student;
+use App\Models\ThesisLogs;
 use App\Models\ThesisTransaction ;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -193,13 +194,14 @@ class ThesisNewEntriesController extends Controller
 
     public function list()
     {
-        $thesisEntries = ThesisTransaction ::with(['student', 'degree', 'defense', 'recorder', 'createdBy', 'createdOn'])
+        $query = ThesisTransaction::with(['student', 'degree', 'defense', 'recorder', 'createdBy', 'createdOn'])
+            ->whereNull('deleted_at')
             ->get();
 
         $ibu_dbcon = DB::connection('ibu_test');
 
 
-        return DataTables::of($thesisEntries)
+        return DataTables::of($query)
             ->addColumn('id', function($data) {
                 return $data->id;
             })
@@ -266,6 +268,10 @@ class ThesisNewEntriesController extends Controller
                 return $data->created_at->format('m/d/Y');
             })
 
+            ->editColumn('membersCount', function($data) {
+                return count(json_decode($data->member_ids));
+            })
+
             ->make(true);
     }
 
@@ -273,5 +279,159 @@ class ThesisNewEntriesController extends Controller
     {
         $hasData = ThesisTransaction::count() > 0;
         return response()->json(['hasData' => $hasData]);
+    }
+
+    public function destroy($id)
+    {
+        try {
+            $thesisEntry = ThesisTransaction::findOrFail($id);
+            $thesisEntry->delete(); // Soft delete
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Thesis entry deleted successfully.'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error deleting thesis entry: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+
+    public function generateTrackingNum(Request $request){
+
+        $transactions = ThesisTransaction::whereNull('deleted_at')
+        ->where('created_on', Auth::user()->office_id)
+        // ->whereNull('tracking_number')
+        ->where('created_by', Auth::user()->id)
+        ->get();
+
+        if ($transactions->isEmpty()) {
+            // Find the last batch_id
+            $lastBatch = ThesisTransaction::whereNotNull('tracking_number')
+                ->where('status', '<>', 'On Queue')
+                ->orderBy('tracking_number', 'desc')
+                ->first();
+
+            if ($lastBatch) {
+                $lastBatchCreatedAt = $lastBatch->created_at->format('F j, Y');
+
+                // Count transactions with the status 'processing' for the new batch_id
+                $processingTransactions = ThesisTransaction::whereNull('deleted_at')
+                ->where('tracking_number', $lastBatch->tracking_number)
+                ->where('status', 'processing') // Adjust the 'status' value based on your actual column values
+                ->count();
+
+
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No transactions found',
+                    'last_batch_id' => $lastBatch->batch_id, // Return last generated batch_id
+                    'processing_transactions' => $processingTransactions, // Count of processing transactions
+                    'date' => $lastBatchCreatedAt // Count of processing transactions
+                ]);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No transactions and no batch_id found'
+                ]);
+            }
+        }
+
+        // Find the last batch_id to increment the number part
+        $lastBatch = ThesisTransaction::whereNull('deleted_at')
+            ->whereNotNull('tracking_number')
+            ->orderBy('tracking_number', 'desc')
+            ->first();
+
+
+        $lastNumber = 0;
+        if ($lastBatch) {
+            // Extract the number before the dash
+            $batchParts = explode(' - ', $lastBatch->tracking_number);
+            $lastNumber = intval($batchParts[0]);
+        }
+
+        // Increment the batch number
+        $newNumber = $lastNumber + 1;
+
+
+        // Format the current date as 'mdy'
+        $date = now()->format('mdy');
+
+        // Generate the new tracking_number
+        $newBatchId = "00{$newNumber} - {$date}";
+
+        foreach ($transactions as $transaction) {
+            $transaction->tracking_number = $newBatchId;
+            $transaction->save();
+        }
+
+        $ack = new ThesisLogs();
+        $ack->tracking_number= $newBatchId;
+        $ack->office_id = Auth::user()->office_id;
+        $ack->user_id = Auth::user()->id;
+        $ack->save();
+
+
+        // Count total transactions for the new batch_id
+        $totalTransactions = ThesisTransaction::whereNull('deleted_at')
+                                ->where('tracking_number', $newBatchId)->count();
+
+        // Count transactions with the status 'processing' for the new batch_id
+        $processingTransactions = ThesisTransaction::whereNull('deleted_at')
+            ->where('tracking_number', $newBatchId)
+            ->where('status', 'processing') // Adjust the 'status' value based on your actual column values
+            ->count();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Tracking Number generated successfully',
+                'batch_id' => $newBatchId,
+                'total_transactions' => $totalTransactions, // Total transactions count
+                'processing_transactions' => $processingTransactions, // Count of processing transactions
+                'date' => $date, // Count of processing transactions
+            ]);
+
+    }
+
+    public function getMembersByID(Request $request)
+    {
+        $id = $request->id;
+        $thesisEntry = ThesisTransaction::where('id', $id)->first();
+        $membersArray = json_decode($thesisEntry->member_ids);
+
+        // Retrieve all needed columns
+        $members = Member::whereIn('id', $membersArray)
+            ->get(['first_name', 'last_name', 'member_type'])
+            ->mapWithKeys(function ($member) {
+                return [$member->last_name => [
+                    'first_name' => $member->first_name,
+                    'member_type' => $member->member_type,
+                ]];
+            });
+
+        return response()->json($members);
+    }
+
+    public function getTransactionByID(Request $request){
+        $id = $request->id;
+
+        $thesisEntry = ThesisTransaction::findOrFail($id);
+
+        $student = Student::where('id',  $thesisEntry->student_id)->first();
+        $defense = Defense::where('id',  $thesisEntry->defense_id)->first();
+        $degree = Degree::where('id',  $thesisEntry->degree_id)->first();
+        $recorder = Recorder::where('id',  $thesisEntry->recorder_id)->first();
+
+        return response()->json([
+            'thesisEntry' => $thesisEntry,
+            'student' => $student,
+            'defense' => $defense,
+            'degree' => $degree,
+            'recorder' => $recorder,
+        ]);
     }
 }
