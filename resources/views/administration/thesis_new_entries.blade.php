@@ -23,15 +23,18 @@
                                 <div class="row" id="inputGroupStudentRow">
                                     <div class="col-md">
                                         <input type="text" class="form-control required-field " name="student_first_name" placeholder="First Name" />
+                                        <div class="invalid-feedback">First name is required</div>
                                     </div>
                                     <div class="col-md">
                                         <input type="text" class="form-control required-field" name="student_middle_name" placeholder="Middle Name" />
+                                        <div class="invalid-feedback">Middle name is required</div>
                                     </div>
                                     <div class="col-md">
-                                        <input type="text" class="form-control required-field" name="student_suffix" placeholder="Suffix. (optional)" />
+                                        <input type="text" class="form-control" name="student_suffix" placeholder="Suffix. (optional)" />
                                     </div>
                                     <div class="col-md">
                                         <input type="text" class="form-control required-field" name="student_last_name" placeholder="Last Name" />
+                                        <div class="invalid-feedback">Last name is required</div>
                                     </div>
                                 </div>
                             </div>
@@ -41,14 +44,17 @@
                             <div class="col-md">
                                 <label for="defense_date" class="form-label">Defense Date</label>
                                 <input type="date" class="form-control required-field" id="ediDefensedate" name="defense_date" required />
+                                <div class="invalid-feedback">Defense date is required</div>
                             </div>
                             <div class="col-md">
                                 <label for="defense_time" class="form-label">Defense Time</label>
                                 <input type="time" class="form-control required-field" id="editDefenseTime" name="defense_time" required />
+                                <div class="invalid-feedback">Defense time is required</div>
                             </div>
                             <div class="col-md">
                                 <label for="or_number" class="form-label">OR#</label>
                                 <input type="" class="form-control required-field" id="orNumber" name="or_number" required />
+                                <div class="invalid-feedback">OR number is required</div>
                             </div>
                         </div>
 
@@ -57,15 +63,15 @@
                                 <label for="degree" class="form-label">Select Degree</label>
                                 <select class="form-select required-field" id="editDegree" name="degree" required>
                                     <option value="">Select Degree</option>
-                                   
                                 </select>
+                                <div class="invalid-feedback">Please select a degree</div>
                             </div>
                             <div class="col-md">
                                 <label for="defense" class="form-label">Select Defense</label>
                                 <select class="form-select required-field" id="editDefense" name="defense_type" required>
                                     <option value="">Select Defense</option>
-                                    
                                 </select>
+                                <div class="invalid-feedback">Please select a defense type</div>
                             </div>
                         </div>
 
@@ -75,12 +81,15 @@
                                 <select class="form-select required-field" id="editAdviser" name="adviser_id" required>
                                     <option value="">Search/Select Adviser</option>
                                 </select>
+                                <div class="invalid-feedback">Please select an adviser</div>
+                                
                             </div>
                             <div class="col-md">
                                 <label for="chairperson" class="form-label">Select Chairperson</label>
                                 <select class="form-select required-field" id="editChairperson" name="chairperson_id" required>
                                     <option value="">Search/Select Chairperson</option>
                                 </select>
+                                <div class="invalid-feedback">Please select a chairperson</div>
                             </div>
                         </div>
 
@@ -219,15 +228,18 @@
                             <div class="row" id="editGroupRecorderRow">
                                 <div class="col-md">
                                     <input type="text" class="form-control required-field" name="recorder_first_name" placeholder="First Name" />
+                                    <div class="invalid-feedback">First name is required</div>
                                 </div>
                                 <div class="col-md">
                                     <input type="text" class="form-control required-field" name="recorder_middle_name" placeholder="Middle Name" />
+                                    <div class="invalid-feedback">Middle name is required</div>
                                 </div>
                                 <div class="col-md">
-                                    <input type="text" class="form-control required-field" name="recorder_suffix" placeholder="Suffix. (optional)" />
+                                    <input type="text" class="form-control" name="recorder_suffix" placeholder="Suffix. (optional)" />
                                 </div>
                                 <div class="col-md">
                                     <input type="text" class="form-control required-field" name="recorder_last_name" placeholder="Last Name" />
+                                    <div class="invalid-feedback">Last name is required</div>
                                 </div>
                             </div>
                         </div>
