@@ -18,7 +18,11 @@ class ThesisNewEntriesController extends Controller
 {
     public function thesisNewEntries()
     {
-        return view('administration.thesis_new_entries');
+        if(in_array(Auth::user()->usertype->name, ['Dean', 'Superadmin'])) {
+            return view('administration.thesis_new_entries');
+        }else{
+            abort(403, 'Unauthorized action.');
+        }
     }
 
     public function getStudent(Request $request){
@@ -89,7 +93,7 @@ class ThesisNewEntriesController extends Controller
 
             // Handle Student
             $student_id = $request->student_id;
-            if (!$student_id || $request->student_first_name) {
+            if (!$student_id && $request->student_first_name) {
                 // Create new student
                 $student = Student::create([
                     'first_name' => ucfirst($request->student_first_name),
@@ -100,7 +104,7 @@ class ThesisNewEntriesController extends Controller
                     'created_by' => Auth::user()->id,
                     'updated_by' => Auth::user()->id,
                 ]);
-                
+
                 $student_id = $student->id;
             }
 
@@ -171,7 +175,7 @@ class ThesisNewEntriesController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            
+
             // Check if error is due to null column values
             if (strpos($e->getMessage(), 'cannot be null') !== false) {
                 return response()->json([
@@ -202,7 +206,7 @@ class ThesisNewEntriesController extends Controller
             ->addColumn('student', function($data) {
                 return $data->student_id ? ucfirst($data->student->first_name) . ' ' . ucfirst($data->student->last_name) : 'N/A';
             })
-           
+
             ->editColumn('defense_date', function($data) {
                 return $data->defense_date;
             })
@@ -253,7 +257,7 @@ class ThesisNewEntriesController extends Controller
             ->editColumn('created_by', function($data) {
                 return $data->created_by ? ucfirst($data->createdBy->first_name) . ' ' . ucfirst($data->createdBy->last_name) : 'N/A';
             })
-            
+
             ->editColumn('created_on', function($data) {
                 return $data->created_on ? ucfirst($data->createdOn->name) : 'N/A';
             })
@@ -261,7 +265,7 @@ class ThesisNewEntriesController extends Controller
             ->editColumn('created_at', function($data) {
                 return $data->created_at->format('m/d/Y');
             })
-          
+
             ->make(true);
     }
 

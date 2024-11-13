@@ -47,6 +47,7 @@
             </a>
         </li>
 
+        @if(in_array(Auth::user()->usertype->name, ['Dean', 'Superadmin']))
         <li class="menu-item">
             <div style="margin-left: 5%; margin-top: 5%; color: #b4b0c4;">Thesis Transaction</div>
         </li>
@@ -65,9 +66,16 @@
         <li class="menu-item {{ request()->is('thesis_in_queue') ? 'active' : '' }}">
             <a href="" class="menu-link">
                 <i class='menu-icon tf-icons bx bx-list-ol' ></i>
-              <div class="text-truncate" data-i18n="Page 2">Thesis In Queue</div>
+              <div class="text-truncate" data-i18n="Page 2">Outgoing Defenses</div>
             </a>
         </li>
+        <li class="menu-item {{ request()->is('thesis_in_queue') ? 'active' : '' }}">
+            <a href="" class="menu-link">
+                <i class='menu-icon tf-icons bx bx-group'></i>
+                <div class="text-truncate" data-i18n="Page 2">Thesis Track & Monitor</div>
+            </a>
+        </li>
+        @endif
 
         <li class="menu-item">
           <div style="margin-left: 5%; margin-top: 5%; color: #b4b0c4;">Transaction</div>

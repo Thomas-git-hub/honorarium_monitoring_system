@@ -3,11 +3,11 @@
 @section('content')
 
     {{-- Edit form --}}
-    <div class="modal fade" id="editThesisEntiresModal" tabindex="-1" aria-hidden="true">
+    <div class="modal fade" id="editThesisEntriesModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel1">Modal title</h5>
+                    <h5 class="modal-title" id="exampleModalLabel1">Edit Thesis Entry</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
@@ -37,15 +37,15 @@
                         <div class="row mt-4">
                             <div class="col-md">
                                 <label for="defense_date" class="form-label">Defense Date</label>
-                                <input type="date" class="form-control" id="defense_date" name="defense_date" required />
+                                <input type="date" class="form-control" id="ediDefensedate" name="defense_date" required />
                             </div>
                             <div class="col-md">
                                 <label for="defense_time" class="form-label">Defense Time</label>
-                                <input type="time" class="form-control" id="defense_time" name="defense_time" required />
+                                <input type="time" class="form-control" id="editDefenseTime" name="defense_time" required />
                             </div>
                             <div class="col-md">
                                 <label for="or_number" class="form-label">OR#</label>
-                                <input type="" class="form-control" id="or_number" name="or_number" required />
+                                <input type="" class="form-control" id="orNumber" name="or_number" required />
                             </div>
                         </div>
 
@@ -298,18 +298,18 @@
                             </button>
                         </div>
                         <div class="col-md">
-                            <input type="text" class="form-control required-field" name="student_first_name" placeholder="First Name" />
+                            <input type="text" class="form-control required-field f_name" name="student_first_name" placeholder="First Name" />
                             <div class="invalid-feedback">First name is required</div>
                         </div>
                         <div class="col-md">
-                            <input type="text" class="form-control required-field" name="student_middle_name" placeholder="Middle Name" />
+                            <input type="text" class="form-control required-field m_name" name="student_middle_name" placeholder="Middle Name" />
                             <div class="invalid-feedback">Middle name is required</div>
                         </div>
                         <div class="col-md">
-                            <input type="text" class="form-control" name="student_suffix" placeholder="Suffix. (optional)" />
+                            <input type="text" class="form-control suffix" name="student_suffix" placeholder="Suffix. (optional)" />
                         </div>
                         <div class="col-md">
-                            <input type="text" class="form-control required-field" name="student_last_name" placeholder="Last Name" />
+                            <input type="text" class="form-control required-field l_name" name="student_last_name" placeholder="Last Name" />
                             <div class="invalid-feedback">Last name is required</div>
                         </div>
                     </div>
@@ -340,7 +340,7 @@
                         <label for="degree" class="form-label">Select Degree</label>
                         <select class="form-select required-field" id="degree" name="degree_id">
                             <option value="">Select Degree</option>
-                            
+
                         </select>
                         <div class="invalid-feedback">Please select a degree</div>
                     </div>
@@ -348,7 +348,7 @@
                         <label for="defense" class="form-label">Select Defense</label>
                         <select class="form-select required-field" id="defense" name="defense_id">
                             <option value="">Select Defense</option>
-                           
+
                         </select>
                         <div class="invalid-feedback">Please select a defense type</div>
                     </div>
@@ -491,7 +491,8 @@
 
     {{-- new entry button --}}
     <div class="row mt-4">
-        <div class="col-md d-flex justify-content-end">
+        <div class="col-md d-flex justify-content-end gap-2">
+            <button class="btn btn-label-primary btn-sm" id="refresh">Refresh</button>
             <button class="btn btn-primary" id="addNewThesisEntryButton">Add New Entry</button>
         </div>
     </div>
@@ -510,7 +511,36 @@
     </div>
 
     <div class="d-flex justify-content-end mt-2">
-        <button class="btn btn-primary" id="generateTrackingBtn" style="display: none;">Generate Tracking Number</button>
+        <button class="btn btn-primary" id="generateTrackingNumberButton">Generate Tracking Number</button>
+    </div>
+
+    <div class="card border border-primary trackingNumDisplay mt-2" id="trackingNumDisplay" style="display: none;">
+        <div class="card-body">
+            <div class="row d-flex align-items-center mb-5">
+                <label for="html5-text-input" class="col-md-4 col-form-label fs-6">Tracking Number:</label>
+                <div class="col-md-8">
+                  <b class="text-primary" id="batchThesisID">-</b>
+                </div>
+                <small class="text-danger"><b>Note:&nbsp;</b>Always attach the tracking number on the documents.</small>
+            </div>
+            <div class="row d-flex align-items-center">
+                <label for="html5-text-input" class="col-md-4 col-form-label">Total Students:</label>
+                <div class="col-md-8">
+                  <b class="text-dark" id="thesisTransCount">-</b>
+                </div>
+            </div>
+            <div class="row d-flex align-items-center mb-3">
+                <label for="html5-text-input" class="col-md-4 col-form-label">Transaction Date:</label>
+                <div class="col-md-8">
+                  <small class="text-dark" id="date"><?php echo date('F j, Y'); ?></small>
+                </div>
+            </div>
+            <div class="">
+                <small class="text-danger">Please ensure that all outgoing defenses have complete documentation and that all defense members submits complete requirements.</small>
+                <button class="btn btn-primary w-100" id="proceedThesisTransactionButton">Proceed to next office</button>
+            </div>
+
+        </div>
     </div>
 
 
@@ -663,6 +693,25 @@
 
        
 
+        // clear fields when switching actions
+        // Clear the select field with id #student when #addStudentButton is clicked
+        $('#addStudentButton').click(function() {
+            // Clear the selected option in the student dropdown
+            $('#student').val(null).trigger('change'); // Use trigger('change') to update Select2
+        });
+        // Clear the fields with class names f_name, m_name, suffix, and l_name when #cancelStudentButton is clicked
+        $('#cancelStudentButton').click(function() {
+            $('.f_name, .m_name, .suffix, .l_name').val(''); // Clear the input fields
+        });
+        // Clear the select field with class .member when .addMemberButton is clicked
+        $('.addMemberButton').click(function() {
+            $('.member').val(null).trigger('change'); // Clear the select field
+        });
+        // Clear the input fields with specific name attributes when .cancelMemberButton is clicked
+        $('.cancelMemberButton').click(function() {
+            $('input[name*="_first_name"], input[name*="_middle_name"], input[name*="_suffix"], input[name*="_last_name"]').val(''); // Clear the input fields
+        });
+
         // Handle form toggles
         const formToggles = [
             {
@@ -727,30 +776,7 @@
 
         // Validate required fields when form is submitted
         $('#thesisEntryFormData').on('submit', function(e) {
-            let isValid = true;
-            
-            // Check all visible required fields
-            $('.required-field:visible').each(function() {
-                if (!$(this).val()) {
-                    $(this).addClass('error');
-                    $(this).next('.invalid-feedback').show();
-                    if ($(this).hasClass('select2-hidden-accessible')) {
-                        $(this).next('.select2-container').find('.select2-selection').addClass('error');
-                    }
-                    isValid = false;
-                } else {
-                    $(this).removeClass('error');
-                    $(this).next('.invalid-feedback').hide();
-                    if ($(this).hasClass('select2-hidden-accessible')) {
-                        $(this).next('.select2-container').find('.select2-selection').removeClass('error');
-                    }
-                }
-            });
 
-            if (!isValid) {
-                e.preventDefault();
-                return false;
-            }
         });
 
         // Remove error class on input
@@ -775,7 +801,7 @@
             }
         });
 
-        
+
         // DataTable initialization
         const thesisTable = $('#thesisEntriesTable').DataTable({
             processing: true,
@@ -813,7 +839,7 @@
                     render: function(data) {
                         return `
                             <div class="d-flex">
-                                <button type="button" class="btn btn-icon me-2 btn-label-success" data-bs-toggle="modal" data-bs-target="#editThesisEntiresModal">
+                                <button type="button" class="btn btn-icon me-2 btn-label-success" data-bs-toggle="modal" data-bs-target="#editThesisEntriesModal">
                                     <span class="tf-icons bx bx-pencil bx-22px"></span>
                                 </button>
                                 <button type="button" class="btn btn-icon me-2 btn-label-danger">
@@ -838,7 +864,7 @@
                 // Check data whenever table is redrawn
                 checkTableData();
             },
-            
+
         });
 
         function checkTableData() {
@@ -860,7 +886,7 @@
 
         // Call the function when page loads
         checkTableData();
-        
+
         // Enhanced search functionality
         $.fn.dataTable.ext.search.push((settings, data, dataIndex) => {
             const searchText = $('.dataTables_filter input').val().toLowerCase();
@@ -875,6 +901,8 @@
 
         // Handle "Add New Entry" button click
         $('#addNewThesisEntryButton').click(function() {
+            $('#trackingNumDisplay').hide();
+            $('#generateTrackingNumberButton').hide();
             $('#thesisEntryForm').show();
             $(this).hide();
         });
@@ -883,7 +911,7 @@
         $('#cancelFormButton').click(function() {
             // Clear all input fields
             $('#thesisEntryForm').find('input, select').val('');
-            
+
             // Remove error classes
             $('.required-field').removeClass('error');
             $('.select2-selection').removeClass('error');
@@ -895,45 +923,115 @@
             // Hide form and show add button
             $('#thesisEntryForm').hide();
             $('#addNewThesisEntryButton').show();
+            $('#generateTrackingNumberButton').show();
+
 
             // Reset all member/student/recorder sections to search view
             $('.inputGroupStudentDiv, .inputGroupMemberDiv, .inputGroupRecorderDiv').hide();
             $('.searchStudentDiv, .searchMemberDiv, .searchRecorderDiv').show();
         });
 
-        $('#thesisEntryFormData').on('submit', function(e) {
-            e.preventDefault();
-            
-            // Get all form data
-            const formData = $(this).serialize();
-            $.ajax({
-                url: '{{ route("thesis.store") }}',
-                type: 'POST',
-                data: formData,
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                success: function(response) {
-                    if (response.success) {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Success',
-                            text: response.message || 'Thesis entry saved successfully!'
-                        });
+        // $('#thesisEntryFormData').on('submit', function(e) {
+        //     e.preventDefault();
 
-                        $('#cancelFormButton').click();
-                        checkTableData();
-                    }
-                },
-                error: function(xhr) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: xhr.responseJSON?.message || 'Something went wrong!'
+        //     // Get all form data
+        //     const formData = $(this).serialize();
+        //     $.ajax({
+        //         url: '{{ route("thesis.store") }}',
+        //         type: 'POST',
+        //         data: formData,
+        //         headers: {
+        //             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        //         },
+        //         success: function(response) {
+        //             if (response.success) {
+        //                 Swal.fire({
+        //                     icon: 'success',
+        //                     title: 'Success',
+        //                     text: response.message || 'Thesis entry saved successfully!'
+        //                 });
+
+        //                 $('#cancelFormButton').click();
+        //                 checkTableData();
+        //             }
+        //         },
+        //         error: function(xhr) {
+        //             Swal.fire({
+        //                 icon: 'error',
+        //                 title: 'Error',
+        //                 text: xhr.responseJSON?.message || 'Something went wrong!'
+        //             });
+        //         }
+        //     });
+        // });
+
+        $(document).ready(function() {
+            $('#thesisEntryFormData').off('submit').on('submit', function(e) {
+
+                let isValid = true;
+
+                    // Check all visible required fields
+                    $('.required-field:visible').each(function() {
+                        if (!$(this).val()) {
+                            $(this).addClass('error');
+                            $(this).next('.invalid-feedback').show();
+                            if ($(this).hasClass('select2-hidden-accessible')) {
+                                $(this).next('.select2-container').find('.select2-selection').addClass('error');
+                            }
+                            isValid = false;
+                        } else {
+                            $(this).removeClass('error');
+                            $(this).next('.invalid-feedback').hide();
+                            if ($(this).hasClass('select2-hidden-accessible')) {
+                                $(this).next('.select2-container').find('.select2-selection').removeClass('error');
+                            }
+                        }
                     });
-                }
+
+                    if (!isValid) {
+                        e.preventDefault();
+                        return false;
+                    }
+                e.preventDefault();
+
+                // Get all form data
+                const formData = $(this).serialize();
+                $.ajax({
+                    url: '{{ route("thesis.store") }}',
+                    type: 'POST',
+                    data: formData,
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Success',
+                                text: response.message || 'Thesis entry saved successfully!'
+                            });
+
+                            // Clear the form and reset it if needed
+                            $('#cancelFormButton').click();
+
+                            // Check table data or perform any additional logic
+                            checkTableData();
+
+                            // Reload the DataTable to reflect the new data
+                            $('#thesisEntriesTable').DataTable().ajax.reload();
+                        }
+                    },
+                    error: function(xhr) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: xhr.responseJSON?.message || 'Something went wrong!'
+                        });
+                    }
+                });
             });
         });
+
 
         // Function to capitalize first letter of each word
         function capitalizeWords(str) {
@@ -965,5 +1063,19 @@
         //     minuteStep: 1
         // });
     });
+
+
+    // Generate Tracking Number hide show
+    $('#generateTrackingNumberButton').click(function() {
+        $('#generateTrackingNumberButton').hide();
+        $('#trackingNumDisplay').show(); // Show the tracking number display
+         // Hide the generate tracking number button
+    });
+
+    // refresh page
+    $('#refresh').click(function() {
+        window.location.reload();
+    });
+
 </script>
 @endsection
