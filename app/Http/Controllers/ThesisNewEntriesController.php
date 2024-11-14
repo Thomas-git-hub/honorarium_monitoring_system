@@ -163,7 +163,7 @@ class ThesisNewEntriesController extends Controller
             $thesis->created_on = Auth::user()->office_id;
             $thesis->updated_by = Auth::user()->id;
             $thesis->updated_on = Auth::user()->office_id;
-            $thesis->status = 'Active';
+            $thesis->status = 'processing';
             $thesis->save();
 
             DB::commit();
