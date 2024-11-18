@@ -267,10 +267,6 @@ class QueueController extends Controller
             return response()->json(['success' => false, 'message' => 'No office Found']);
         }
 
-
-
-
-
         $ack = new Acknowledgement();
         $ack->batch_id= $request->batch_id;
         $ack->office_id = Auth::user()->office_id;

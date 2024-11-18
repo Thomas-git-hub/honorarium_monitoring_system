@@ -8,12 +8,19 @@ use App\Models\Member;
 use App\Models\Recorder;
 use App\Models\Student;
 use App\Models\ThesisLogs;
+use App\Models\Office;
+use App\Models\Emailing;
 use App\Models\ThesisTransaction ;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\DataTables;
 use Carbon\Carbon;
+use App\Mail\On_Hold_Email;
+use App\Mail\On_Hold_Email_two;
+use App\Mail\TransactionStatusChanged;
+use Illuminate\Support\Facades\Mail;
+
 
 class ThesisNewEntriesController extends Controller
 {
@@ -543,5 +550,81 @@ class ThesisNewEntriesController extends Controller
                 'message' => 'Error updating thesis entry: ' . $e->getMessage()
             ], 500);
         }
+    }
+
+    public function proceed(Request $request){
+        $ibu_dbcon = DB::connection('ibu_test');
+
+        $transactions = ThesisTransaction::whereNull('deleted_at')
+        ->where('status', 'processing')
+        ->where('tracking_number', '!=', NULL)
+        ->where('created_on', Auth::user()->office_id)
+        ->where('created_by', Auth::user()->id)
+        ->get();
+
+        if ($transactions->isEmpty()) {
+            return response()->json(['success' => false, 'message' => 'No thesis transactions found with processing status']);
+        }
+
+        $batchId = $transactions->first()->tracking_number;
+    
+        $usertype = Auth::user()->usertype->name;
+
+        if($usertype === 'Dean' || $usertype === 'Superadmin'){
+            $office = Office::where('name', 'Administrator')->first();
+        }
+        elseif($usertype === 'Administrator'){
+            $office = Office::where('name', 'Budget Office')->first();
+        }
+        elseif($usertype === 'Budget Office' || $usertype === 'Accounting' ){
+            $office = Office::where('name', 'Dean')->first();
+        }
+        elseif($usertype === 'Dean' ){
+            $office = Office::where('name', 'Accounting')->first();
+
+        }elseif($usertype === 'Cashiers'){
+            $office = Office::where('name', 'Faculty')->first();
+
+        }elseif($usertype === 'Accounting' ){
+            $office = Office::where('name', 'Dean')->first();
+        }
+        else{
+            return response()->json(['success' => false, 'message' => 'No office Found']);
+        }
+
+         // Update the status to 'On Queue'
+        if($usertype === 'Cashiers' ){
+
+            ThesisTransaction::whereNull('deleted_at')
+            ->where('tracking_number', $batchId)
+            ->where('status', 'processing')
+            ->where('created_on', Auth::user()->office_id)
+            ->where('created_by', Auth::user()->id)
+            ->update([
+                'status' => 'Complete',
+                'updated_on' =>  Auth::user()->office_id,
+                'created_by' => Auth::user()->id,
+                'updated_at' => now(),
+            ]);
+
+        }else{
+
+            ThesisTransaction::whereNull('deleted_at')
+            ->where('tracking_number', $batchId)
+            ->where('status', 'processing')
+            ->where('created_on', Auth::user()->office_id)
+            ->where('created_by', Auth::user()->id)
+            ->update([
+                'status' => 'On Queue',
+                'updated_on' =>  Auth::user()->office_id,
+                'created_by' => Auth::user()->id,
+                'updated_at' => now(),
+            ]);
+
+        }
+        return response()->json(['success' => true, 'message' => 'Transaction proceeded successfully.']);
+
+
+
     }
 }

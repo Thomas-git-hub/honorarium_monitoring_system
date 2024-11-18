@@ -569,6 +569,60 @@
 <script>
     $(document).ready(function() {
 
+        $('#proceedThesisTransactionButton').off('click').on('click', function() {
+            $.ajax({
+                url: '{{ route('thesis.proceed') }}',
+                method: 'POST',
+                data: {
+                    _token: $('meta[name="csrf-token"]').attr('content'),
+                },
+                beforeSend: function() {
+                    Swal.fire({
+                        title: 'Processing...',
+                        html: '<div class="spinner-grow text-primary" role="status" style="width: 3rem; height: 3rem;"></div>',
+                        showConfirmButton: false,
+                        allowOutsideClick: false
+                    });
+                },
+
+                success: function(response) {
+                    if (response.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Transaction Completed',
+                            text: response.message,
+                        }).then(function() {
+                            // Reload the entire page when the "OK" button is clicked
+                            location.reload();
+                        });
+
+                        getNewEntries();
+
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Something went wrong',
+                            text: response.message,
+                        });
+
+                        getNewEntries();
+                    }
+
+                    // Reload DataTable
+                    $('#facultyTable').DataTable().ajax.reload();
+                },
+                error: function(xhr) {
+                    getNewEntries();
+
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'There was a problem updating the transactions.',
+                    });
+                }
+            });
+        });
+
          // clear fields when switching actions
         // Clear the select field with id #student when #addStudentButton is clicked
         $('#addStudentButton').click(function() {

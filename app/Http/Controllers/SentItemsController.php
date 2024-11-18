@@ -52,8 +52,6 @@ class SentItemsController extends Controller
         }
 
 
-
-
         $pendingMails = Emailing::where('status', 'Unread')->where('to_user', Auth::user()->employee_id);
         $EmailCount = $pendingMails->count();
 

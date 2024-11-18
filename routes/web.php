@@ -167,6 +167,7 @@ Route::middleware(['auth_check', '419'])->group(function () {
         Route::post('/thesis/generateTrackingNum', [ThesisNewEntriesController::class, 'generateTrackingNum'])->name('thesis.generateTrackingNum');
         Route::get('/thesis/getMembersByID', [ThesisNewEntriesController::class, 'getMembersByID'])->name('thesis.getMembersByID');
         Route::get('/thesis/getTransactionByID', [ThesisNewEntriesController::class, 'getTransactionByID'])->name('thesis.getTransactionByID');
+        Route::post('/thesis/proceed', [ThesisNewEntriesController::class, 'proceed'])->name('thesis.proceed');
 
         Route::match(['post', 'put'], 'thesis/update', [ThesisNewEntriesController::class, 'update'])->name('thesis.update');
 
