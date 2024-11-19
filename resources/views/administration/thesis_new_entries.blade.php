@@ -269,7 +269,7 @@
                             <div class="card-body text-success">
                                 <div class="row d-flex align-items-center">
                                     <div class="col-md d-flex align-items-center gap-3">
-                                        <h1 class="text-success text-center d-flex align-items-center" id="onQueue" style="font-size: 48px;">10</h1>
+                                        <h1 class="text-success text-center d-flex align-items-center" id="onQueue" style="font-size: 48px;">0</h1>
                                         <h5 class="card-title text-success">Outgoing Defenses Added</h5>
                                     </div>
                                 </div>
@@ -512,7 +512,7 @@
         <div class="col-md d-flex justify-content-end gap-2">
             <button class="btn btn-label-primary btn-sm" id="refresh">Refresh</button>
             <button class="btn btn-primary" id="addNewThesisEntryButton">Add New Entry</button>
-            <button class="btn btn-success" id="generateTrackingNumberButton">Generate Tracking Number</button>
+            <button class="btn btn-success d-none" id="generateTrackingNumberButton">Generate Tracking Number</button>
         </div>
     </div>
 
@@ -569,6 +569,25 @@
 <script>
     $(document).ready(function() {
 
+         // Function to fetch and display the count of transactions
+         function fetchTransactionCount() {
+            $.ajax({
+                url: '{{ route("thesis.getItems") }}', // Adjust the route as necessary
+                type: 'GET',
+                success: function(response) {
+                    if (response.transactions !== undefined) {
+                        $('#onQueue').text(response.transactions); // Update the count in the HTML
+                    }
+                },
+                error: function(xhr) {
+                    console.error('Error fetching transaction count:', xhr);
+                }
+            });
+        }
+
+        // Call the function to fetch the count on page load
+        fetchTransactionCount();
+
         $('#proceedThesisTransactionButton').off('click').on('click', function() {
             $.ajax({
                 url: '{{ route('thesis.proceed') }}',
@@ -595,24 +614,19 @@
                             // Reload the entire page when the "OK" button is clicked
                             location.reload();
                         });
-
-                        getNewEntries();
-
                     } else {
                         Swal.fire({
                             icon: 'error',
                             title: 'Something went wrong',
                             text: response.message,
                         });
-
-                        getNewEntries();
+                       
                     }
-
+                    fetchTransactionCount();
                     // Reload DataTable
                     $('#facultyTable').DataTable().ajax.reload();
                 },
                 error: function(xhr) {
-                    getNewEntries();
 
                     Swal.fire({
                         icon: 'error',
@@ -1118,10 +1132,11 @@
                 url: '{{ route("thesis.checkData") }}',
                 type: 'GET',
                 success: function(response) {
-                    if (response.hasData) {
-                        $('#generateTrackingBtn').show();
+                    console.log(response.DataIsZero);
+                    if (response.DataIsZero == '0') {
+                        $('#generateTrackingNumberButton').addClass('d-none');
                     } else {
-                        $('#generateTrackingBtn').hide();
+                        $('#generateTrackingNumberButton').removeClass('d-none');
                     }
                 },
                 error: function(xhr) {
@@ -1224,6 +1239,7 @@
                             text: response.message || 'Thesis entry saved successfully!'
                         });
 
+                        fetchTransactionCount();
                         // Clear the form and reset it if needed
                         $('#cancelFormButton').click();
 
@@ -1283,6 +1299,7 @@
                                     response.message,
                                     'success'
                                 );
+                                 fetchTransactionCount();
                                 thesisTable.ajax.reload(); // Reload the DataTable
                             }
                         },
@@ -1386,6 +1403,8 @@
                 }
             });
         });
+
+       
 
     });
 

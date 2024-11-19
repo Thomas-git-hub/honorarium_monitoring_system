@@ -19,6 +19,7 @@ use App\Http\Controllers\UserManagementController;
 use App\Http\Controllers\CashierQueueController;
 use App\Http\Controllers\FacultyDashboardController;
 use App\Http\Controllers\FacultyTrackingController;
+use App\Http\Controllers\ThesisAcknowledgementController;
 use App\Http\Controllers\ThesisNewEntriesController;
 
 //START NO AUTHENTICATED ACCESS
@@ -171,9 +172,17 @@ Route::middleware(['auth_check', '419'])->group(function () {
 
         Route::match(['post', 'put'], 'thesis/update', [ThesisNewEntriesController::class, 'update'])->name('thesis.update');
 
+        Route::get('/thesis/get-items', [ThesisNewEntriesController::class, 'getItems'])->name('thesis.getItems');
+
+        Route::get('/thesisAcknowledgement', [ThesisAcknowledgementController::class, 'thesis_acknowledgement'])->name('thesis.thesis_acknowledgement');
+        Route::get('/thesis/acknowledgement/list', [ThesisAcknowledgementController::class, 'list'])->name('thesis.acknowledgement.list');
+        Route::get('/openThesisAcknowledgement', [ThesisAcknowledgementController::class, 'openThesisAcknowledgement'])->name('thesis.openThesisAcknowledgement');
+
+        Route::get('/thesis/open/list', [ThesisAcknowledgementController::class, 'open_list'])->name('thesis.open.list');
+        Route::post('/thesis/acknowledge', [ThesisAcknowledgementController::class, 'acknowledge'])->name('thesis.acknowledge');
 
 
-        
+
 
         
 

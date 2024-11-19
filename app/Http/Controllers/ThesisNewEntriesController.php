@@ -203,6 +203,7 @@ class ThesisNewEntriesController extends Controller
     {
         $query = ThesisTransaction::with(['student', 'degree', 'defense', 'recorder', 'createdBy', 'createdOn'])
             ->whereNull('deleted_at')
+            ->where('status', 'processing')
             ->get();
 
         $ibu_dbcon = DB::connection('ibu_test');
@@ -284,8 +285,9 @@ class ThesisNewEntriesController extends Controller
 
     public function checkData()
     {
-        $hasData = ThesisTransaction::count() > 0;
-        return response()->json(['hasData' => $hasData]);
+        $DataIsZero = ThesisTransaction::where('status', 'processing')
+        ->count();
+        return response()->json(['DataIsZero' => $DataIsZero]);
     }
 
     public function destroy($id)
@@ -310,6 +312,7 @@ class ThesisNewEntriesController extends Controller
     public function generateTrackingNum(Request $request){
 
         $transactions = ThesisTransaction::whereNull('deleted_at')
+        ->where('status', 'processing')
         ->where('created_on', Auth::user()->office_id)
         // ->whereNull('tracking_number')
         ->where('created_by', Auth::user()->id)
@@ -317,13 +320,34 @@ class ThesisNewEntriesController extends Controller
 
         if ($transactions->isEmpty()) {
             // Find the last batch_id
-            $lastBatch = ThesisTransaction::whereNotNull('tracking_number')
-                ->where('status', '<>', 'On Queue')
+            $lastBatch = ThesisTransaction::where('status', '<>', 'On Queue')
+                ->whereNotNull('tracking_number')
                 ->orderBy('tracking_number', 'desc')
                 ->first();
 
             if ($lastBatch) {
                 $lastBatchCreatedAt = $lastBatch->created_at->format('F j, Y');
+
+                // Extract the number before the dash
+                $batchParts = explode(' - ', $lastBatch->tracking_number);
+                $lastNumber = preg_replace('/\D/', '', $batchParts[0]);
+
+                //Increment the batch number
+                $newNumber = $lastNumber + 1;
+
+                // Generate the new tracking_number
+                $newBatchId = "THS{$newNumber} - {$lastBatchCreatedAt}";
+
+                foreach ($transactions as $transaction) {
+                    $transaction->tracking_number = $newBatchId;
+                    $transaction->save();
+                }
+
+                $ack = new ThesisLogs();
+                $ack->tracking_number= $newBatchId;
+                $ack->office_id = Auth::user()->office_id;
+                $ack->user_id = Auth::user()->id;
+                $ack->save();
 
                 // Count transactions with the status 'processing' for the new batch_id
                 $processingTransactions = ThesisTransaction::whereNull('deleted_at')
@@ -571,7 +595,7 @@ class ThesisNewEntriesController extends Controller
         $usertype = Auth::user()->usertype->name;
 
         if($usertype === 'Dean' || $usertype === 'Superadmin'){
-            $office = Office::where('name', 'Administrator')->first();
+            $office = Office::where('name', 'BUGS Administration')->first();
         }
         elseif($usertype === 'Administrator'){
             $office = Office::where('name', 'Budget Office')->first();
@@ -602,7 +626,7 @@ class ThesisNewEntriesController extends Controller
             ->where('created_by', Auth::user()->id)
             ->update([
                 'status' => 'Complete',
-                'updated_on' =>  Auth::user()->office_id,
+                'updated_on' =>  $office->id,
                 'created_by' => Auth::user()->id,
                 'updated_at' => now(),
             ]);
@@ -616,7 +640,7 @@ class ThesisNewEntriesController extends Controller
             ->where('created_by', Auth::user()->id)
             ->update([
                 'status' => 'On Queue',
-                'updated_on' =>  Auth::user()->office_id,
+                'updated_on' =>  $office->id,
                 'created_by' => Auth::user()->id,
                 'updated_at' => now(),
             ]);
@@ -626,5 +650,16 @@ class ThesisNewEntriesController extends Controller
 
 
 
+    }
+
+    public function getItems(){
+
+        $transactions = ThesisTransaction::whereNull('deleted_at')
+        ->where('status', 'processing')
+        ->where('created_on', Auth::user()->office_id)
+        ->where('created_by', Auth::user()->id)
+        ->count();
+
+        return response()->json(['transactions' => $transactions]);
     }
 }
