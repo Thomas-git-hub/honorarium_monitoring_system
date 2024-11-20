@@ -21,6 +21,8 @@ use App\Http\Controllers\FacultyDashboardController;
 use App\Http\Controllers\FacultyTrackingController;
 use App\Http\Controllers\ThesisAcknowledgementController;
 use App\Http\Controllers\ThesisNewEntriesController;
+use App\Http\Controllers\ThesisOutGoingController;
+use App\Http\Controllers\ThesisOpenOutGoingController;
 
 //START NO AUTHENTICATED ACCESS
 Route::middleware(['guest', '419'])->group(function () {
@@ -154,7 +156,9 @@ Route::middleware(['auth_check', '419'])->group(function () {
         Route::get('/faculty_dashboard', [FacultyDashboardController::class, 'faculty_dashboard'])->name('faculty_dashboard');
         Route::get('/faculty_tracking', [FacultyTrackingController::class, 'faculty_tracking'])->name('faculty_tracking');
 
-        // New Route as of Nov 4
+        // NEW ROUTE AS OF NOV 4
+        // THESIS HONORARIUM PROCESS
+        // Thesis New Entries
         Route::get('/thesis_new_entries', [ThesisNewEntriesController::class, 'thesisNewEntries'])->name('thesis.newEntries');
         Route::get('/getStudent', [ThesisNewEntriesController::class, 'getStudent'])->name('thesis.getStudent');
         Route::get('/getMembers', [ThesisNewEntriesController::class, 'getMembers'])->name('thesis.getMembers');
@@ -174,6 +178,8 @@ Route::middleware(['auth_check', '419'])->group(function () {
 
         Route::get('/thesis/get-items', [ThesisNewEntriesController::class, 'getItems'])->name('thesis.getItems');
 
+
+        // Thesis Acknowledgement
         Route::get('/thesisAcknowledgement', [ThesisAcknowledgementController::class, 'thesis_acknowledgement'])->name('thesis.thesis_acknowledgement');
         Route::get('/thesis/acknowledgement/list', [ThesisAcknowledgementController::class, 'list'])->name('thesis.acknowledgement.list');
         Route::get('/openThesisAcknowledgement', [ThesisAcknowledgementController::class, 'openThesisAcknowledgement'])->name('thesis.openThesisAcknowledgement');
@@ -182,9 +188,17 @@ Route::middleware(['auth_check', '419'])->group(function () {
         Route::post('/thesis/acknowledge', [ThesisAcknowledgementController::class, 'acknowledge'])->name('thesis.acknowledge');
 
 
+        // Thesis Out Going Defenses
+        Route::get('/thesis-out-going', [ThesisOutGoingController::class, 'showThesisOutGoing'])->name('thesis.outgoing');
 
 
-        
+        // Thesis Open Out Going Defenses
+        Route::get('/thesis-open-out-going', [ThesisOpenOutGoingController::class, 'showThesisOpenOutGoing'])->name('thesis.open.out.going');
+
+
+
+
+
 
 
 

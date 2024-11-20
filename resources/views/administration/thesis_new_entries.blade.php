@@ -82,7 +82,7 @@
                                     <option value="">Search/Select Adviser</option>
                                 </select>
                                 <div class="invalid-feedback">Please select an adviser</div>
-                                
+
                             </div>
                             <div class="col-md">
                                 <label for="chairperson" class="form-label">Select Chairperson</label>
@@ -253,6 +253,7 @@
         </div>
     </div>
 
+    {{-- Page Title --}}
     <div class="row mt-4 gap-3" id="thesisNewEntriesTitle">
         <div class="col">
             <div class="card">
@@ -373,7 +374,7 @@
                 </div>
 
                 {{-- Adviser & Chairperson Section --}}
-                <div class="row mt-2">
+                {{-- <div class="row mt-2">
                     <div class="col-md">
                         <label for="adviser" class="form-label">Select Adviser</label>
                         <select class="form-select required-field" id="adviser" name="adviser_id">
@@ -381,12 +382,114 @@
                         </select>
                         <div class="invalid-feedback">Please select an adviser</div>
                     </div>
+                </div>
+                <div class="row mt-2">
                     <div class="col-md">
                         <label for="chairperson" class="form-label">Select Chairperson</label>
                         <select class="form-select required-field" id="chairperson" name="chairperson_id">
                             <option value="">Search/Select Chairperson</option>
                         </select>
                         <div class="invalid-feedback">Please select a chairperson</div>
+                    </div>
+                </div> --}}
+
+                {{-- Adviser Section --}}
+                <div class="row mt-5">
+                    <label for="adviser" class="form-label">Adviser</label>
+                </div>
+                <div id="searchAdviserDiv">
+                    <div class="row" id="searchAdviserRow">
+                        <div class="col-md-10">
+                            <select class="form-select required-field" id="adviser" name="adviser_id">
+                                <option value="">Search/Select Adviser</option>
+                            </select>
+                            <div class="invalid-feedback">Please select Adviser</div>
+                        </div>
+                        <div class="col-md-2">
+                            <button type="button" class="btn btn-label-primary w-100" id="addAdviserButton">
+                                <i class='bx bx-user-plus'></i>Add Adviser
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div id="inputGroupAdviserDiv" style="display:none">
+                    <div class="row mb-2" id="inputGroupAdviserRow">
+                        <div class="col-md">
+                            <button type="button" class="btn btn-label-warning d-flex justify content-end w-100" id="cancelAdviserButton">
+                                <i class='bx bx-search-alt'></i>Search
+                            </button>
+                        </div>
+                        <div class="col-md">
+                            <input type="text" class="form-control required-field f_name" name="adviser_first_name" placeholder="First Name" />
+                            <div class="invalid-feedback">First name is required</div>
+                        </div>
+                        <div class="col-md">
+                            <input type="text" class="form-control required-field m_name" name="adviser_middle_name" placeholder="Middle Name" />
+                            <div class="invalid-feedback">Middle name is required</div>
+                        </div>
+                        <div class="col-md">
+                            <input type="text" class="form-control suffix" name="adviser_suffix" placeholder="Suffix. (optional)" />
+                        </div>
+                        <div class="col-md">
+                            <input type="text" class="form-control required-field l_name" name="adviser_last_name" placeholder="Last Name" />
+                            <div class="invalid-feedback">Last name is required</div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md">
+                            <input type="text" class="form-control required-field adviser_email" name="adviser_email" placeholder="email address" />
+                            <div class="invalid-feedback">Email is required</div>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Chairperson Section --}}
+                <div class="row mt-2">
+                    <label for="chairperson" class="form-label">Chairperson</label>
+                </div>
+                <div id="searchChairpersonDiv">
+                    <div class="row" id="searchChairpersonRow">
+                        <div class="col-md-10">
+                            <select class="form-select required-field" id="chairperson" name="chairperson_id">
+                                <option value="">Search/Select Chairperson</option>
+                            </select>
+                            <div class="invalid-feedback">Please select Chairperson</div>
+                        </div>
+                        <div class="col-md-2">
+                            <button type="button" class="btn btn-label-primary w-100" id="addChairpersonButton">
+                                <i class='bx bx-user-plus'></i>Add Chairperson
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div id="inputGroupChairpersonDiv" style="display:none">
+                    <div class="row mb-2" id="inputGroupChairpersonRow">
+                        <div class="col-md">
+                            <button type="button" class="btn btn-label-warning d-flex justify content-end w-100" id="cancelChairpersonButton">
+                                <i class='bx bx-search-alt'></i>Search
+                            </button>
+                        </div>
+                        <div class="col-md">
+                            <input type="text" class="form-control required-field f_name" name="chairperson_first_name" placeholder="First Name" />
+                            <div class="invalid-feedback">First name is required</div>
+                        </div>
+                        <div class="col-md">
+                            <input type="text" class="form-control required-field m_name" name="chairperson_middle_name" placeholder="Middle Name" />
+                            <div class="invalid-feedback">Middle name is required</div>
+                        </div>
+                        <div class="col-md">
+                            <input type="text" class="form-control suffix" name="chairperson_suffix" placeholder="Suffix. (optional)" />
+                        </div>
+                        <div class="col-md">
+                            <input type="text" class="form-control required-field l_name" name="chairperson_last_name" placeholder="Last Name" />
+                            <div class="invalid-feedback">Last name is required</div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md">
+                            <input type="text" class="form-control required-field chairperson_email" name="chairperson_email" placeholder="email address" />
+                            <div class="invalid-feedback">Email is required</div>
+                        </div>
                     </div>
                 </div>
 
@@ -533,6 +636,7 @@
         <button class="btn btn-primary" id="generateTrackingNumberButton">Generate Tracking Number</button>
     </div> --}}
 
+    {{-- Generate Tracking Number --}}
     <div class="card border border-primary trackingNumDisplay mt-2" id="trackingNumDisplay" style="display: none;">
         <div class="card-body">
             <div class="row d-flex align-items-center mb-5">
@@ -569,8 +673,8 @@
 <script>
     $(document).ready(function() {
 
-         // Function to fetch and display the count of transactions
-         function fetchTransactionCount() {
+        // Function to fetch and display the count of transactions
+        function fetchTransactionCount() {
             $.ajax({
                 url: '{{ route("thesis.getItems") }}', // Adjust the route as necessary
                 type: 'GET',
@@ -584,10 +688,11 @@
                 }
             });
         }
-
         // Call the function to fetch the count on page load
         fetchTransactionCount();
 
+
+        // Proceed Transaction
         $('#proceedThesisTransactionButton').off('click').on('click', function() {
             $.ajax({
                 url: '{{ route('thesis.proceed') }}',
@@ -620,7 +725,7 @@
                             title: 'Something went wrong',
                             text: response.message,
                         });
-                       
+
                     }
                     fetchTransactionCount();
                     // Reload DataTable
@@ -637,7 +742,7 @@
             });
         });
 
-         // clear fields when switching actions
+
         // Clear the select field with id #student when #addStudentButton is clicked
         $('#addStudentButton').click(function() {
             // Clear the selected option in the student dropdown
@@ -656,6 +761,8 @@
             $('input[name*="_first_name"], input[name*="_middle_name"], input[name*="_suffix"], input[name*="_last_name"]').val(''); // Clear the input fields
         });
 
+
+        // Search/Select Student
         $('#student').select2({
             placeholder: 'Search Student...',
             allowClear: true,
@@ -680,6 +787,8 @@
             }
         });
 
+
+        // Search/Select Recorder
         $('#recorder').select2({
             placeholder: 'Search Student...',
             allowClear: true,
@@ -705,6 +814,7 @@
         });
 
 
+        // Search/Select Adviser and Chairperson
         function createSelect2Config(placeholder) {
             return {
                 placeholder: placeholder,
@@ -731,11 +841,12 @@
                 }
             };
         }
-
         ['chairperson', 'adviser'].forEach(field => {
             $(`#${field}`).select2(createSelect2Config('Search by Name/ID Number...'));
         });
 
+
+        // Search/Select Members
         for (let i = 1; i <= 4; i++) {
             $(`select[name="member_${i}_id"]`).select2({
                 placeholder: 'Search by Name...',
@@ -762,6 +873,7 @@
             });
         }
 
+
         // Load defense types
         $.ajax({
             url: '{{ route('thesis.getDefenseTypes') }}',
@@ -780,6 +892,7 @@
             }
         });
 
+
         // Load degrees
         $.ajax({
             url: '{{ route('thesis.getDegrees') }}',
@@ -797,7 +910,8 @@
                 console.error('Error loading degrees:', error);
             }
         });
-        
+
+
        // Helper function to configure select2
         function createSelect2Edit(placeholder) {
             return {
@@ -828,12 +942,13 @@
             };
         }
 
-        // Initialize select2 for adviser and chairperson fields
+
+        // Initialize select2 for adviser and chairperson Edit fields
         ['editAdviser', 'editChairperson'].forEach(field => {
             $(`#${field}`).select2(createSelect2Edit('Search by Name/ID Number...'));
         });
 
-       
+
         // Handle form toggles
         const formToggles = [
             {
@@ -841,6 +956,18 @@
                 cancelBtn: '#cancelStudentButton',
                 searchDiv: '#searchStudentDiv',
                 inputDiv: '#inputGroupStudentDiv'
+            },
+            {
+                addBtn: '#addAdviserButton',
+                cancelBtn: '#cancelAdviserButton',
+                searchDiv: '#searchAdviserDiv',
+                inputDiv: '#inputGroupAdviserDiv'
+            },
+            {
+                addBtn: '#addChairpersonButton',
+                cancelBtn: '#cancelChairpersonButton',
+                searchDiv: '#searchChairpersonDiv',
+                inputDiv: '#inputGroupChairpersonDiv'
             },
             {
                 addBtn: '.addMemberButton',
@@ -877,7 +1004,9 @@
             });
         });
 
-        // Add CSS for required fields
+
+
+        // VALIDATION = Add CSS for required fields
         $("<style>")
             .prop("type", "text/css")
             .html(`
@@ -896,7 +1025,7 @@
             `)
             .appendTo("head");
 
-       
+
 
         // Remove error class on input
         $('.required-field').on('input change', function() {
@@ -908,7 +1037,6 @@
                 }
             }
         });
-
         // Remove error class on select2 change
         $('select').on('change', function() {
             if ($(this).val()) {
@@ -920,8 +1048,9 @@
             }
         });
 
-        window.showMembersAlert = function(id) {
 
+        // Display Members as Alert
+        window.showMembersAlert = function(id) {
             $.ajax({
                 url: '{{ route("thesis.getMembersByID") }}', // Route to get members by ID
                 type: 'GET',
@@ -943,7 +1072,7 @@
                         confirmButtonColor: '#007bff',
                         footer: 'Viewing members for thesis entry.'
                     });
-                   
+
                 },
                 error: function(xhr) {
                     Swal.fire({
@@ -953,10 +1082,9 @@
                     });
                 }
             });
-           
         };
+        console.log(typeof showMembersAlert);
 
-        console.log(typeof showMembersAlert); 
 
         // DataTable initialization
         const thesisTable = $('#thesisEntriesTable').DataTable({
@@ -1023,6 +1151,7 @@
         });
 
 
+        // Edit Thesis Entries
         $(document).on('click', '.edit-btn', function() {
             const thesisId = $(this).data('id'); // Get the thesis ID from the button's data attribute
 
@@ -1088,7 +1217,7 @@
 
                     // Set Adviser
                     adviserSelect.append(new Option(adviser.employee_fname + ' ' + adviser.employee_lname, adviser.id, true, true)).trigger('change');
-            
+
                     // Set Chairperson
                     chairpersonSelect.append(new Option(chairperson.employee_fname + ' ' + chairperson.employee_lname, chairperson.id, true, true)).trigger('change');
 
@@ -1127,6 +1256,8 @@
             });
         });
 
+
+        // Checking if Datatable is not empty
         function checkTableData() {
             $.ajax({
                 url: '{{ route("thesis.checkData") }}',
@@ -1192,7 +1323,8 @@
             $('.searchStudentDiv, .searchMemberDiv, .searchRecorderDiv').show();
         });
 
-      
+
+        // VALIDATION = Thesis Entry Form on submit
         $('#thesisEntryFormData').off('submit').on('submit', function(e) {
 
             let isValid = true;
@@ -1259,12 +1391,13 @@
                 }
             });
         });
-    
+
 
         // Function to capitalize first letter of each word
         function capitalizeWords(str) {
             return str.replace(/\b\w/g, function(txt) { return txt.toUpperCase(); });
         }
+
 
         // Apply auto-capitalization to name input fields
         $('#thesisEntryForm').on('input', 'input[type="text"]', function() {
@@ -1272,6 +1405,7 @@
                 $(this).val(capitalizeWords($(this).val()));
             }
         });
+
 
         // Handle delete button click
         $(document).on('click', '.deleteThesisEntry', function() {
@@ -1346,6 +1480,7 @@
             });
         });
 
+
         // Handle the submission of the edit form
         $(document).on('click', '.editSubmitBtn', function() {
 
@@ -1370,10 +1505,10 @@
             });
 
             if (!isValid) {
-               
+
                 return false;
             }
-           
+
             const formData = $('#editThesisEntriesModal').find('input, select').serialize() ;
 
             $.ajax({
@@ -1404,13 +1539,15 @@
             });
         });
 
-       
+
 
     });
 
-    // refresh page
-    $('#refresh').click(function() {
-        window.location.reload();
+    $(document).ready(function() {
+        // refresh page
+        $('#refresh').click(function() {
+            window.location.reload();
+        });
     });
 
 </script>
