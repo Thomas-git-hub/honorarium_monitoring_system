@@ -6,17 +6,17 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Recorder extends Model
+class Chairperson extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $table = 'recorders';
-
+    protected $table = 'chairperson';
     
     protected $fillable = [
         'first_name',
         'middle_name',
         'last_name',
+        'email',
         'suffix',
         'status',
         'created_by',
@@ -34,4 +34,4 @@ class Recorder extends Model
     {
         return $this->belongsTo(User::class, 'updated_by');
     }
-} 
+}

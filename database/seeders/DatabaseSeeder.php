@@ -30,6 +30,8 @@ class DatabaseSeeder extends Seeder
             StudentSeeder::class,
             MemberSeeder::class,
             RecorderSeeder::class,
+            ChairpersonSeeder::class,
+            AdviserSeeder::class,
         ]);
     }
 }

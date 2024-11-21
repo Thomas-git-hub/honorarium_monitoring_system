@@ -56,9 +56,26 @@
 @section('components.specific_page_scripts')
 <script>
     $(function () {
+        function fetchTransactionCount() {
+            $.ajax({
+                url: '{{ route("thesis.outgoing.getItems") }}', // Adjust the route as necessary
+                type: 'GET',
+                success: function(response) {
+                    if (response.transactions !== undefined) {
+                        $('#onQueue').text(response.transactions); // Update the count in the HTML
+                    }
+                },
+                error: function(xhr) {
+                    console.error('Error fetching transaction count:', xhr);
+                }
+            });
+        }
+        // Call the function to fetch the count on page load
+        fetchTransactionCount();
         var table = $('#thesisOutGoingTable').DataTable({
             processing: true,
-            serverSide: false,
+            serverSide: true,
+            ajax: '{{route('thesis.outgoing.list')}}', 
             pageLength: 100,
             paging: true, // abled pagination
             dom: '<"top"lf>rt<"bottom"ip>',
@@ -66,12 +83,7 @@
                 search: "", // Remove the default search label
                 searchPlaceholder: "Search..." // Set the placeholder text
             },
-            data: [
-                { tracking_number: "TN123", from: "Office A", trans_id: "5", created_at: "2022-01-01" },
-                { tracking_number: "TN124", from: "Office B", trans_id: "3", created_at: "2022-01-02" },
-                { tracking_number: "TN125", from: "Office C", trans_id: "2", created_at: "2022-01-03" },
-                // Add more data as needed
-            ],
+            
             columns: [
                 { data: 'tracking_number', name: 'tracking_number', title: 'TN' },
                 { data: 'from', name: 'from', title: 'From' },
@@ -95,7 +107,7 @@
                 }
 
                 // Redirect to another page with full details (example)
-                window.location.href = `/thesis-open-out-going`;
+                window.location.href = `/thesis-open-out-going?id=${rowData.tracking_number}`;
                 // window.location.href = `/thesisOpenOutGoing?id=${rowData.tracking_number}`;
         });
     });

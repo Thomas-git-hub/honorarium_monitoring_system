@@ -1,7 +1,5 @@
 @extends('components.app')
 
-
-
 @section('content')
  {{-- Page Title --}}
  <div class="row">
@@ -13,17 +11,17 @@
                 <h4 class="d-flex align-items-center"><i class='bx bx-list-ul'  style="font-size: 32px;"></i>Batch Out Going Defenses Transaction Details</h4>
                 <div class="row">
                     <div class="col-md">
-                        <div class="alert alert-secondary">
+                        <div class="alert alert-secondary total-transaction">
                             Total Transactions: <b></b>
                         </div>
                     </div>
                     <div class="col-md">
-                        <div class="alert alert-success">
+                        <div class="alert alert-success office">
                             From: <b></b>
                         </div>
                     </div>
                     <div class="col-md">
-                        <div class="alert alert-warning">
+                        <div class="alert alert-warning date">
                             Received Date: <b></b>
                         </div>
                     </div>
@@ -34,7 +32,7 @@
                     <div class="card-body">
                         <h5 class="card-title text-primary">Tracking Number:</h5>
                         {{-- <h1 class="text-primary">{{$onQueue}}</h1> --}}
-                        <h1 class="text-primary"></h1>
+                        <h1 class="text-primary tracking"></h1>
                     </div>
                 </div>
             </div>
@@ -42,71 +40,61 @@
     </div>
 </div>
 
-
 {{-- Add Deduction and Net Amount Modal--}}
 <div class="modal fade" id="addHonorariumAmount" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="">Add Honorarium Amount</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
-            </button>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        <form action="" method="POST">
+        <form id="honorariumForm">
             @csrf
             <div class="modal-body">
+                <input type="hidden" id="transaction_id" name="transaction_id">
                 <div class="row mb-3">
                     <div class="col-md">
-                        <h4>Student: &nbsp;<b class="text-primary">John Doe</b></h4>
+                        <h4>Student: &nbsp;<b class="text-primary" id="student"></b></h4>
                     </div>
                 </div>
                 <div class="row mb-2">
                     <div class="col-md mb-2">
-                        <div>Defense Date: &nbsp;<b class="text-primary">lorem ipsum</b></div>
+                        <div>Defense Date: &nbsp;<b class="text-primary" id="defense_date"></b></div>
                     </div>
                     <div class="col-md mb-2">
-                        <div>Defense Time: &nbsp;<b class="text-primary">lorem ipsum</b></div>
+                        <div>Defense Time: &nbsp;<b class="text-primary" id="defense_time"></b></div>
                     </div>
                 </div>
                 <div class="row mb-3">
                     <div class="col-md mb-2">
-                        <div>Degree: &nbsp;<b class="text-primary">lorem ipsum</b></div>
+                        <div>Degree: &nbsp;<b class="text-primary" id="degree"></b></div>
                     </div>
                     <div class="col-md mb-2">
-                        <div>Defense: &nbsp;<b class="text-primary">lorem ipsum</b></div>
+                        <div>Defense: &nbsp;<b class="text-primary" id="defense"></b></div>
                     </div>
                 </div>
                 <div class="row mb-3">
                     <div class="col-md">
-                        <div>Adviser: &nbsp;<b class="text-primary">lorem ipsum</b></div>
+                        <input type="hidden" id="adviser_id" name="adviser_id">
+                        <div>Adviser: &nbsp;<b class="text-primary" id="adviser"></b></div>
                         <input id="adviserInputAmount" class="form-control form-control-md mb-2" type="text" name="adviser_amount" placeholder="Enter Honorarium Amount"/>
                     </div>
                     <div class="col-md">
-                        <div>Chairperson: &nbsp;<b class="text-primary">lorem ipsum</b></div>
+                        <input type="hidden" id="chairperson_id" name="chairperson_id">
+                        <div>Chairperson: &nbsp;<b class="text-primary" id="chairperson"></b></div>
                         <input id="chairpersonInputAmount" class="form-control form-control-md mb-2" type="text" name="chairperson_amount" placeholder="Enter Honorarium Amount"/>
                     </div>
                 </div>
                 <div class="row mb-3">
-                    <div class="col-md-6">
-                        <div>Member 1: &nbsp;<b class="text-primary">lorem ipsum</b></div>
-                        <input id="firstMemberInputAmount" class="form-control form-control-md mb-2" type="text" name="first_member_amount" placeholder="Enter Honorarium Amount"/>
-                    </div>
-                    <div class="col-md-6">
-                        <div>Member 2: &nbsp;<b class="text-primary">lorem ipsum</b></div>
-                        <input id="secondMemberInputAmount" class="form-control form-control-md mb-2" type="text" name="second_member_amount" placeholder="Enter Honorarium Amount"/>
-                    </div>
-                    <div class="col-md-6">
-                        <div>Member 3: &nbsp;<b class="text-primary">lorem ipsum</b></div>
-                        <input id="thirdMemberInputAmount" class="form-control form-control-md mb-2" type="text" name="third_member_amount" placeholder="Enter Honorarium Amount"/>
-                    </div>
-                    <div class="col-md-6">
-                        <div>Member 4: &nbsp;<b class="text-primary">lorem ipsum</b></div>
-                        <input id="fourthMemberInputAmount" class="form-control form-control-md mb-2" type="text" name="fourth_member_amount" placeholder="Enter Honorarium Amount" >
+                    <div class="col-md">
+                        <div>Members:</div>
+                        <div id="membersList"></div>
                     </div>
                 </div>
                 <div class="row mb-2">
                     <div class="col-md">
-                        <div>Recorder: &nbsp;<b class="text-primary">lorem ipsum</b></div>
+                        <input type="hidden" id="recorder_id" name="recorder_id">
+                        <div>Recorder: &nbsp;<b class="text-primary" id="recorder"></b></div>
                         <input id="recorderInputAmount" class="form-control form-control-md mb-2" type="text" name="recorder_amount" placeholder="Enter Honorarium Amount"/>
                     </div>
                 </div>
@@ -121,6 +109,9 @@
     </div>
 </div>
 
+<div class="col-md mx-auto d-flex justify-content-end mt-4">
+    <button type="button" class="btn btn-primary gap-1" id="proceedTransactionButton">Proceed<i class='bx bx-chevrons-right'></i></button>
+</div>
 
 {{-- Datatables --}}
 <div class="row mt-4">
@@ -140,19 +131,98 @@
 
 @endsection
 
-
-
 @section('components.specific_page_scripts')
 <script>
     $(function () {
+        var tracking_number = {!! json_encode($tracking_number) !!};
 
-        var file_name = 'file_name' + new Date().toISOString().split('T')[0];
+        window.showMembersAlert = function(id) {
+            $.ajax({
+                url: '{{ route("thesis.getMembersByID") }}', // Route to get members by ID
+                type: 'GET',
+                data: { id: id }, // Return the id to the backend
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') // CSRF token for security
+                },
+                success: function(members) {
+
+                    const membersString = members.map(member => {
+                        return `<strong>Member Type:</strong> ${member.member_type}<br><strong>Name:</strong> ${member.first_name} ${member.last_name}`;
+                    }).join('<br><br>');
+
+                    Swal.fire({
+                        title: 'Member(s)',
+                        html: membersString,
+                        confirmButtonText: 'Got it',
+                        confirmButtonColor: '#007bff',
+                        footer: 'Viewing members for thesis entry.'
+                    });
+                
+                },
+                error: function(xhr) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: xhr.responseJSON?.message || 'Something went wrong!',
+                    });
+                }
+            });
+
+        };
+
+        // New function to fetch transaction details
+        window.fetchTransactionDetails = function(tracking_number) {
+            $.ajax({
+                url: '{{ route("thesis.fetchTransactionDetails") }}', // New route for fetching transaction details
+                type: 'GET',
+                data: { tracking_number: tracking_number },
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') // CSRF token for security
+                },
+                success: function(response) {
+
+                    const thesisLogs = response.thesisLogs;
+                    const TransCount = response.TransCount;
+                    const office = response.office;
+                    const transactionDetails = response.transactionDetails;
+                    const tracking_number = response.tracking_number;
+
+                    
+                    $('.office b').text(office ? office.name : 'N/A');
+                    $('.tracking').text(tracking_number ? tracking_number : 'N/A');
+                    $('.total-transaction b').text(TransCount ? TransCount : '0');
+                    $('.date b').text(
+                        transactionDetails && transactionDetails.updated_at 
+                            ? new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).format(new Date(transactionDetails.updated_at)) 
+                            : 'N/A'
+                    );
+                   
+                    // $('.text-primary h1').text(data ? data.tracking_number : 'N/A');
+                },
+                error: function(xhr) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: xhr.responseJSON?.message || 'Something went wrong!',
+                    });
+                }
+            });
+        };
+
+        // Call the function with the tracking number when the page loads or based on user action
+        fetchTransactionDetails(tracking_number); // Assuming tracking_number is available
 
         // Datatables
         // var thesisOpenOutgoingTable;
         var thesisOpenOutgoingTable = $('#thesisOpenOutGoingTable').DataTable({
             processing: true,
-            serverSide: false,
+            serverSide: true,
+            ajax: {
+                url: '{{ route('thesis.open.out.list') }}',
+                data: function(d) {
+                    d.tracking_number = tracking_number;
+                }
+            },
             pageLength: 100,
             paging: true,
             dom: '<"top"Bf>rt<"bottom"ip><"clear">',
@@ -160,35 +230,22 @@
                 search: "", // Remove the default search label
                 searchPlaceholder: "Search..." // Set the placeholder text
             },
-            data: [
-                {
-                    student: "John Doe",
-                    defense_date: "2022-01-01",
-                    defense_time: "10:00 AM",
-                    OR: "OR123",
-                    degree: "BSIT",
-                    defense: "Thesis Defense",
-                    adviser: "Dr. Jane Doe",
-                    chairperson: "Dr. John Smith",
-                    members: "Jane Doe, John Smith",
-                    recorder: "Recorder Name",
-                    date: "2022-01-01",
-                    action: ""
-                },
-                // Add more data as needed
-            ],
+           
             columns: [
                 { data: 'student', name: 'student', title: 'Student' },
                 { data: 'defense_date', name: 'defense_date', title: 'Defense Date' },
                 { data: 'defense_time', name: 'defense_time', title: 'Defense Time' },
-                { data: 'OR', name: 'OR', title: 'OR' },
+                { data: 'orNumber', name: 'orNumber', title: 'OR' },
                 { data: 'degree', name: 'degree', title: 'Degree' },
                 { data: 'defense', name: 'defense', title: 'Defense' },
                 { data: 'adviser', name: 'adviser', title: 'Adviser' },
                 { data: 'chairperson', name: 'chairperson', title: 'Chairperson' },
-                { data: 'members', name: 'members', title: 'Members' },
+                { data: 'membersCount', name: 'membersCount', title: 'Members', render: function(data, type, row) {
+                    return `<a href="#" onclick="showMembersAlert(${row.id})">${data}</a>`;
+                } },
                 { data: 'recorder', name: 'recorder', title: 'Recorder' },
                 { data: 'date', name: 'date', title: 'Date' },
+                @if(Auth::user()->usertype->name === 'Administrator')
                 {
                     data: 'action',
                     name: 'action',
@@ -198,13 +255,14 @@
                     render: function(data, type, row) {
                         return `
                             <div class="d-flex">
-                                <button type="button" class="btn btn-icon me-2 btn-label-success delete-btn" data-id="" data-bs-toggle="modal" data-bs-target="#addHonorariumAmount">
+                                <button type="button" class="btn btn-icon me-2 btn-label-success add-btn" data-id="${row.id}" data-bs-toggle="modal" data-bs-target="#addHonorariumAmount">
                                     <span class="tf-icons bx bx-show-alt bx-22px"></span>
                                 </button>
                             </div>
                         `;
                     }
                 }
+                @endif
             ],
             buttons: [
                 {
@@ -231,79 +289,232 @@
             }
         });
 
-
-        // Row click event
-        // $('#thesisOpenOutGoingTable tbody').on('click', 'tr', function() {
-        //         var rowData = table.row($(this).closest('tr')).data();
-
-        //         // If the row is unopened, change its class to opened
-        //         if ($(this).hasClass('unopened')) {
-        //             $(this).removeClass('unopened').addClass('opened');
-        //         }
-
-        //         // Redirect to another page with full details (example)
-        //         window.location.href = `/thesisOpenOutGoing?id=${rowData.tracking_number}`;
-        // });
-    });
-
-
-    // On form submit
-    $('form').on('submit', function(event) {
-            // Flag to check if form is valid
+        $('#honorariumForm').on('submit', function(e) {
+            e.preventDefault(); // Prevent default form submission
             let isValid = true;
-
-            // Array of field IDs to validate
-            const fields = [
-                '#adviserInputAmount',
-                '#chairpersonInputAmount',
-                '#firstMemberInputAmount',
-                '#secondMemberInputAmount',
-                '#thirdMemberInputAmount',
-                '#fourthMemberInputAmount',
-                '#recorderInputAmount'
-            ];
-
-            // Loop through each field ID
-            fields.forEach(function(fieldId) {
-                // Check if the field is empty
-                if ($(fieldId).val() === '') {
-                    // Add border-danger class to indicate an error
-                    $(fieldId).addClass('border-danger');
-                    isValid = false; // Mark form as invalid
+            $(this).find('input[type="text"]').each(function() {
+                if ($(this).val().trim() === '') {
+                    isValid = false;
+                    $(this).addClass('is-invalid'); 
                 } else {
-                    // Remove border-danger class if the field is filled
-                    $(fieldId).removeClass('border-danger');
+                    $(this).removeClass('is-invalid'); 
                 }
             });
 
-            // If the form is not valid, prevent the form from submitting
-            if (!isValid) {
-                event.preventDefault(); // Prevent form submission
+            if (isValid) {
+                // If valid, proceed with AJAX submission
+                $.ajax({
+                    url: '{{ route("thesis.submitAmount") }}', // New route for saving honorarium
+                    type: 'POST',
+                    data: $(this).serialize(), // Serialize form data
+                    success: function(response) {
+                        // Handle success response
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success',
+                            text: response.message,
+                        });
+                        $('#addHonorariumAmount').modal('hide'); // Hide modal
+                        // Optionally refresh data or perform other actions
+                    },
+                    error: function(xhr) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: xhr.responseJSON?.message || 'Something went wrong!',
+                        });
+                    }
+                });
+            } else {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Validation Error',
+                    text: 'Please fill in all fields before submitting.',
+                });
             }
         });
 
-        // Optional: On input change, remove border-danger class if the field is not empty
-        const fields = [
-            '#adviserInputAmount',
-            '#chairpersonInputAmount',
-            '#firstMemberInputAmount',
-            '#secondMemberInputAmount',
-            '#thirdMemberInputAmount',
-            '#fourthMemberInputAmount',
-            '#recorderInputAmount'
-        ];
-
-        // Loop through each field and remove the border-danger class when the user starts typing
-        fields.forEach(function(fieldId) {
-            $(fieldId).on('input', function() {
-                // If the field is not empty, remove border-danger class
-                if ($(fieldId).val() !== '') {
-                    $(fieldId).removeClass('border-danger');
+        // Replace Bootstrap modal with SweetAlert2
+        $('#proceedTransactionButton').off('click').on('click', function() {
+            $.ajax({
+                url: '{{ route('thesis.check.proceed.cashier') }}',
+                method: 'POST',
+                data: {
+                    batch_id: tracking_number,
+                    _token: $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function(response) {
+                    Swal.fire({
+                        icon: 'question',
+                        html: `
+                            <p class="text-success fw-bold fs-4">You are about to send Thesis Transactions to the next Office.</p>
+                            <p class="text-muted">"Proceeding with this transaction indicates that every individual has submitted all necessary requirements for their honorarium."</p>
+                            ${response.canProceedToCashier ? '<button id="proceedToCashier" class="btn btn-success mt-3">Proceed to Cashier</button>' : ''}
+                        `,
+                        showCancelButton: true,
+                        confirmButtonText: response.canProceedToCashier ? '' : 'Proceed to @if(Auth::user()->usertype->name === "Accounting") Dean @else next Office @endif',
+                        cancelButtonText: 'Cancel',
+                        customClass: {
+                            confirmButton: 'btn btn-primary gap-1',
+                            cancelButton: 'btn btn-label-danger'
+                        },
+                        buttonsStyling: false,
+                        showConfirmButton: !response.canProceedToCashier
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    $.ajax({
+                                        url: '{{ route('thesis.proceedByTN') }}',
+                                        method: 'POST',
+                                        data: {
+                                            tracking_number: tracking_number,
+                                            _token: $('meta[name="csrf-token"]').attr('content'),
+                                        },
+                                        beforeSend: function() {
+                                            Swal.fire({
+                                                title: 'Processing...',
+                                                html: '<div class="spinner-grow text-primary" role="status" style="width: 3rem; height: 3rem;"></div>',
+                                                showConfirmButton: false,
+                                                allowOutsideClick: false
+                                            });
+                                        },
+                                        success: function(response) {
+                                            if (response.success) {
+                                                Swal.fire({
+                                                    icon: 'success',
+                                                    title: response.message,
+                                                    html: `<h4 class="text-success">Tracking Number:<b>${response.batch_id}</b></h4><small class="text-danger">Note: Always attach the tracking number on the documents.</small>`,
+                                                    text: response.message,
+                                                }).then((result) => {
+                                                    if (result.isConfirmed) {
+                                                        window.location.href = '/thesis-out-going';
+                                                    }
+                                                });
+                                            } else {
+                                                Swal.fire({
+                                                    icon: 'error',
+                                                    title: 'Something went wrong',
+                                                    text: response.message,
+                                                });
+                                            }
+                                            $('#thesisOpenOutGoingTable').DataTable().ajax.reload();
+                                        },
+                                        error: function(xhr) {
+                                            Swal.fire({
+                                                icon: 'error',
+                                                title: 'Error',
+                                                text: 'There was a problem updating the transactions.',
+                                            });
+                                        }
+                                    });
+                                }
+                            });
+                },
+                error: function(xhr) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'There was a problem checking the batch status.',
+                    });
                 }
             });
         });
 
+        $(document).on('click', '#proceedToCashier', function() {
+            $.ajax({
+                url: '{{ route('thesis.proceed-to-cashier') }}',
+                method: 'POST',
+                data: {
+                    _token: $('meta[name="csrf-token"]').attr('content'),
+                    batch_id: tracking_number,
+                },
+                beforeSend: function() {
+                    Swal.fire({
+                        title: 'Processing...',
+                        html: '<div class="spinner-grow text-primary" role="status" style="width: 3rem; height: 3rem;"></div>',
+                        showConfirmButton: false,
+                        allowOutsideClick: false
+                    });
+                },
+                success: function(response) {
+                    if(response.success){
+                        Swal.fire({
+                                icon: 'success',
+                                title: 'Transaction forwarded successfully',
+                                html: `<h4 class="text-success">Tracking Number:<b>${response.batch_id}</b></h4><small class="text-danger">Note: Always attach the tracking number on the documents.</small>`,
+                                text: response.message,
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    // Redirect to /thesis-out-going' when OK is clicked
+                                    window.location.href = '/thesis-out-going';
+                                }
+                            });
+                    } else {
+                        Swal.fire({
+                                icon: 'error',
+                                title: 'Something went wrong',
+                                text: response.message,
+                            });
+                    }
+                    $('#facultyTable').DataTable().ajax.reload();
+                },
+                error: function(xhr) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'There was a problem updating the transactions.',
+                    });
+                }
+            });
+        });
 
+    });
 
+    $(document).on('click', '.add-btn', function() {
+        var id = $(this).data('id'); // Get the ID from the button's data attribute
+
+        $.ajax({
+            url: '{{ route("thesis.honorarium.data") }}', // Route to fetch honorarium data
+            type: 'GET',
+            data: { id: id }, // Send the ID to the backend
+            success: function(data) {
+                // Populate the modal fields with the retrieved data
+                $('#transaction_id').val(data.transaction.id);
+                $('#adviser_id').val(data.transaction.adviser_id);
+                $('#chairperson_id').val(data.transaction.chairperson_id);
+                $('#recorder_id').val(data.transaction.recorder_id);
+                $('#student').text(data.transaction.student ? data.transaction.student.first_name + ' ' + data.transaction.student.last_name : 'N/A');
+                $('#defense_date').text(data.transaction.defense_date || 'N/A');
+                $('#defense_time').text(data.transaction.defense_time || 'N/A');
+                $('#degree').text(data.transaction.degree ? data.transaction.degree.name : 'N/A');
+                $('#defense').text(data.transaction.defense ? data.transaction.defense.name : 'N/A');
+                $('#recorder').text(data.transaction.recorder ? data.transaction.recorder.first_name + ' ' + data.transaction.recorder.last_name : 'N/A');
+                $('#adviser').text(data.transaction.adviser ? data.transaction.adviser.first_name + ' ' + data.transaction.adviser.last_name : 'N/A');
+                $('#chairperson').text(data.transaction.chairperson ? data.transaction.chairperson.first_name + ' ' + data.transaction.chairperson.last_name : 'N/A');
+
+                // Set the amounts in the input fields
+                $('#adviserInputAmount').val(data.adviser_amount || '');
+                $('#chairpersonInputAmount').val(data.chairperson_amount || '');
+                $('#recorderInputAmount').val(data.recorder_amount || '');
+
+                // Display members with input fields for honorarium amounts
+                let membersHtml = '';
+                data.members.forEach(member => {
+                    const memberAmount = data.member_amounts[member.id] || '';
+                    membersHtml += `
+                        <div>${member.member_type}: &nbsp;<b class="text-primary">${member.first_name} ${member.last_name}</b></div>
+                        <input class="form-control form-control-md mb-2 member-input" type="text" name="member_ids[${member.id}]" placeholder="Enter Honorarium Amount" value="${memberAmount}"/>
+                    `;
+                });
+                $('#membersList').html(membersHtml); 
+            },
+            error: function(xhr) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: xhr.responseJSON?.message || 'Something went wrong!',
+                });
+            }
+        });
+    });
 </script>
 @endsection

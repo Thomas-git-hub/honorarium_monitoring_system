@@ -76,8 +76,7 @@
 
         var tracking_number = {!! json_encode($tracking_number) !!};
 
-           window.showMembersAlert = function(id) {
-
+        window.showMembersAlert = function(id) {
             $.ajax({
                 url: '{{ route("thesis.getMembersByID") }}', // Route to get members by ID
                 type: 'GET',
@@ -87,9 +86,8 @@
                 },
                 success: function(members) {
 
-                    const membersString = Object.keys(members).map(lastName => {
-                        const member = members[lastName];
-                        return `<strong>Member Type:</strong> ${member.member_type}<br><strong>Name:</strong> ${member.first_name} ${lastName}`;
+                    const membersString = members.map(member => {
+                        return `<strong>Member Type:</strong> ${member.member_type}<br><strong>Name:</strong> ${member.first_name} ${member.last_name}`;
                     }).join('<br><br>');
 
                     Swal.fire({
@@ -99,7 +97,7 @@
                         confirmButtonColor: '#007bff',
                         footer: 'Viewing members for thesis entry.'
                     });
-                   
+                
                 },
                 error: function(xhr) {
                     Swal.fire({
@@ -109,8 +107,9 @@
                     });
                 }
             });
-           
+
         };
+
 
          // DataTable initialization
          const thesisTable = $('#thesisEntriesTable').DataTable({
@@ -191,6 +190,7 @@
                             text: response.message,
                         });
                         $('#thesisEntriesTable').DataTable().ajax.reload();
+                        window.location.href = '/thesis-out-going';
                         
 
                     }else{

@@ -813,38 +813,55 @@
             }
         });
 
-
-        // Search/Select Adviser and Chairperson
-        function createSelect2Config(placeholder) {
-            return {
-                placeholder: placeholder,
-                allowClear: true,
-                ajax: {
-                    url: '{{ route('getUser') }}',
-                    dataType: 'json',
-                    delay: 250,
-                    data: function(params) {
-                        return {
-                            search: params.term
-                        };
-                    },
-                    processResults: function(data) {
-                        return {
-                            results: data.map(function(user) {
-                                return {
-                                    id: user.id,
-                                    text: user.employee_fname + ' ' + user.employee_lname
-                                };
-                            })
-                        };
-                    }
-                }
-            };
-        }
-        ['chairperson', 'adviser'].forEach(field => {
-            $(`#${field}`).select2(createSelect2Config('Search by Name/ID Number...'));
+         // Search/Select Chairperosn
+         $('#chairperson').select2({
+            placeholder: 'Search Chairperson...',
+            allowClear: true,
+            ajax: {
+                url: '{{ route('thesis.getChairperson') }}',
+                dataType: 'json',
+                delay: 250,
+                data: function(params) {
+                    return {
+                        search: params.term
+                    };
+                },
+                processResults: function(data) {
+                    return {
+                        results: data.map(user => ({
+                            id: user.id,
+                            text: `${user.first_name} ${user.last_name}`
+                        }))
+                    };
+                },
+                cache: true
+            }
         });
 
+         // Search/Select Chairperosn
+         $('#adviser').select2({
+            placeholder: 'Search Chairperson...',
+            allowClear: true,
+            ajax: {
+                url: '{{ route('thesis.getAdviser') }}',
+                dataType: 'json',
+                delay: 250,
+                data: function(params) {
+                    return {
+                        search: params.term
+                    };
+                },
+                processResults: function(data) {
+                    return {
+                        results: data.map(user => ({
+                            id: user.id,
+                            text: `${user.first_name} ${user.last_name}`
+                        }))
+                    };
+                },
+                cache: true
+            }
+        });
 
         // Search/Select Members
         for (let i = 1; i <= 4; i++) {
@@ -909,43 +926,6 @@
             error: function(error) {
                 console.error('Error loading degrees:', error);
             }
-        });
-
-
-       // Helper function to configure select2
-        function createSelect2Edit(placeholder) {
-            return {
-                placeholder: placeholder,
-                allowClear: true,
-                width: '100%',
-                dropdownParent: $('#editThesisEntriesModal'),
-                ajax: {
-                    url: '{{ route('getUser') }}',
-                    dataType: 'json',
-                    delay: 250,
-                    data: function(params) {
-                        return {
-                            search: params.term
-                        };
-                    },
-                    processResults: function(data) {
-                        return {
-                            results: data.map(function(user) {
-                                return {
-                                    id: user.id,
-                                    text: user.employee_fname + ' ' + user.employee_lname
-                                };
-                            })
-                        };
-                    }
-                }
-            };
-        }
-
-
-        // Initialize select2 for adviser and chairperson Edit fields
-        ['editAdviser', 'editChairperson'].forEach(field => {
-            $(`#${field}`).select2(createSelect2Edit('Search by Name/ID Number...'));
         });
 
 
@@ -1060,9 +1040,8 @@
                 },
                 success: function(members) {
 
-                    const membersString = Object.keys(members).map(lastName => {
-                        const member = members[lastName];
-                        return `<strong>Member Type:</strong> ${member.member_type}<br><strong>Name:</strong> ${member.first_name} ${lastName}`;
+                    const membersString = members.map(member => {
+                        return `<strong>Member Type:</strong> ${member.member_type}<br><strong>Name:</strong> ${member.first_name} ${member.last_name}`;
                     }).join('<br><br>');
 
                     Swal.fire({
@@ -1072,7 +1051,7 @@
                         confirmButtonColor: '#007bff',
                         footer: 'Viewing members for thesis entry.'
                     });
-
+                
                 },
                 error: function(xhr) {
                     Swal.fire({
@@ -1082,8 +1061,9 @@
                     });
                 }
             });
+
         };
-        console.log(typeof showMembersAlert);
+
 
 
         // DataTable initialization
@@ -1148,6 +1128,74 @@
                 checkTableData();
             },
 
+        });
+
+         
+
+         function createSelect2EditAdviser(placeholder) {
+            return {
+                placeholder: placeholder,
+                allowClear: true,
+                width: '100%',
+                dropdownParent: $('#editThesisEntriesModal'),
+                ajax: {
+                    url: '{{ route('thesis.getAdviser') }}',
+                    dataType: 'json',
+                    delay: 250,
+                    data: function(params) {
+                        return {
+                            search: params.term
+                        };
+                    },
+                    processResults: function(data) {
+                        return {
+                            results: data.map(function(user) {
+                                return {
+                                    id: user.id,
+                                    text: user.first_name + ' ' + user.last_name
+                                };
+                            })
+                        };
+                    }
+                }
+            };
+        }
+
+        ['editAdviser',].forEach(field => {
+            $(`#${field}`).select2(createSelect2EditAdviser('Search by Name...'));
+        });
+
+         function createSelect2EditChairperson(placeholder) {
+            return {
+                placeholder: placeholder,
+                allowClear: true,
+                width: '100%',
+                dropdownParent: $('#editThesisEntriesModal'),
+                ajax: {
+                    url: '{{ route('thesis.getChairperson') }}',
+                    dataType: 'json',
+                    delay: 250,
+                    data: function(params) {
+                        return {
+                            search: params.term
+                        };
+                    },
+                    processResults: function(data) {
+                        return {
+                            results: data.map(function(user) {
+                                return {
+                                    id: user.id,
+                                    text: user.first_name + ' ' + user.last_name
+                                };
+                            })
+                        };
+                    }
+                }
+            };
+        }
+
+        ['editChairperson',].forEach(field => {
+            $(`#${field}`).select2(createSelect2EditChairperson('Search by Name...'));
         });
 
 
@@ -1216,10 +1264,10 @@
                     const chairpersonSelect = $('#editThesisEntriesModal select[name="chairperson_id"]');
 
                     // Set Adviser
-                    adviserSelect.append(new Option(adviser.employee_fname + ' ' + adviser.employee_lname, adviser.id, true, true)).trigger('change');
+                    adviserSelect.append(new Option(adviser.first_name + ' ' + adviser.last_name, adviser.id, true, true)).trigger('change');
 
                     // Set Chairperson
-                    chairpersonSelect.append(new Option(chairperson.employee_fname + ' ' + chairperson.employee_lname, chairperson.id, true, true)).trigger('change');
+                    chairpersonSelect.append(new Option(chairperson.first_name + ' ' + chairperson.last_name, chairperson.id, true, true)).trigger('change');
 
                       // Clear member fields before populating
                     for (let i = 1; i <= 4; i++) {

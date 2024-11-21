@@ -20,6 +20,7 @@ use App\Http\Controllers\CashierQueueController;
 use App\Http\Controllers\FacultyDashboardController;
 use App\Http\Controllers\FacultyTrackingController;
 use App\Http\Controllers\ThesisAcknowledgementController;
+use App\Http\Controllers\ThesisMonitorController;
 use App\Http\Controllers\ThesisNewEntriesController;
 use App\Http\Controllers\ThesisOutGoingController;
 use App\Http\Controllers\ThesisOpenOutGoingController;
@@ -164,6 +165,8 @@ Route::middleware(['auth_check', '419'])->group(function () {
         Route::get('/getMembers', [ThesisNewEntriesController::class, 'getMembers'])->name('thesis.getMembers');
         Route::get('/getDegrees', [ThesisNewEntriesController::class, 'getDegrees'])->name('thesis.getDegrees');
         Route::get('/getRecorder', [ThesisNewEntriesController::class, 'getRecorder'])->name('thesis.getRecorder');
+        Route::get('/getChairperson', [ThesisNewEntriesController::class, 'getChairperson'])->name('thesis.getChairperson');
+        Route::get('/getAdviser', [ThesisNewEntriesController::class, 'getAdviser'])->name('thesis.getAdviser');
         Route::get('/getDefenseTypes', [ThesisNewEntriesController::class, 'getDefenseTypes'])->name('thesis.getDefenseTypes');
         Route::post('/thesis/store', [ThesisNewEntriesController::class, 'store'])->name('thesis.store');
         Route::get('/thesis/list', [ThesisNewEntriesController::class, 'list'])->name('thesis.list');
@@ -187,19 +190,31 @@ Route::middleware(['auth_check', '419'])->group(function () {
         Route::get('/thesis/open/list', [ThesisAcknowledgementController::class, 'open_list'])->name('thesis.open.list');
         Route::post('/thesis/acknowledge', [ThesisAcknowledgementController::class, 'acknowledge'])->name('thesis.acknowledge');
 
-
         // Thesis Out Going Defenses
         Route::get('/thesis-out-going', [ThesisOutGoingController::class, 'showThesisOutGoing'])->name('thesis.outgoing');
-
+        Route::get('/thesis-out-going/list', [ThesisOutGoingController::class, 'list'])->name('thesis.outgoing.list');
+        Route::get('/thesis-out-going/getItems', [ThesisOutGoingController::class, 'getItems'])->name('thesis.outgoing.getItems');
 
         // Thesis Open Out Going Defenses
         Route::get('/thesis-open-out-going', [ThesisOpenOutGoingController::class, 'showThesisOpenOutGoing'])->name('thesis.open.out.going');
+        Route::get('/thesis-open-out-going/list', [ThesisOpenOutGoingController::class, 'open_list'])->name('thesis.open.out.list');
+        Route::get('/thesis/fetchTransactionDetails', [ThesisOpenOutGoingController::class, 'fetchTransactionDetails'])->name('thesis.fetchTransactionDetails');
+        Route::get('/thesis/honorarium-data', [ThesisOpenOutGoingController::class, 'getHonorariumData'])->name('thesis.honorarium.data');
+        Route::post('/thesis/submitAmount', [ThesisOpenOutGoingController::class, 'submitAmount'])->name('thesis.submitAmount');
+        Route::post('/thesis/proceedByTN', [ThesisOpenOutGoingController::class, 'proceedByTN'])->name('thesis.proceedByTN');
+        Route::post('/thesis/proceed-to-cashier', [ThesisOpenOutGoingController::class, 'proceedToCashier'])->name('thesis.proceed-to-cashier');
+        Route::post('/thesis/check-proceed-cashier', [ThesisOpenOutGoingController::class, 'checkIfProceedToCashier'])->name('thesis.check.proceed.cashier');
 
 
-
-
-
-
+        Route::get('/thesis-track-and-monitor', [ThesisMonitorController::class, 'index'])->name('thesis.track.and.monitor');
+        Route::get('/thesis/dean_office/new-entries', [ThesisMonitorController::class, 'DeanListNewEntries'])->name('thesis.dean_office.new-entries');
+        Route::get('/thesis/bugs', [ThesisMonitorController::class, 'AdminList'])->name('thesis.bugs');
+        Route::get('/thesis/budget-office', [ThesisMonitorController::class, 'BudgetList'])->name('thesis.budget-office');
+        Route::get('/thesis/dean_office', [ThesisMonitorController::class, 'DeanList'])->name('thesis.dean_office');
+        Route::get('/thesis/dean_office/accounting', [ThesisMonitorController::class, 'DeanListTwo'])->name('thesis.dean_office_two');
+        Route::get('/thesis/accounting', [ThesisMonitorController::class, 'AccountList'])->name('thesis.accounting');
+        Route::get('/thesis/cashier', [ThesisMonitorController::class, 'CashierList'])->name('thesis.cashier');
+        Route::get('/thesis/honorarium_released', [ThesisMonitorController::class, 'honorarium_released'])->name('thesis.honorarium_released');
 
 
     // });

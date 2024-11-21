@@ -33,23 +33,29 @@ class ThesisTransaction extends Model
 
 
     public function student(){
-        return $this->belongsTo(Student::class, 'student_id');
+        return $this->belongsTo(Student::class, 'student_id', 'id');
 
+    }
+
+    public function adviser(){
+        return $this->belongsTo(Adviser::class, 'adviser_id', 'id');
+
+    }
+
+    public function chairperson(){
+        return $this->belongsTo(Chairperson::class, 'chairperson_id', 'id');
 
     }
     public function degree(){
         return $this->belongsTo(Degree::class, 'degree_id');
-
     }
 
     public function defense(){
         return $this->belongsTo(Defense::class, 'defense_id');
-
     }
 
     public function recorder(){
         return $this->belongsTo(Recorder::class, 'recorder_id', 'id');
-
     }
 
     public function createdBy()

@@ -96,13 +96,12 @@ class ThesisAcknowledgementController extends Controller
             $ThesisLogs = collect();
         }
 
-        if(Auth::user()->usertype->name === 'Administrator' || Auth::user()->usertype->name === 'Superadmin'){
+        if( Auth::user()->usertype->name === 'Superadmin'){
             // Filter out ThesisLogs with a transaction count of 0
             $filteredThesisLogs = $ThesisLogs->filter(function ($acknowledgement) {
                 $countTran = ThesisTransaction::whereNull('deleted_at')
                 ->where('tracking_number', $acknowledgement->tracking_number)
                 ->where('status', 'On Queue')
-                // ->where('office', Auth::user()->office_id)
                 ->count();
                 return $countTran > 0; // Only keep ThesisLogs with a transaction count greater than 0
             });
@@ -153,7 +152,7 @@ class ThesisAcknowledgementController extends Controller
         ->orderBy('id', 'desc')
         ->first();
 
-        $TransCount = ThesisTransaction::with(['honorarium', 'createdBy'])
+        $TransCount = ThesisTransaction::with(['createdBy'])
         ->whereNull('deleted_at')
         ->where('updated_on', Auth::user()->office_id)
         ->where('status', 'On Queue')
@@ -166,7 +165,7 @@ class ThesisAcknowledgementController extends Controller
         $pendingMails = Emailing::where('status', 'Unread')->where('to_user', Auth::user()->employee_id);
         $EmailCount = $pendingMails->count();
 
-        $TransactionCount = ThesisTransaction::with(['honorarium', 'createdBy'])
+        $TransactionCount = ThesisTransaction::with([ 'createdBy'])
         ->whereNull('deleted_at')
         ->where('status', 'On Queue')
         ->where('updated_on', Auth::user()->office_id)
@@ -179,7 +178,7 @@ class ThesisAcknowledgementController extends Controller
     public function open_list(Request $request){
 
         if(Auth::user()->usertype->name === 'Superadmin'){
-            $query = ThesisTransaction::with(['student', 'degree', 'defense', 'recorder', 'createdBy', 'createdOn'])
+            $query = ThesisTransaction::with(['student', 'degree', 'defense', 'recorder', 'createdBy', 'createdOn', 'adviser', 'chairperson'])
             ->whereNull('deleted_at')
             ->where('status', 'On Queue')
             ->where('tracking_number', $request->tracking_number);
@@ -238,28 +237,15 @@ class ThesisAcknowledgementController extends Controller
             })
 
             ->addColumn('adviser', function($data) use($ibu_dbcon) {
-                $employeeDetails = $ibu_dbcon->table('employee')
-                ->where('id', $data->adviser_id)
-                ->first();
-                return ucfirst($employeeDetails->employee_fname) . ' ' . ucfirst($employeeDetails->employee_lname);
+                return $data->adviser_id ? ucfirst($data->adviser->first_name) . ' ' . ucfirst($data->adviser->last_name) : 'N/A';
 
             })
 
             ->addColumn('chairperson', function($data) use($ibu_dbcon) {
-                $employeeDetails = $ibu_dbcon->table('employee')
-                ->where('id', $data->chairperson_id)
-                ->first();
-                return ucfirst($employeeDetails->employee_fname) . ' ' . ucfirst($employeeDetails->employee_lname);
+                return $data->chairperson_id ? ucfirst($data->chairperson->first_name) . ' ' . ucfirst($data->chairperson->last_name) : 'N/A';
 
             })
 
-            ->addColumn('chairperson', function($data) use($ibu_dbcon) {
-                $employeeDetails = $ibu_dbcon->table('employee')
-                ->where('id', $data->chairperson_id)
-                ->first();
-                return ucfirst($employeeDetails->employee_fname) . ' ' . ucfirst($employeeDetails->employee_lname);
-
-            })
 
             ->addColumn('recorder', function($data) {
                 return $data->recorder_id ? ucfirst($data->recorder->first_name) . ' ' . ucfirst($data->recorder->last_name) : 'N/A';
@@ -312,8 +298,8 @@ class ThesisAcknowledgementController extends Controller
             ->where('updated_on', Auth::user()->office_id)
             ->update([
                 'status' => 'processing',
-                'created_on' => Auth::user()->office_id,
-                'created_by' => Auth::user()->id,
+                'updated_on' => Auth::user()->office_id,
+                'updated_by' => Auth::user()->id,
                 'updated_at' => now(),
             ]);
 

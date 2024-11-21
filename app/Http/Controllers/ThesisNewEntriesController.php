@@ -10,6 +10,8 @@ use App\Models\Student;
 use App\Models\ThesisLogs;
 use App\Models\Office;
 use App\Models\Emailing;
+use App\Models\Chairperson;
+use App\Models\Adviser;
 use App\Models\ThesisTransaction ;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -94,6 +96,42 @@ class ThesisNewEntriesController extends Controller
         return response()->json($data);
     }
 
+    public function getChairperson(Request $request){
+
+        $searchTerm = $request->input('search'); // Capture search term
+
+        $searchTerm = ucfirst($searchTerm);
+
+        $data = Chairperson::whereNull('deleted_at')
+        ->where('status', 'Active')
+        ->where(function($query) use ($searchTerm) {
+            $query->where(DB::raw("CONCAT(first_name, ' ', last_name)"), 'like', "%{$searchTerm}%")
+                ->orWhere('first_name', 'like', "%{$searchTerm}%")
+                ->orWhere('last_name', 'like', "%{$searchTerm}%");
+        })->get();
+
+        return response()->json($data);
+
+    }
+
+    public function getAdviser(Request $request){
+
+        $searchTerm = $request->input('search'); // Capture search term
+
+        $searchTerm = ucfirst($searchTerm);
+
+        $data = Adviser::whereNull('deleted_at')
+        ->where('status', 'Active')
+        ->where(function($query) use ($searchTerm) {
+            $query->where(DB::raw("CONCAT(first_name, ' ', last_name)"), 'like', "%{$searchTerm}%")
+                ->orWhere('first_name', 'like', "%{$searchTerm}%")
+                ->orWhere('last_name', 'like', "%{$searchTerm}%");
+        })->get();
+
+        return response()->json($data);
+
+    }
+
     public function store(Request $request)
     {
         try {
@@ -114,6 +152,40 @@ class ThesisNewEntriesController extends Controller
                 ]);
 
                 $student_id = $student->id;
+            }
+
+            $adviser_id = $request->adviser_id;
+            if (!$adviser_id && $request->adviser_first_name) {
+                // Create new adviser
+                $adviser = Adviser::create([
+                    'first_name' => ucfirst($request->adviser_first_name),
+                    'middle_name' => ucfirst($request->adviser_middle_name),
+                    'last_name' => ucfirst($request->adviser_last_name),
+                    'email' => ucfirst($request->adviser_email),
+                    'suffix' => $request->adviser_suffix,
+                    'status' => 'Active',
+                    'created_by' => Auth::user()->id,
+                    'updated_by' => Auth::user()->id,
+                ]);
+
+                $adviser_id = $adviser->id;
+            }
+
+            $chairperson_id = $request->chairperson_id;
+            if (!$chairperson_id && $request->chairperson_first_name) {
+                // Create new chairperson
+                $chairperson = Chairperson::create([
+                    'first_name' => ucfirst($request->chairperson_first_name),
+                    'middle_name' => ucfirst($request->chairperson_middle_name),
+                    'last_name' => ucfirst($request->chairperson_last_name),
+                    'email' => ucfirst($request->chairperson_email),
+                    'suffix' => $request->chairperson_suffix,
+                    'status' => 'Active',
+                    'created_by' => Auth::user()->id,
+                    'updated_by' => Auth::user()->id,
+                ]);
+
+                $chairperson_id = $chairperson->id;
             }
 
             // Handle Members
@@ -159,8 +231,8 @@ class ThesisNewEntriesController extends Controller
             $thesis->student_id = $student_id;
             $thesis->degree_id = $request->degree_id;
             $thesis->defense_id = $request->defense_id;
-            $thesis->adviser_id = $request->adviser_id;
-            $thesis->chairperson_id = $request->chairperson_id;
+            $thesis->adviser_id = $adviser_id;
+            $thesis->chairperson_id = $chairperson_id;
             $thesis->member_ids = json_encode($member_ids);
             $thesis->recorder_id = $recorder_id;
             $thesis->or_number = $request->or_number;
@@ -201,9 +273,10 @@ class ThesisNewEntriesController extends Controller
 
     public function list()
     {
-        $query = ThesisTransaction::with(['student', 'degree', 'defense', 'recorder', 'createdBy', 'createdOn'])
+        $query = ThesisTransaction::with(['student', 'degree', 'defense', 'recorder', 'createdBy', 'createdOn', 'chairperson', 'chairperson'])
             ->whereNull('deleted_at')
             ->where('status', 'processing')
+            ->where('created_by', Auth::user()->id)
             ->get();
 
         $ibu_dbcon = DB::connection('ibu_test');
@@ -237,26 +310,12 @@ class ThesisNewEntriesController extends Controller
             })
 
             ->addColumn('adviser', function($data) use($ibu_dbcon) {
-                $employeeDetails = $ibu_dbcon->table('employee')
-                ->where('id', $data->adviser_id)
-                ->first();
-                return ucfirst($employeeDetails->employee_fname) . ' ' . ucfirst($employeeDetails->employee_lname);
+                return $data->adviser_id ? ucfirst($data->adviser->first_name) . ' ' . ucfirst($data->adviser->last_name) : 'N/A';
 
             })
 
             ->addColumn('chairperson', function($data) use($ibu_dbcon) {
-                $employeeDetails = $ibu_dbcon->table('employee')
-                ->where('id', $data->chairperson_id)
-                ->first();
-                return ucfirst($employeeDetails->employee_fname) . ' ' . ucfirst($employeeDetails->employee_lname);
-
-            })
-
-            ->addColumn('chairperson', function($data) use($ibu_dbcon) {
-                $employeeDetails = $ibu_dbcon->table('employee')
-                ->where('id', $data->chairperson_id)
-                ->first();
-                return ucfirst($employeeDetails->employee_fname) . ' ' . ucfirst($employeeDetails->employee_lname);
+                return $data->chairperson_id ? ucfirst($data->chairperson->first_name) . ' ' . ucfirst($data->chairperson->last_name) : 'N/A';
 
             })
 
@@ -286,6 +345,7 @@ class ThesisNewEntriesController extends Controller
     public function checkData()
     {
         $DataIsZero = ThesisTransaction::where('status', 'processing')
+        ->where('created_by', Auth::user()->id)
         ->count();
         return response()->json(['DataIsZero' => $DataIsZero]);
     }
@@ -437,12 +497,14 @@ class ThesisNewEntriesController extends Controller
         // Retrieve all needed columns
         $members = Member::whereIn('id', $membersArray)
             ->get(['first_name', 'last_name', 'member_type'])
-            ->mapWithKeys(function ($member) {
-                return [$member->last_name => [
+            ->map(function ($member) {
+                return [
                     'first_name' => $member->first_name,
+                    'last_name' => $member->last_name,
                     'member_type' => $member->member_type,
-                ]];
+                ];
             });
+
 
         return response()->json($members);
     }
@@ -451,20 +513,14 @@ class ThesisNewEntriesController extends Controller
         $id = $request->id;
 
         $thesisEntry = ThesisTransaction::findOrFail($id);
-        $ibu_dbcon = DB::connection('ibu_test');
 
         $student = Student::where('id',  $thesisEntry->student_id)->first();
         $defense = Defense::where('id',  $thesisEntry->defense_id)->first();
         $degree = Degree::where('id',  $thesisEntry->degree_id)->first();
         $recorder = Recorder::where('id',  $thesisEntry->recorder_id)->first();
+        $adviser = Adviser::where('id',  $thesisEntry->adviser_id)->first();
+        $chairperson = Chairperson::where('id',  $thesisEntry->chairperson_id)->first();
 
-        $adviser = $ibu_dbcon->table('employee')
-        ->where('id', $thesisEntry->adviser_id)
-        ->first();
-
-        $chairperson = $ibu_dbcon->table('employee')
-        ->where('id', $thesisEntry->chairperson_id)
-        ->first();
 
         $memberIds = json_decode($thesisEntry->member_ids);
         $members = Member::whereIn('id', $memberIds)->get();
@@ -593,29 +649,9 @@ class ThesisNewEntriesController extends Controller
         $batchId = $transactions->first()->tracking_number;
     
         $usertype = Auth::user()->usertype->name;
-
-        if($usertype === 'Dean' || $usertype === 'Superadmin'){
-            $office = Office::where('name', 'BUGS Administration')->first();
-        }
-        elseif($usertype === 'Administrator'){
-            $office = Office::where('name', 'Budget Office')->first();
-        }
-        elseif($usertype === 'Budget Office' || $usertype === 'Accounting' ){
-            $office = Office::where('name', 'Dean')->first();
-        }
-        elseif($usertype === 'Dean' ){
-            $office = Office::where('name', 'Accounting')->first();
-
-        }elseif($usertype === 'Cashiers'){
-            $office = Office::where('name', 'Faculty')->first();
-
-        }elseif($usertype === 'Accounting' ){
-            $office = Office::where('name', 'Dean')->first();
-        }
-        else{
-            return response()->json(['success' => false, 'message' => 'No office Found']);
-        }
-
+        
+        $office = Office::where('name', 'BUGS Administration')->first();
+       
          // Update the status to 'On Queue'
         if($usertype === 'Cashiers' ){
 
@@ -647,8 +683,6 @@ class ThesisNewEntriesController extends Controller
 
         }
         return response()->json(['success' => true, 'message' => 'Transaction proceeded successfully.']);
-
-
 
     }
 

@@ -784,7 +784,7 @@ class QueueController extends Controller
             $acknowledgements = collect();
         }
 
-        if(Auth::user()->usertype->name === 'Admin'){
+        if(Auth::user()->usertype->name === 'Administrator'){
             $filteredAcknowledgements = $acknowledgements->filter(function ($acknowledgement) {
                 $countTran = Transaction::whereNull('deleted_at')
                 ->where('batch_id', $acknowledgement->batch_id)
