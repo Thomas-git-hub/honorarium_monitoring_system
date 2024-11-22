@@ -19,6 +19,37 @@ class ForAcknowledgementController extends Controller
     public function for_acknowledgement(request $request)
     {
         if(Auth::user()->usertype->name !== 'Faculty'){
+
+            if(Auth::user()->usertype->name === 'Superadmin'){
+                $TransCountToday = Transaction::with(['honorarium', 'createdBy'])
+                                        ->whereNull('deleted_at')
+                                        ->where('status', 'On Queue')
+                                        ->whereDate('created_at', Carbon::today())
+                                        ->count();
+                $yesterday = Carbon::yesterday()->format('Y-m-d');
+
+                $TransCountYesterday = Transaction::with(['honorarium', 'createdBy'])
+                    ->whereNull('deleted_at')
+                    ->where('status', 'On Queue')
+                    ->whereDate('updated_at', $yesterday)
+                    ->count();
+
+                $TransCountDaysAgo = Transaction::with(['honorarium', 'createdBy'])
+                    ->whereNull('deleted_at')
+                    ->where('status', 'On Queue')
+                    ->whereDate('updated_at', '<', now()->subDays(1))
+                    ->whereDate('updated_at', '>=', now()->subDays(7))
+                    ->count();
+
+                $pendingMails = Emailing::where('status', 'Unread')->where('to_user', Auth::user()->employee_id);
+                $EmailCount = $pendingMails->count();
+
+                $TransactionCount = Transaction::with(['honorarium', 'createdBy'])
+                ->whereNull('deleted_at')
+                ->where('status', 'On Queue')
+                ->count();
+        }else{
+
             $TransCountToday = Transaction::with(['honorarium', 'createdBy'])
                                     ->whereNull('deleted_at')
                                     ->where('status', 'On Queue')
@@ -51,6 +82,8 @@ class ForAcknowledgementController extends Controller
             ->where('office', Auth::user()->office_id)
             ->count();
 
+        }
+
             return view('administration.for_acknowledgement', compact('TransCountToday', 'TransCountYesterday', 'TransCountDaysAgo', 'EmailCount', 'TransactionCount'));
 
         }else{
@@ -67,12 +100,13 @@ class ForAcknowledgementController extends Controller
         if (Auth::user()->usertype->name === 'Superadmin' || Auth::user()->usertype->name === 'Administrator') {
             $acknowledgements = Acknowledgement::with(['user', 'office', 'transaction'])
                 ->select('batch_id', 'office_id', 'created_at', 'user_id')
+                ->groupBy('batch_id')
                 ->get();
         } elseif (Auth::user()->usertype->name === 'Budget Office') {
-            $From_office = Office::where('name', 'BUGS Administration')->first();
+            $From_office = Office::whereIn('name', ['BUGS Administration', 'ICTO'])->pluck('id');
             $acknowledgements = Acknowledgement::with(['user', 'office', 'transaction'])
                 ->select('batch_id', 'office_id', 'created_at', 'user_id')
-                ->where('office_id', $From_office->id)
+                ->whereIn('office_id', $From_office)
                 ->groupBy('batch_id')
                 ->get();
         } elseif (Auth::user()->usertype->name === 'Dean') {
@@ -108,7 +142,6 @@ class ForAcknowledgementController extends Controller
                 $countTran = Transaction::whereNull('deleted_at')
                 ->where('batch_id', $acknowledgement->batch_id)
                 ->where('status', 'On Queue')
-                // ->where('office', Auth::user()->office_id)
                 ->count();
                 return $countTran > 0; // Only keep acknowledgements with a transaction count greater than 0
             });
@@ -140,11 +173,21 @@ class ForAcknowledgementController extends Controller
                     '(' . $data->office->name . ')';
             })
             ->addColumn('trans_id', function ($data) {
-                return Transaction::whereNull('deleted_at')
-                ->where('batch_id', $data->batch_id)
-                ->where('status', 'On Queue')
-                ->where('office', Auth::user()->office_id)
-                ->count();
+                if(Auth::user()->usertype->name === 'Superadmin'){
+                    return Transaction::whereNull('deleted_at')
+                    ->where('batch_id', $data->batch_id)
+                    ->where('status', 'On Queue')
+                    ->where('from_office', Auth::user()->office_id)
+                    ->count();
+
+                }else{
+                    return Transaction::whereNull('deleted_at')
+                    ->where('batch_id', $data->batch_id)
+                    ->where('status', 'On Queue')
+                    ->where('office', Auth::user()->office_id)
+                    ->count();
+                }
+              
             })
             ->addColumn('created_at', function ($data) {
                 return $data->created_at ? $data->created_at->format('m-d-Y') : 'N/A';

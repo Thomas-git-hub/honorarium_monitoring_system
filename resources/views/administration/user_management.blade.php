@@ -93,35 +93,14 @@
                                 </div>
                                 <div class="card-body text-success">
                                     <div class="row d-flex align-items-center">
-                                        <div class="col-2">
-                                            <h1 class="text-success text-center" style="font-size: 48px;">5</h1>
-                                        </div>
-                                        <div class="col-10">
-                                            <h5 class="card-title text-success">Approved Requests</h5>
+                                        <div class="col-md d-flex align-items-center gap-3">
+                                            <h1 class="text-success text-center d-flex align-items-center" id="UserCount" style="font-size: 48px;">0</h1>
+                                            <h5 class="card-title text-success">Numbers of Active User</h5>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-
-                        <div class="col-md">
-                            <div class="card shadow-none bg-label-danger">
-                                <div class="card-header d-flex justify-content-end">
-                                    <small class="card-title text-danger d-flex align-items-center"><i class='bx bxs-shield-x' style="font-size: 32px;"></i></small>
-                                </div>
-                                <div class="card-body text-danger">
-                                    <div class="row d-flex align-items-center">
-                                        <div class="col-2">
-                                            <h1 class="text-danger text-center" style="font-size: 48px;">5</h1>
-                                        </div>
-                                        <div class="col-10">
-                                            <h5 class="card-title text-danger">Pending Requests</h5>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
                     </div>
                 </div>
             </div>
@@ -275,6 +254,22 @@
 
 
 @section('components.specific_page_scripts')
+
+<script>
+    $(document).ready(function() {
+        // Fetch active user count on page load
+        $.ajax({
+            url: '{{ route('user_management.user_count') }}', // Adjust the route as necessary
+            type: 'GET',
+            success: function(response) {
+                $('#UserCount').text(response.active_user_count);
+            },
+            error: function(xhr) {
+                console.error('Error fetching user count:', xhr);
+            }
+        });
+    });
+</script>
 
 {{-- DATATABLES --}}
 <script>
@@ -683,5 +678,7 @@
         });
     });
 </script>
+
+
 
 @endsection

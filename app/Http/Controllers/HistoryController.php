@@ -58,6 +58,7 @@ class HistoryController extends Controller
         if (Auth::user()->usertype->name === 'Superadmin') {
             $acknowledgements = Acknowledgement::with(['user', 'office', 'transaction'])
                 ->select('batch_id', 'office_id', 'created_at', 'user_id')
+                ->where('office_id', Auth::user()->office_id)
                 ->groupBy('batch_id', 'user_id')
                 ->get();
         }elseif(Auth::user()->usertype->name === 'Administrator'){
@@ -244,7 +245,7 @@ class HistoryController extends Controller
                 ];
             })
 
-            ->addColumn('created_by', function($data) {
+            ->addColumn('updated_by', function($data) {
                 return $data->createdBy ? $data->createdBy->first_name  . ' ' . $data->createdBy->last_name: 'Unknown';
             })
             ->addColumn('action', function($data) {

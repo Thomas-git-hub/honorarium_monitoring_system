@@ -193,5 +193,10 @@ class UserManagementController extends Controller
 
     }
 
+    public function UserCount(){
+        $activeUserCount = User::whereNull('deleted_at')->where('status', 'Active')->count();
+        return response()->json(['active_user_count' => $activeUserCount]);
+    }
+
 
 }

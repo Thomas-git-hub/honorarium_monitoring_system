@@ -20,30 +20,61 @@ class OpenAcknowledgementController extends Controller
     public function open_acknowledgement(Request $request){
         $batch_id = $request->input('id');
 
-        $acknowledgements = Acknowledgement::with(['user', 'office', 'transaction'])
-        ->select('id','batch_id', 'office_id', 'created_at', 'user_id')
-        ->where('batch_id', $batch_id)
-        ->orderBy('id', 'desc')
-        ->first();
+        if(Auth::user()->usertype->name === 'Superadmin'){
+            $acknowledgements = Acknowledgement::with(['user', 'office', 'transaction'])
+            ->select('id','batch_id', 'office_id', 'created_at', 'user_id')
+            ->where('batch_id', $batch_id)
+            ->orderBy('id', 'desc')
+            ->first();
+    
+            $TransCount = Transaction::with(['honorarium', 'createdBy'])
+            ->whereNull('deleted_at')
+            ->where('from_office', Auth::user()->office_id)
+            ->where('status', 'On Queue')
+            ->where('batch_id', $batch_id)
+            ->count();
+    
+            $office = Office::where('id', $acknowledgements->office_id)
+            ->first();
+    
+            $pendingMails = Emailing::where('status', 'Unread')->where('to_user', Auth::user()->employee_id);
+            $EmailCount = $pendingMails->count();
+    
+            $TransactionCount = Transaction::with(['honorarium', 'createdBy'])
+            ->whereNull('deleted_at')
+            ->where('status', 'On Queue')
+            ->where('from_office', Auth::user()->office_id)
+            ->count();
 
-        $TransCount = Transaction::with(['honorarium', 'createdBy'])
-        ->whereNull('deleted_at')
-        ->where('office', Auth::user()->office_id)
-        ->where('status', 'On Queue')
-        ->where('batch_id', $batch_id)
-        ->count();
+        }else{
+            $acknowledgements = Acknowledgement::with(['user', 'office', 'transaction'])
+            ->select('id','batch_id', 'office_id', 'created_at', 'user_id')
+            ->where('batch_id', $batch_id)
+            ->orderBy('id', 'desc')
+            ->first();
+    
+            $TransCount = Transaction::with(['honorarium', 'createdBy'])
+            ->whereNull('deleted_at')
+            ->where('from_office', Auth::user()->office_id)
+            ->where('status', 'On Queue')
+            ->where('batch_id', $batch_id)
+            ->count();
+    
+            $office = Office::where('id', $acknowledgements->office_id)
+            ->first();
+    
+            $pendingMails = Emailing::where('status', 'Unread')->where('to_user', Auth::user()->employee_id);
+            $EmailCount = $pendingMails->count();
+    
+            $TransactionCount = Transaction::with(['honorarium', 'createdBy'])
+            ->whereNull('deleted_at')
+            ->where('status', 'On Queue')
+            ->where('from_office', Auth::user()->office_id)
+            ->count();
 
-        $office = Office::where('id', $acknowledgements->office_id)
-        ->first();
+        }
 
-        $pendingMails = Emailing::where('status', 'Unread')->where('to_user', Auth::user()->employee_id);
-        $EmailCount = $pendingMails->count();
-
-        $TransactionCount = Transaction::with(['honorarium', 'createdBy'])
-        ->whereNull('deleted_at')
-        ->where('status', 'On Queue')
-        ->where('office', Auth::user()->office_id)
-        ->count();
+       
 
         return view('administration.open_acknowledgement', compact('batch_id', 'acknowledgements', 'office', 'TransCount', 'EmailCount', 'TransactionCount'));
     }

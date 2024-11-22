@@ -45,9 +45,11 @@
 <div class="row mt-3">
     <div class="col">
         <div class="row mb-3">
+            @if(Auth::user()->usertype->name !== 'Superadmin')
             <div class="col-md mx-auto d-flex justify-content-end">
                 <button type="button" class="btn btn-primary gap-1 ProceedAcknowledge " id="ProceedAcknowledge" >Acknowledge Transaction<i class='bx bx-chevrons-right'></i></button>
             </div>
+            @endif
         </div>
 
         <div class="card custom-card border border-primary">

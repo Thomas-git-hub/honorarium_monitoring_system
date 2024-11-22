@@ -47,10 +47,10 @@
             </a>
         </li>
 
-
         <li class="menu-item">
             <div style="margin-left: 5%; margin-top: 5%; color: #b4b0c4;">Thesis Transaction</div>
         </li>
+
         @if(Auth::user()->usertype->name !== 'Faculty')
         <li class="menu-item {{ request()->is('thesis_acknowledgement') ? 'active' : '' }}">
             <a href="/thesisAcknowledgement" class="menu-link">
@@ -59,6 +59,7 @@
             </a>
         </li>
         @endif
+
         @if(in_array(Auth::user()->usertype->name, ['Dean', 'Superadmin']))
         <li class="menu-item {{ request()->is('thesis_new_entries') ? 'active' : '' }}">
             <a href="/thesis_new_entries" class="menu-link">
@@ -67,6 +68,7 @@
             </a>
         </li>
         @endif
+
         @if(Auth::user()->usertype->name !== 'Faculty')
         <li class="menu-item {{ request()->is('thesis-out-going') || request()->is('thesis-open-out-going') ? 'active' : '' }}">
             <a href="/thesis-out-going" class="menu-link">
@@ -75,6 +77,7 @@
             </a>
         </li>
         @endif
+
         @if(in_array(Auth::user()->usertype->name, ['Dean', 'Superadmin', 'Administrator', 'Faculty']))
         <li class="menu-item {{ request()->is('thesis-track-and-monitor') ? 'active' : '' }}">
             <a href="/thesis-track-and-monitor" class="menu-link">
@@ -113,7 +116,7 @@
           </a>
         </li>
         @endif
-        @if(Auth::user()->usertype->name !== 'Faculty' && Auth::user()->usertype->name !== 'Cashiers')
+        @if(Auth::user()->usertype->name !== 'Faculty' && Auth::user()->usertype->name !== 'Cashiers' && Auth::user()->usertype->name !== 'Administrator')
         <li class="menu-item {{ request()->is('admin_on_queue') || request()->is('open_on_queue') ? 'active' : '' }}">
           <a href="/admin_on_queue" class="menu-link">
             <i class='menu-icon tf-icons bx bx-list-ol'></i>
@@ -158,7 +161,6 @@
             <div style="margin-left: 5%; margin-top: 5%; color: #b4b0c4;">Users</div>
         </li>
 
-
         <li class="menu-item {{ request()->is('user_management') ? 'active' : '' }}">
             <a href="/user_management" class="menu-link">
               <i class='menu-icon tf-icons bx bx-shield-alt-2'></i>
@@ -166,14 +168,6 @@
             </a>
         </li>
 
-
-
-        <li class="menu-item {{ request()->is('admin_faculty') || request()->is('admin_view_faculty') ? 'active' : '' }}">
-          <a href="/admin_faculty" class="menu-link">
-            <i class='menu-icon tf-icons bx bx-group'></i>
-            <div class="text-truncate" data-i18n="Page 2">Track & Monitor</div>
-          </a>
-        </li>
         @endif
       </ul>
   </aside>

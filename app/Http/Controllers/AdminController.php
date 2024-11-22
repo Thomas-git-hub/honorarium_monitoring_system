@@ -154,7 +154,7 @@ class AdminController extends Controller
 
     public function admin_honorarium(){
 
-        if(Auth::user()->usertype->name === 'Administrator' || Auth::user()->usertype->name === 'SuperAdmin'){
+        if(Auth::user()->usertype->name === 'Administrator' || Auth::user()->usertype->name === 'Superadmin'){
             $pendingMails = Emailing::where('status', 'Unread')->where('to_user', Auth::user()->employee_id);
             $EmailCount = $pendingMails->count();
             return view('administration.admin_honorarium', compact('EmailCount'));
@@ -166,7 +166,7 @@ class AdminController extends Controller
     /* ---------------------------------------NEW ENTRIES FUNCTIONS-------------------------------------------- */
     public function admin_new_entries(){
 
-        if(Auth::user()->usertype->name === 'Administrator' || Auth::user()->usertype->name === 'SuperAdmin'){
+        if(Auth::user()->usertype->name === 'Administrator' || Auth::user()->usertype->name === 'Superadmin'){
 
             $pendingMails = Emailing::where('status', 'Unread')->where('to_user', Auth::user()->employee_id);
             $EmailCount = $pendingMails->count();

@@ -77,6 +77,8 @@ Route::middleware(['auth_check', '419'])->group(function () {
         Route::get('/admin_faculty', [AdminController::class, 'admin_faculty'])->name("admin_faculty");
         Route::get('/admin_view_faculty', [AdminController::class, 'admin_view_faculty'])->name("admin_view_faculty");
         Route::get('/admin_faculty/list', [UserController::class, 'list'])->name("admin_faculty.list");
+        Route::get('/user-management/user-count', [UserManagementController::class, 'UserCount'])->name('user_management.user_count');
+
 
         Route::get('/user_management', [UserManagementController::class, 'user_management'])->name("user_management");
         Route::get('/user_management/list', [UserManagementController::class, 'list'])->name("user_management.list");
