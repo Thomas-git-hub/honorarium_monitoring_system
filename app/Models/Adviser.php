@@ -13,6 +13,7 @@ class Adviser extends Model
     protected $table = 'adviser';
     
     protected $fillable = [
+        'employee_id',
         'first_name',
         'middle_name',
         'last_name',

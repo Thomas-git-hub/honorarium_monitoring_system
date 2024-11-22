@@ -36,7 +36,6 @@ class ThesisOpenOutGoingController extends Controller
         return view('administration.thesis_open_out_going', compact('tracking_number', 'thesisLogs', 'office', 'TransCount'));
     }
 
-    
     public function open_list(Request $request){
 
         if(Auth::user()->usertype->name === 'Superadmin'){

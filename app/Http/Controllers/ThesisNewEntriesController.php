@@ -140,71 +140,132 @@ class ThesisNewEntriesController extends Controller
             // Handle Student
             $student_id = $request->student_id;
             if (!$student_id && $request->student_first_name) {
-                // Create new student
-                $student = Student::create([
-                    'first_name' => ucfirst($request->student_first_name),
-                    'middle_name' => ucfirst($request->student_middle_name),
-                    'last_name' => ucfirst($request->student_last_name),
-                    'suffix' => $request->student_suffix,
-                    'status' => 'Active',
-                    'created_by' => Auth::user()->id,
-                    'updated_by' => Auth::user()->id,
-                ]);
+                // Check if the student already exists
+                $existingStudent = Student::where('first_name', ucfirst($request->student_first_name))
+                    ->where('last_name', ucfirst($request->student_last_name))
+                    ->first();
 
-                $student_id = $student->id;
+                if ($existingStudent) {
+                    // If the student exists, set the student_id
+                    $student_id = $existingStudent->id;
+                    
+                } else {
+                    // Create new student
+                    $student = Student::create([
+                        'first_name' => ucfirst($request->student_first_name),
+                        'middle_name' => ucfirst($request->student_middle_name),
+                        'last_name' => ucfirst($request->student_last_name),
+                        'suffix' => $request->student_suffix,
+                        'status' => 'Active',
+                        'created_by' => Auth::user()->id,
+                        'updated_by' => Auth::user()->id,
+                    ]);
+
+                    $student_id = $student->id;
+                }
             }
 
             $adviser_id = $request->adviser_id;
             if (!$adviser_id && $request->adviser_first_name) {
-                // Create new adviser
-                $adviser = Adviser::create([
-                    'first_name' => ucfirst($request->adviser_first_name),
-                    'middle_name' => ucfirst($request->adviser_middle_name),
-                    'last_name' => ucfirst($request->adviser_last_name),
-                    'email' => ucfirst($request->adviser_email),
-                    'suffix' => $request->adviser_suffix,
-                    'status' => 'Active',
-                    'created_by' => Auth::user()->id,
-                    'updated_by' => Auth::user()->id,
-                ]);
+                $add_employee_id =  null;
 
-                $adviser_id = $adviser->id;
+                $existingAddEmployee = DB::connection('ibu_test')->table('employee_user')->where('email', $request->adviser_email)->first();
+                if( $existingAddEmployee){
+                    $add_employee_id = $existingAddEmployee->id ? $existingAddEmployee->id : null ;  
+                }
+                  
+                // Check if the adviser already exists
+                $existingAdviser = Adviser::where('email', $request->adviser_email)->first();
+
+                if ($existingAdviser) {
+                    // If the adviser exists, set the adviser_id
+                    $adviser_id = $existingAdviser->id;
+                } else {
+                    // Create new adviser
+                    $adviser = Adviser::create([
+                        'employee_id' => $add_employee_id ? $add_employee_id : null,
+                        'first_name' => ucfirst($request->adviser_first_name),
+                        'middle_name' => ucfirst($request->adviser_middle_name),
+                        'last_name' => ucfirst($request->adviser_last_name),
+                        'email' => $request->adviser_email,
+                        'suffix' => $request->adviser_suffix,
+                        'status' => 'Active',
+                        'created_by' => Auth::user()->id,
+                        'updated_by' => Auth::user()->id,
+                    ]);
+
+                    $adviser_id = $adviser->id;
+                }
             }
 
+           
             $chairperson_id = $request->chairperson_id;
             if (!$chairperson_id && $request->chairperson_first_name) {
-                // Create new chairperson
-                $chairperson = Chairperson::create([
-                    'first_name' => ucfirst($request->chairperson_first_name),
-                    'middle_name' => ucfirst($request->chairperson_middle_name),
-                    'last_name' => ucfirst($request->chairperson_last_name),
-                    'email' => ucfirst($request->chairperson_email),
-                    'suffix' => $request->chairperson_suffix,
-                    'status' => 'Active',
-                    'created_by' => Auth::user()->id,
-                    'updated_by' => Auth::user()->id,
-                ]);
+                $chair_employee_id = null;
 
-                $chairperson_id = $chairperson->id;
+                $existingChairEmployee = DB::connection('ibu_test')->table('employee_user')->where('email', $request->chairperson_email)->first();
+               if($existingChairEmployee){
+                    $chair_employee_id = $existingChairEmployee->id ? $existingChairEmployee->id : null;
+               }
+                
+                $existingChairperson = Chairperson::where('email', $request->chairperson_email)->first();
+
+                if ($existingChairperson) {
+                    // If the chairperson exists, set the chairperson_id
+                    $chairperson_id = $existingChairperson->id;
+                } else {
+                    // Create new chairperson
+                    $chairperson = Chairperson::create([
+                        'employee_id' => $chair_employee_id ? $chair_employee_id : null,
+                        'first_name' => ucfirst($request->chairperson_first_name),
+                        'middle_name' => ucfirst($request->chairperson_middle_name),
+                        'last_name' => ucfirst($request->chairperson_last_name),
+                        'email' => $request->chairperson_email,
+                        'suffix' => $request->chairperson_suffix,
+                        'status' => 'Active',
+                        'created_by' => Auth::user()->id,
+                        'updated_by' => Auth::user()->id,
+                    ]);
+
+                    $chairperson_id = $chairperson->id;
+                }
             }
 
             // Handle Members
             $member_ids = [];
             for ($i = 1; $i <= 4; $i++) {
                 $member_id = $request->input("member_{$i}_id");
-                if (!$member_id && $request->input("member_{$i}_first_name")) {
-                    // Create new member
-                    $member = Member::create([
-                        'first_name' => ucfirst($request->input("member_{$i}_first_name")),
-                        'middle_name' => ucfirst($request->input("member_{$i}_middle_name")),
-                        'last_name' => ucfirst($request->input("member_{$i}_last_name")),
-                        'suffix' => $request->input("member_{$i}_suffix"),
-                        'member_type' => $request->input("member_type_{$i}"),
-                        'status' => 'Active',
-                        'created_by' => Auth::user()->id,
-                        'updated_by' => Auth::user()->id,
-                    ]);
-                    $member_ids[] = $member->id;
+                $first_name = ucfirst($request->input("member_{$i}_first_name"));
+                $middle_name = ucfirst($request->input("member_{$i}_middle_name"));
+                $last_name = ucfirst($request->input("member_{$i}_last_name"));
+                $suffix = $request->input("member_{$i}_suffix");
+                $member_type = $request->input("member_type_{$i}");
+
+                if (!$member_id && $first_name) {
+                    // Check if the member already exists
+                    $existingMember = Member::where('first_name', $first_name)
+                        ->where('middle_name', $middle_name)
+                        ->where('last_name', $last_name)
+                        ->where('suffix', $suffix)
+                        ->first();
+
+                    if ($existingMember) {
+                        // If the member exists, set the member_id
+                        $member_ids[] = $existingMember->id;
+                    } else {
+                        // Create new member
+                        $member = Member::create([
+                            'first_name' => $first_name,
+                            'middle_name' => $middle_name,
+                            'last_name' => $last_name,
+                            'suffix' => $suffix,
+                            'member_type' => $member_type,
+                            'status' => 'Active',
+                            'created_by' => Auth::user()->id,
+                            'updated_by' => Auth::user()->id,
+                        ]);
+                        $member_ids[] = $member->id;
+                    }
                 } elseif ($member_id) {
                     $member_ids[] = $member_id;
                 }
@@ -213,17 +274,29 @@ class ThesisNewEntriesController extends Controller
             // Handle Recorder
             $recorder_id = $request->recorder_id;
             if (!$recorder_id && $request->recorder_first_name) {
-                // Create new recorder
-                $recorder = Recorder::create([
-                    'first_name' => ucfirst($request->recorder_first_name),
-                    'middle_name' => ucfirst($request->recorder_middle_name),
-                    'last_name' => ucfirst($request->recorder_last_name),
-                    'suffix' => $request->recorder_suffix,
-                    'status' => 'Active',
-                    'created_by' => Auth::user()->id,
-                    'updated_by' => Auth::user()->id,
-                ]);
-                $recorder_id = $recorder->id;
+                // Check if the recorder already exists
+                $existingRecorder = Recorder::where('first_name', $request->recorder_first_name)
+                ->where('middle_name', $request->recorder_middle_name)
+                ->where('last_name', $request->recorder_last_name)
+                ->where('suffix', $request->recorder_suffix)
+                ->first();
+
+                if ($existingRecorder) {
+                    // If the recorder exists, set the recorder_id
+                    $recorder_id = $existingRecorder->id;
+                } else {
+                    // Create new recorder
+                    $recorder = Recorder::create([
+                        'first_name' => ucfirst($request->recorder_first_name),
+                        'middle_name' => ucfirst($request->recorder_middle_name),
+                        'last_name' => ucfirst($request->recorder_last_name),
+                        'suffix' => $request->recorder_suffix,
+                        'status' => 'Active',
+                        'created_by' => Auth::user()->id,
+                        'updated_by' => Auth::user()->id,
+                    ]);
+                    $recorder_id = $recorder->id;
+                }
             }
 
             // Create thesis transaction

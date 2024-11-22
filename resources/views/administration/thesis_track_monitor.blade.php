@@ -178,9 +178,10 @@
                 { data: 'defense', name: 'defense', title: 'Defense' },
                 { data: 'adviser', name: 'adviser', title: 'Adviser' },
                 { data: 'chairperson', name: 'chairperson', title: 'Chairperson' },
-                { data: 'membersCount', name: 'membersCount', title: 'Members', render: function(data, type, row) {
-                    return `<a href="#" onclick="showMembersAlert(${row.id})">${data}</a>`;
-                } },
+                // { data: 'membersCount', name: 'membersCount', title: 'Members', render: function(data, type, row) {
+                //     return `<a href="#" onclick="showMembersAlert(${row.id})">${data}</a>`;
+                // } },
+                { data: 'membersCount', name: 'membersCount', title: 'Members' },
                 { data: 'recorder', name: 'recorder', title: 'Recorder' },
                 { data: 'created_by', name: 'created_by', title: 'Created By' },
                 { data: 'created_on', name: 'created_on', title: 'Created On' },
