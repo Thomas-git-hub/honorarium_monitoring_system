@@ -114,7 +114,7 @@
 </div>
 
 {{-- Datatables --}}
-<div class="row mt-4">
+<div class="row mt-2">
     <div class="col">
         <div class="card custom-card">
             <div class="card-body">
@@ -157,7 +157,7 @@
                         confirmButtonColor: '#007bff',
                         footer: 'Viewing members for thesis entry.'
                     });
-                
+
                 },
                 error: function(xhr) {
                     Swal.fire({
@@ -187,16 +187,16 @@
                     const transactionDetails = response.transactionDetails;
                     const tracking_number = response.tracking_number;
 
-                    
+
                     $('.office b').text(office ? office.name : 'N/A');
                     $('.tracking').text(tracking_number ? tracking_number : 'N/A');
                     $('.total-transaction b').text(TransCount ? TransCount : '0');
                     $('.date b').text(
-                        transactionDetails && transactionDetails.updated_at 
-                            ? new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).format(new Date(transactionDetails.updated_at)) 
+                        transactionDetails && transactionDetails.updated_at
+                            ? new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).format(new Date(transactionDetails.updated_at))
                             : 'N/A'
                     );
-                   
+
                     // $('.text-primary h1').text(data ? data.tracking_number : 'N/A');
                 },
                 error: function(xhr) {
@@ -230,7 +230,7 @@
                 search: "", // Remove the default search label
                 searchPlaceholder: "Search..." // Set the placeholder text
             },
-           
+
             columns: [
                 { data: 'student', name: 'student', title: 'Student' },
                 { data: 'defense_date', name: 'defense_date', title: 'Defense Date' },
@@ -295,9 +295,9 @@
             $(this).find('input[type="text"]').each(function() {
                 if ($(this).val().trim() === '') {
                     isValid = false;
-                    $(this).addClass('is-invalid'); 
+                    $(this).addClass('is-invalid');
                 } else {
-                    $(this).removeClass('is-invalid'); 
+                    $(this).removeClass('is-invalid');
                 }
             });
 
@@ -386,7 +386,7 @@
                                                     text: response.message,
                                                 }).then((result) => {
                                                     if (result.isConfirmed) {
-                                                        window.location.href = '/thesis-out-going';
+                                                        window.location.href = '/thesis-track-and-monitor';
                                                     }
                                                 });
                                             } else {
@@ -505,7 +505,7 @@
                         <input class="form-control form-control-md mb-2 member-input" type="text" name="member_ids[${member.id}]" placeholder="Enter Honorarium Amount" value="${memberAmount}"/>
                     `;
                 });
-                $('#membersList').html(membersHtml); 
+                $('#membersList').html(membersHtml);
             },
             error: function(xhr) {
                 Swal.fire({

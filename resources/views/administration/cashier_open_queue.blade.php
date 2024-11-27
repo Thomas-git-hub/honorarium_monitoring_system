@@ -149,13 +149,13 @@
     <div class="col">
         <div class="row mb-2">
             <div class="col-md mx-auto d-flex justify-content-end">
-                <button type="button" class="btn btn-primary gap-1 d-none" id="proceedTransactionButton">Proceed<i class='bx bx-chevrons-right'></i></button>
+                <button type="button" class="btn btn-primary gap-1 d-none" id="">Proceed<i class='bx bx-chevrons-right'></i></button>
             </div>
         </div>
 
         <div class="row mb-2">
             <div class="col-md mx-auto d-flex justify-content-end">
-                <button class="btn btn-success">Transaction Finished</button>
+                <button class="btn btn-success" id="proceedTransactionButton">Release</button>
             </div>
         </div>
 
@@ -254,6 +254,57 @@
             ],
         });
 
+        // Replace Bootstrap modal with SweetAlert2
+        $('#proceedTransactionButton').off('click').on('click', function(e) {
+            e.preventDefault(); // Prevent the default form submission
+
+            $.ajax({
+                url: '{{ route('admin_on_queue.proceed') }}',
+                method: 'POST',
+                data: {
+                    batch_id: batchId,
+                    _token: $('meta[name="csrf-token"]').attr('content'),
+                },
+                beforeSend: function() {
+                    Swal.fire({
+                        title: 'Processing...',
+                        html: '<div class="spinner-grow text-primary" role="status" style="width: 3rem; height: 3rem;"></div>',
+                        showConfirmButton: false,
+                        allowOutsideClick: false
+                    });
+                },
+                success: function(response) {
+                    if (response.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Transaction forwarded successfully',
+                            html: `<h4 class="text-success">Tracking Number:<b>${response.batch_id}</b></h4><small class="text-danger">Note: Always attach the tracking number on the documents.</small>`,
+                            text: response.message,
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                window.location.href = '/history';
+                            }
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Something went wrong',
+                            text: response.message,
+                        });
+                    }
+                    $('#facultyTable').DataTable().ajax.reload();
+                },
+                error: function(xhr) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'There was a problem updating the transactions.',
+                    });
+                }
+            });
+
+        });
+
         $('#cashierOpenQueueTable').off('click').on('click', '.add-btn', function() {
             var row = $(this).closest('tr');
             var rowData = table.row(row).data();
@@ -301,7 +352,7 @@
         }
 
         // Form submission handler
-        $('#NetForm').on('submit', function(e) {
+        $('#NetForm').off('submit').on('submit', function(e) {
             e.preventDefault(); // Prevent the default form submission
 
             var id = $('#id').val(); // Get the hidden ID value
@@ -326,7 +377,11 @@
                         // Handle success response
                         $('#exampleModal').modal('hide');
                         table.ajax.reload();
-                        alert('Net amount successfully saved.');
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success',
+                            text: 'Net amount successfully saved.',
+                        });
                     },
                     error: function(xhr, status, error) {
                         // Handle error
@@ -346,17 +401,7 @@
         });
 
         // Add button click event to trigger form submission
-        $('#addButton').on('click', function() {
-            $('#NetForm').submit(); // Trigger form submission
-        });
 
-        // Handle Enter key press event in the modal
-        $('#netAmount').on('keypress', function(e) {
-            if (e.which == 13) { // Enter key pressed
-                e.preventDefault(); // Prevent the default form submission
-                $('#NetForm').submit(); // Trigger form submission
-            }
-        });
 
         // Close button click event to clear the form and reload the page
         $('#closeButton').on('click', function() {
@@ -416,11 +461,19 @@
                     success: function(response) {
                         $('#deductionModal').modal('hide');
                         table.ajax.reload();
-                        alert('Deduction successfully saved.');
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success',
+                            text: 'Deduction successfully saved.',
+                        });
                     },
                     error: function(xhr, status, error) {
                         console.error(xhr.responseText);
-                        alert('An error occurred while saving the deduction. Please try again.');
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: 'An error occurred while saving the deduction. Please try again.',
+                        });
                     }
                 });
             } else {

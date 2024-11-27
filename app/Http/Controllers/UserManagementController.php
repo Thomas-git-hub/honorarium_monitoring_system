@@ -17,7 +17,7 @@ use Yajra\DataTables\Facades\DataTables;
 class UserManagementController extends Controller
 {
     public function user_management(){
-        if(Auth::user()->usertype->name === 'Administrator'){
+        if(Auth::user()->usertype->name === 'Administrator' || Auth::user()->usertype->name === 'Superadmin'){
 
             $pendingMails = Emailing::where('status', 'Unread')->where('to_user', Auth::user()->employee_id);
             $EmailCount = $pendingMails->count();

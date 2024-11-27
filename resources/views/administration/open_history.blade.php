@@ -258,6 +258,14 @@
                 { data: 'year', name: 'year', title: 'Semester Year' },
                 { data: 'month.month_name', name: 'month', title: 'Month Of' },
                 { data: 'updated_by', name: 'updated_by', title: 'Updated By' },
+                @if (Auth::user()->usertype->name === 'Cashiers')
+                { data: 'deduction', name: 'deduction', title: 'Deduction Amount' },
+                { data: 'net', name: 'net', title: 'Net Amount' },
+                // { data: 'action', name: 'action', title: 'Action', render: function(data) {
+                //     return '<button type="button" class="btn btn-label-primary claimed-btn">Claimed</button>';
+                // } }
+                @endif
+
                 // { data: 'action', name: 'action', title: 'Action' }
             ],
             order: [[0, 'desc']], // Sort by date_received column by default

@@ -361,11 +361,10 @@ class AdminController extends Controller
     public function list(Request $request)
     {
         if(Auth::user()->usertype->name === 'Superadmin'){
-            $bugs_office = Office::where('name', 'BUGS Administration')->first();
             $query = Transaction::with(['honorarium', 'createdBy'])
             ->whereNull('deleted_at')
             ->where('batch_status', '<>', 'Batch On Hold')
-            ->where('office', $bugs_office->id)
+            ->where('office', Auth::user()->id)
             ->whereIn('status', ['Processing', 'On-hold']);
 
         }

@@ -78,8 +78,7 @@ class FacultyTrackingController extends Controller
             $releaseCount = Transaction::with(['honorarium', 'createdBy'])
             ->whereNull('deleted_at')
             ->where('employee_id',Auth::user()->employee_id)
-            ->where('office', $faculty->id)
-            ->where('status', 'Completed')
+            ->where('status', 'Complete')
             ->count();
 
 
@@ -152,11 +151,13 @@ class FacultyTrackingController extends Controller
             })
 
             ->addColumn('date_received', function($data) {
-                return $data->date_of_trans ? $data->date_of_trans : 'N/A';
+                return $data->date_of_trans
+                ? date('F j, Y', strtotime($data->date_of_trans))
+                : 'N/A';
             })
 
             ->addColumn('transaction_date', function($data) {
-                return $data->updated_at ? $data->updated_at : 'N/A';
+                return $data->updated_at ? $data->updated_at->format('F j, Y') : 'N/A';
             })
 
             ->addColumn('month', function($data) use ($months) {
@@ -224,11 +225,13 @@ class FacultyTrackingController extends Controller
             })
 
             ->addColumn('date_received', function($data) {
-                return $data->date_of_trans ? $data->date_of_trans : 'N/A';
+                return $data->date_of_trans
+                ? date('F j, Y', strtotime($data->date_of_trans))
+                : 'N/A';
             })
 
             ->addColumn('transaction_date', function($data) {
-                return $data->updated_at ? $data->updated_at : 'N/A';
+                return $data->updated_at ? $data->updated_at->format('F j, Y') : 'N/A';
             })
 
             ->addColumn('month', function($data) use ($months) {
@@ -298,11 +301,13 @@ class FacultyTrackingController extends Controller
             })
 
             ->addColumn('date_received', function($data) {
-                return $data->date_of_trans ? $data->date_of_trans : 'N/A';
+                return $data->date_of_trans
+                ? date('F j, Y', strtotime($data->date_of_trans))
+                : 'N/A';
             })
 
             ->addColumn('transaction_date', function($data) {
-                return $data->updated_at ? $data->updated_at : 'N/A';
+                return $data->updated_at ? $data->updated_at->format('F j, Y') : 'N/A';
             })
 
             ->addColumn('month', function($data) use ($months) {
@@ -370,11 +375,13 @@ class FacultyTrackingController extends Controller
             })
 
             ->addColumn('date_received', function($data) {
-                return $data->date_of_trans ? $data->date_of_trans : 'N/A';
+                return $data->date_of_trans
+                ? date('F j, Y', strtotime($data->date_of_trans))
+                : 'N/A';
             })
 
             ->addColumn('transaction_date', function($data) {
-                return $data->updated_at ? $data->updated_at : 'N/A';
+                return $data->updated_at ? $data->updated_at->format('F j, Y') : 'N/A';
             })
 
             ->addColumn('month', function($data) use ($months) {
@@ -442,11 +449,13 @@ class FacultyTrackingController extends Controller
             })
 
             ->addColumn('date_received', function($data) {
-                return $data->date_of_trans ? $data->date_of_trans : 'N/A';
+                return $data->date_of_trans
+                ? date('F j, Y', strtotime($data->date_of_trans))
+                : 'N/A';
             })
 
             ->addColumn('transaction_date', function($data) {
-                return $data->updated_at ? $data->updated_at : 'N/A';
+                return $data->updated_at ? $data->updated_at->format('F j, Y') : 'N/A';
             })
 
             ->addColumn('month', function($data) use ($months) {
@@ -514,11 +523,13 @@ class FacultyTrackingController extends Controller
             })
 
             ->addColumn('date_received', function($data) {
-                return $data->date_of_trans ? $data->date_of_trans : 'N/A';
+                return $data->date_of_trans
+                ? date('F j, Y', strtotime($data->date_of_trans))
+                : 'N/A';
             })
 
             ->addColumn('transaction_date', function($data) {
-                return $data->updated_at ? $data->updated_at : 'N/A';
+                return $data->updated_at ? $data->updated_at->format('F j, Y') : 'N/A';
             })
 
             ->addColumn('month', function($data) use ($months) {
@@ -540,8 +551,7 @@ class FacultyTrackingController extends Controller
         $query = Transaction::with(['honorarium', 'createdBy'])
         ->whereNull('deleted_at')
         ->where('employee_id', $request->user_id)
-        ->where('office', $faculty->id)
-        ->where('status', 'Completed');
+        ->where('status', 'Complete');
 
         $transactions = $query->get();
         $ibu_dbcon = DB::connection('ibu_test');
@@ -585,11 +595,13 @@ class FacultyTrackingController extends Controller
             })
 
             ->addColumn('date_received', function($data) {
-                return $data->date_of_trans ? $data->date_of_trans : 'N/A';
+                return $data->date_of_trans
+                ? date('F j, Y', strtotime($data->date_of_trans))
+                : 'N/A';
             })
 
             ->addColumn('transaction_date', function($data) {
-                return $data->updated_at ? $data->updated_at : 'N/A';
+                return $data->updated_at ? $data->updated_at->format('F j, Y') : 'N/A';
             })
 
             ->addColumn('month', function($data) use ($months) {

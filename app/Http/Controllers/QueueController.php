@@ -743,6 +743,9 @@ class QueueController extends Controller
 
         if (Auth::user()->usertype->name === 'Superadmin') {
             $acknowledgements = Acknowledgement::with(['user', 'office', 'transaction'])
+                ->whereHas('transaction', function($query) {
+                    $query->whereColumn('office', '=', 'acknowledgement.office_id');
+                })
                 ->select('batch_id', 'office_id', 'created_at', 'user_id')
                 ->groupBy('batch_id', 'user_id')
                 ->get();
@@ -860,17 +863,32 @@ class QueueController extends Controller
         ->where('batch_id', $batch_id)
         ->first();
 
-        $TransCount = Transaction::with(['honorarium', 'createdBy'])
-        ->whereNull('deleted_at')
-        ->where('office', Auth::user()->office_id)
-        ->whereIn('status', ['Processing', 'On-hold'])
-        ->where('batch_id', $batch_id)
-        ->count();
+        if (Auth::user()->usertype->name === 'Superadmin') {
+            $TransCount = Transaction::with(['honorarium', 'createdBy'])
+            ->whereNull('deleted_at')
+            ->where('from_office', Auth::user()->office_id)
+            ->whereIn('status', ['Processing', 'On-hold'])
+            ->where('batch_id', $batch_id)
+            ->count();
 
-        $hasOnHoldStatus = Transaction::where('batch_id', $batch_id)
-        ->where('office', Auth::user()->office_id)
-        ->where('status', 'On-hold')
-        ->exists();
+            $hasOnHoldStatus = Transaction::where('batch_id', $batch_id)
+            ->where('from_office', Auth::user()->office_id)
+            ->where('status', 'On-hold')
+            ->exists();
+        }else{
+            $hasOnHoldStatus = Transaction::where('batch_id', $batch_id)
+            ->where('office', Auth::user()->office_id)
+            ->where('status', 'On-hold')
+            ->exists();
+
+            $TransCount = Transaction::with(['honorarium', 'createdBy'])
+            ->whereNull('deleted_at')
+            ->where('office', Auth::user()->office_id)
+            ->whereIn('status', ['Processing', 'On-hold'])
+            ->where('batch_id', $batch_id)
+            ->count();
+
+        }
 
         $office = Office::where('id', $acknowledgements->office_id)->first();
 
@@ -880,7 +898,9 @@ class QueueController extends Controller
     public function open_list(Request $request){
 
         if(Auth::user()->usertype->name === 'Superadmin'){
-            $query = Transaction::with(['honorarium', 'createdBy'])->whereNull('deleted_at')->where('status', 'Processing')->where('batch_id', $request->batch_id);
+            $query = Transaction::with(['honorarium', 'createdBy'])->whereNull('deleted_at')
+            ->whereIn('status', ['On-hold', 'Processing'])
+            ->where('batch_id', $request->batch_id);
         }
         elseif(Auth::user()->usertype->name === 'Admin'){
             $office = Office::where('name', 'Budget Office')->first();
@@ -1016,14 +1036,19 @@ class QueueController extends Controller
 
                 ->addColumn('action', function($data) {
                     $usertype = Auth::user()->usertype->name;
-                    if ( $usertype === 'Admin' ||  $usertype === 'Accounting' ||$usertype === 'Superadmin') {
+                    if ( $usertype === 'Admin' ||  $usertype === 'Accounting') {
                         $editButton = '<button type="button" class="btn btn-icon me-2 btn-label-success edit-btn"><span class="tf-icons bx bx-pencil bx-18px"></span></button>';
 
                     }else{
                         $editButton = '';
                     }
+
+                    if ($usertype !== 'Superadmin') {
+                        $on_holdButton = '<button type="button" class="btn btn-icon me-2 btn-label-danger on-hold-btn" data-bs-toggle="offcanvas" data-bs-target="#offcanvasEnd" aria-controls="offcanvasEnd" id="sendEmailBtn"><span class="tf-icons bx bxs-hand bx-18px"></span></button>';
+                    }else{
+                        $on_holdButton = '';
+                    }
                     // $editButton = '<button type="button" class="btn btn-icon me-2 btn-label-success edit-btn"><span class="tf-icons bx bx-pencil bx-18px"></span></button>';
-                    $on_holdButton = '<button type="button" class="btn btn-icon me-2 btn-label-danger on-hold-btn" data-bs-toggle="offcanvas" data-bs-target="#offcanvasEnd" aria-controls="offcanvasEnd" id="sendEmailBtn"><span class="tf-icons bx bxs-hand bx-18px"></span></button>';
 
                     return '<div class="d-flex flex-row" data-id="' . $data->id . '">' . $editButton . $on_holdButton . '</div>';
                     })

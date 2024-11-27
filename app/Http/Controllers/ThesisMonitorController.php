@@ -33,9 +33,10 @@ class ThesisMonitorController extends Controller
             $searchAdviserID = Adviser::where('employee_id', Auth::user()->employee_id)->first();
             $searchChairpersonID = Chairperson::where('employee_id', Auth::user()->employee_id)->first();
 
+
         if(Auth::user()->usertype->name === 'Faculty'){
 
-            
+
 
             if( $searchAdviserID && $searchChairpersonID){
 
@@ -48,7 +49,7 @@ class ThesisMonitorController extends Controller
                     ->where('chairperson_id', $searchChairpersonID->id)
                     ->whereIn('status', ['processing'])
                     ->count();
-        
+
                     $adminCount = ThesisTransaction::with([ 'createdBy'])
                     ->whereNull('deleted_at')
                     ->where('adviser_id', $searchChairpersonID->id)
@@ -57,7 +58,7 @@ class ThesisMonitorController extends Controller
                     ->where('created_on', $dean_office->id)
                     ->whereIn('status', ['processing', 'On Queue'])
                     ->count();
-        
+
                     $budgtCount =  ThesisTransaction::with([ 'createdBy'])
                     ->whereNull('deleted_at')
                     ->where('adviser_id', $searchChairpersonID->id)
@@ -66,7 +67,7 @@ class ThesisMonitorController extends Controller
                     ->where('created_on', $bugs_office->id)
                     ->whereIn('status', ['processing', 'On Queue'])
                     ->count();
-        
+
                     $deanCount = ThesisTransaction::with([ 'createdBy'])
                     ->whereNull('deleted_at')
                     ->where('adviser_id', $searchAdviserID->id)
@@ -75,7 +76,7 @@ class ThesisMonitorController extends Controller
                     ->where('created_on', $bugt_office->id)
                     ->whereIn('status', ['processing', 'On Queue'])
                     ->count();
-        
+
                     $deanCountTwo = ThesisTransaction::with([ 'createdBy'])
                     ->whereNull('deleted_at')
                     ->where('adviser_id', $searchAdviserID->id)
@@ -84,7 +85,7 @@ class ThesisMonitorController extends Controller
                     ->where('created_on', $Accounting_office->id)
                     ->whereIn('status', ['processing', 'On Queue'])
                     ->count();
-        
+
                     $acctCount = ThesisTransaction::with([ 'createdBy'])
                     ->whereNull('deleted_at')
                     ->where('adviser_id', $searchAdviserID->id)
@@ -92,7 +93,7 @@ class ThesisMonitorController extends Controller
                     ->where('updated_on', $Accounting_office->id)
                     ->whereIn('status', ['processing', 'On Queue'])
                     ->count();
-        
+
                     $cashCount = ThesisTransaction::with([ 'createdBy'])
                     ->whereNull('deleted_at')
                     ->where('adviser_id', $searchAdviserID->id)
@@ -100,18 +101,18 @@ class ThesisMonitorController extends Controller
                     ->where('updated_on', $Cashiers->id)
                     ->whereIn('status', ['processing', 'On Queue'])
                     ->count();
-        
+
                     $releaseCount = ThesisTransaction::with([ 'createdBy'])
                     ->whereNull('deleted_at')
                     ->where('adviser_id', $searchAdviserID->id)
                     ->where('chairperson_id', $searchChairpersonID->id)
                     ->where('status', 'Complete')
                     ->count();
-                   
+
                 }
-                
+
             }elseif($searchAdviserID){
-                
+
 
                 $initialDeanCount = ThesisTransaction::with([ 'createdBy'])
                     ->whereNull('deleted_at')
@@ -119,7 +120,7 @@ class ThesisMonitorController extends Controller
                     ->where('adviser_id', $searchAdviserID->id)
                     ->whereIn('status', ['processing'])
                     ->count();
-        
+
                     $adminCount = ThesisTransaction::with([ 'createdBy'])
                     ->whereNull('deleted_at')
                     ->where('adviser_id', $searchAdviserID->id)
@@ -127,7 +128,7 @@ class ThesisMonitorController extends Controller
                     ->where('created_on', $dean_office->id)
                     ->whereIn('status', ['processing', 'On Queue'])
                     ->count();
-        
+
                     $budgtCount =  ThesisTransaction::with([ 'createdBy'])
                     ->whereNull('deleted_at')
                     ->where('adviser_id', $searchAdviserID->id)
@@ -135,7 +136,7 @@ class ThesisMonitorController extends Controller
                     ->where('created_on', $bugs_office->id)
                     ->whereIn('status', ['processing', 'On Queue'])
                     ->count();
-        
+
                     $deanCount = ThesisTransaction::with([ 'createdBy'])
                     ->whereNull('deleted_at')
                     ->where('adviser_id', $searchAdviserID->id)
@@ -143,7 +144,7 @@ class ThesisMonitorController extends Controller
                     ->where('created_on', $bugt_office->id)
                     ->whereIn('status', ['processing', 'On Queue'])
                     ->count();
-        
+
                     $deanCountTwo = ThesisTransaction::with([ 'createdBy'])
                     ->whereNull('deleted_at')
                     ->where('adviser_id', $searchAdviserID->id)
@@ -151,29 +152,29 @@ class ThesisMonitorController extends Controller
                     ->where('created_on', $Accounting_office->id)
                     ->whereIn('status', ['processing', 'On Queue'])
                     ->count();
-        
+
                     $acctCount = ThesisTransaction::with([ 'createdBy'])
                     ->whereNull('deleted_at')
                     ->where('adviser_id', $searchAdviserID->id)
                     ->where('updated_on', $Accounting_office->id)
                     ->whereIn('status', ['processing', 'On Queue'])
                     ->count();
-        
+
                     $cashCount = ThesisTransaction::with([ 'createdBy'])
                     ->whereNull('deleted_at')
                     ->where('adviser_id', $searchAdviserID->id)
                     ->where('updated_on', $Cashiers->id)
                     ->whereIn('status', ['processing', 'On Queue'])
                     ->count();
-        
+
                     $releaseCount = ThesisTransaction::with([ 'createdBy'])
                     ->whereNull('deleted_at')
                     ->where('adviser_id', $searchAdviserID->id)
                     ->where('status', 'Complete')
                     ->count();
 
-                
-                
+
+
 
             }elseif($searchChairpersonID){
                 $initialDeanCount = ThesisTransaction::with([ 'createdBy'])
@@ -182,7 +183,7 @@ class ThesisMonitorController extends Controller
                 ->where('chairperson_id', $searchChairpersonID->id)
                 ->whereIn('status', ['processing'])
                 ->count();
-    
+
                 $adminCount = ThesisTransaction::with([ 'createdBy'])
                 ->whereNull('deleted_at')
                 ->where('chairperson_id', $searchChairpersonID->id)
@@ -190,7 +191,7 @@ class ThesisMonitorController extends Controller
                 ->where('created_on', $dean_office->id)
                 ->whereIn('status', ['processing', 'On Queue'])
                 ->count();
-    
+
                 $budgtCount =  ThesisTransaction::with([ 'createdBy'])
                 ->whereNull('deleted_at')
                 ->where('chairperson_id', $searchAdviserID->id)
@@ -198,7 +199,7 @@ class ThesisMonitorController extends Controller
                 ->where('created_on', $bugs_office->id)
                 ->whereIn('status', ['processing', 'On Queue'])
                 ->count();
-    
+
                 $deanCount = ThesisTransaction::with([ 'createdBy'])
                 ->whereNull('deleted_at')
                 ->where('chairperson_id', $searchChairpersonID->id)
@@ -206,7 +207,7 @@ class ThesisMonitorController extends Controller
                 ->where('created_on', $bugt_office->id)
                 ->whereIn('status', ['processing', 'On Queue'])
                 ->count();
-    
+
                 $deanCountTwo = ThesisTransaction::with([ 'createdBy'])
                 ->whereNull('deleted_at')
                 ->where('chairperson_id', $searchChairpersonID->id)
@@ -214,21 +215,21 @@ class ThesisMonitorController extends Controller
                 ->where('created_on', $Accounting_office->id)
                 ->whereIn('status', ['processing', 'On Queue'])
                 ->count();
-    
+
                 $acctCount = ThesisTransaction::with([ 'createdBy'])
                 ->whereNull('deleted_at')
                 ->where('chairperson_id', $searchChairpersonID->id)
                 ->where('updated_on', $Accounting_office->id)
                 ->whereIn('status', ['processing', 'On Queue'])
                 ->count();
-    
+
                 $cashCount = ThesisTransaction::with([ 'createdBy'])
                 ->whereNull('deleted_at')
                 ->where('chairperson_id', $searchChairpersonID->id)
                 ->where('updated_on', $Cashiers->id)
                 ->whereIn('status', ['processing', 'On Queue'])
                 ->count();
-    
+
                 $releaseCount = ThesisTransaction::with([ 'createdBy'])
                 ->whereNull('deleted_at')
                 ->where('chairperson_id', $searchChairpersonID->id)
@@ -236,8 +237,26 @@ class ThesisMonitorController extends Controller
                 ->count();
 
             }else{
-                abort(403, 'Unauthorized action.');
-               
+
+                $initialDeanCount = 0;
+
+                $adminCount = 0;
+
+                $budgtCount = 0;
+
+                $deanCount = 0;
+
+                $deanCountTwo = 0;
+
+                $acctCount = 0;
+
+                $cashCount = 0;
+
+                $releaseCount = 0;
+
+
+   $query = ThesisTransaction::with(['student', 'degree', 'defense', 'recorder', 'createdBy', 'createdOn', 'adviser', 'chairperson'])
+                ->whereIn('status', ['not exist']);
             }
 
         }elseif(in_array(Auth::user()->usertype->name, ['Dean', 'Superadmin', 'Administrator'])){
@@ -299,7 +318,7 @@ class ThesisMonitorController extends Controller
 
         }
 
-       
+
         return view('administration.thesis_track_monitor', compact('user', 'initialDeanCount', 'adminCount', 'budgtCount', 'deanCount', 'acctCount', 'cashCount', 'releaseCount', 'EmailCount', 'deanCountTwo'));
     }
 
@@ -324,7 +343,7 @@ class ThesisMonitorController extends Controller
                     ->where('updated_on', $office->id)
                     ->whereIn('status', ['processing']);
                 }
-                
+
             }elseif($searchAdviserID){
                 $query = ThesisTransaction::with(['student', 'degree', 'defense', 'recorder', 'createdBy', 'createdOn', 'adviser', 'chairperson'])
                 ->whereNull('deleted_at')
@@ -342,10 +361,11 @@ class ThesisMonitorController extends Controller
                 ->whereIn('status', ['processing']);
 
             }else{
-                abort(403, 'Unauthorized action.');
-               
+                $query = ThesisTransaction::with(['student', 'degree', 'defense', 'recorder', 'createdBy', 'createdOn', 'adviser', 'chairperson'])
+                ->whereIn('status', ['not exist']);
+
             }
-    
+
         }else{
             $query = ThesisTransaction::with(['student', 'degree', 'defense', 'recorder', 'createdBy', 'createdOn', 'adviser', 'chairperson'])
             ->whereNull('deleted_at')
@@ -356,7 +376,7 @@ class ThesisMonitorController extends Controller
         }
 
         $transactions = $query->get();
-        
+
 
         return DataTables::of($transactions)
         ->addColumn('id', function($data) {
@@ -413,7 +433,7 @@ class ThesisMonitorController extends Controller
                 return ucfirst($member->first_name) . ' ' . ucfirst($member->last_name);
             })->implode(', ');
             return $members;
-           
+
         })
 
         ->editColumn('created_at', function ($data) {
@@ -441,28 +461,28 @@ class ThesisMonitorController extends Controller
                     ->where('chairperson_id', $searchChairpersonID->id)
                     ->where('adviser_id', $searchAdviserID->id)
                     ->where('updated_on', $office->id)
-                    ->whereIn('status', ['processing', 'On Queue']);    
+                    ->whereIn('status', ['processing', 'On Queue']);
                 }
-                
+
             }elseif($searchAdviserID){
                 $query = ThesisTransaction::with(['student', 'degree', 'defense', 'recorder', 'createdBy', 'createdOn', 'adviser', 'chairperson'])
                 ->whereNull('deleted_at')
                 ->where('adviser_id', $searchAdviserID->id)
                 ->where('updated_on', $office->id)
-                ->whereIn('status', ['processing', 'On Queue']);    
+                ->whereIn('status', ['processing', 'On Queue']);
 
             }elseif($searchChairpersonID){
                 $query = ThesisTransaction::with(['student', 'degree', 'defense', 'recorder', 'createdBy', 'createdOn', 'adviser', 'chairperson'])
                 ->whereNull('deleted_at')
                 ->where('chairperson_id', $searchChairpersonID->id)
                 ->where('updated_on', $office->id)
-                ->whereIn('status', ['processing', 'On Queue']);    
+                ->whereIn('status', ['processing', 'On Queue']);
 
             }else{
-                abort(403, 'Unauthorized action.');
-               
-            }    
-    
+   $query = ThesisTransaction::with(['student', 'degree', 'defense', 'recorder', 'createdBy', 'createdOn', 'adviser', 'chairperson'])
+                ->whereIn('status', ['not exist']);
+            }
+
         }else{
             $query = ThesisTransaction::with(['student', 'degree', 'defense', 'recorder', 'createdBy', 'createdOn', 'adviser', 'chairperson'])
             ->whereNull('deleted_at')
@@ -470,10 +490,10 @@ class ThesisMonitorController extends Controller
             ->whereIn('status', ['processing', 'On Queue']);
 
         }
-       
+
 
         $transactions = $query->get();
-        
+
 
         return DataTables::of($transactions)
         ->addColumn('id', function($data) {
@@ -553,28 +573,28 @@ class ThesisMonitorController extends Controller
                     ->where('chairperson_id', $searchChairpersonID->id)
                     ->where('adviser_id', $searchAdviserID->id)
                     ->where('updated_on', $office->id)
-                    ->whereIn('status', ['processing', 'On Queue']);    
+                    ->whereIn('status', ['processing', 'On Queue']);
                 }
-                
+
             }elseif($searchAdviserID){
                 $query = ThesisTransaction::with(['student', 'degree', 'defense', 'recorder', 'createdBy', 'createdOn', 'adviser', 'chairperson'])
                 ->whereNull('deleted_at')
                 ->where('adviser_id', $searchAdviserID->id)
                 ->where('updated_on', $office->id)
-                ->whereIn('status', ['processing', 'On Queue']);    
+                ->whereIn('status', ['processing', 'On Queue']);
 
             }elseif($searchChairpersonID){
                 $query = ThesisTransaction::with(['student', 'degree', 'defense', 'recorder', 'createdBy', 'createdOn', 'adviser', 'chairperson'])
                 ->whereNull('deleted_at')
                 ->where('chairperson_id', $searchChairpersonID->id)
                 ->where('updated_on', $office->id)
-                ->whereIn('status', ['processing', 'On Queue']);    
+                ->whereIn('status', ['processing', 'On Queue']);
 
             }else{
-                abort(403, 'Unauthorized action.');
-               
-            }        
-    
+   $query = ThesisTransaction::with(['student', 'degree', 'defense', 'recorder', 'createdBy', 'createdOn', 'adviser', 'chairperson'])
+                ->whereIn('status', ['not exist']);
+            }
+
         }else{
             $query = ThesisTransaction::with(['student', 'degree', 'defense', 'recorder', 'createdBy', 'createdOn', 'adviser', 'chairperson'])
             ->whereNull('deleted_at')
@@ -583,7 +603,7 @@ class ThesisMonitorController extends Controller
 
         }
         $transactions = $query->get();
-        
+
 
         return DataTables::of($transactions)
         ->addColumn('id', function($data) {
@@ -645,7 +665,7 @@ class ThesisMonitorController extends Controller
         })
         ->make(true);
 
-        
+
     }
 
     public function DeanList(Request $request)
@@ -667,16 +687,16 @@ class ThesisMonitorController extends Controller
                     ->where('adviser_id', $searchAdviserID->id)
                     ->where('updated_on', $office->id)
                     ->where('created_on', $from_office->id)
-                    ->whereIn('status', ['processing', 'On Queue']);    
+                    ->whereIn('status', ['processing', 'On Queue']);
                 }
-                
+
             }elseif($searchAdviserID){
                 $query = ThesisTransaction::with(['student', 'degree', 'defense', 'recorder', 'createdBy', 'createdOn', 'adviser', 'chairperson'])
                 ->whereNull('deleted_at')
                 ->where('adviser_id', $searchAdviserID->id)
                 ->where('updated_on', $office->id)
                 ->where('created_on', $from_office->id)
-                ->whereIn('status', ['processing', 'On Queue']);    
+                ->whereIn('status', ['processing', 'On Queue']);
 
             }elseif($searchChairpersonID){
                 $query = ThesisTransaction::with(['student', 'degree', 'defense', 'recorder', 'createdBy', 'createdOn', 'adviser', 'chairperson'])
@@ -684,23 +704,23 @@ class ThesisMonitorController extends Controller
                 ->where('chairperson_id', $searchChairpersonID->id)
                 ->where('updated_on', $office->id)
                 ->where('created_on', $from_office->id)
-                ->whereIn('status', ['processing', 'On Queue']);    
+                ->whereIn('status', ['processing', 'On Queue']);
 
             }else{
-                abort(403, 'Unauthorized action.');
-               
-            }    
+   $query = ThesisTransaction::with(['student', 'degree', 'defense', 'recorder', 'createdBy', 'createdOn', 'adviser', 'chairperson'])
+                ->whereIn('status', ['not exist']);
+            }
         }else{
             $query = ThesisTransaction::with(['student', 'degree', 'defense', 'recorder', 'createdBy', 'createdOn', 'adviser', 'chairperson'])
             ->whereNull('deleted_at')
             ->where('updated_on', $office->id)
             ->where('created_on', $from_office->id)
             ->whereIn('status', ['processing', 'On Queue']);
-    
+
         }
 
         $transactions = $query->get();
-        
+
 
         return DataTables::of($transactions)
         ->addColumn('id', function($data) {
@@ -783,16 +803,16 @@ class ThesisMonitorController extends Controller
                     ->where('adviser_id', $searchAdviserID->id)
                     ->where('updated_on', $office->id)
                     ->where('created_on', $from_office->id)
-                    ->whereIn('status', ['processing', 'On Queue']);    
+                    ->whereIn('status', ['processing', 'On Queue']);
                 }
-                
+
             }elseif($searchAdviserID){
                 $query = ThesisTransaction::with(['student', 'degree', 'defense', 'recorder', 'createdBy', 'createdOn', 'adviser', 'chairperson'])
                 ->whereNull('deleted_at')
                 ->where('adviser_id', $searchAdviserID->id)
                 ->where('updated_on', $office->id)
                 ->where('created_on', $from_office->id)
-                ->whereIn('status', ['processing', 'On Queue']);    
+                ->whereIn('status', ['processing', 'On Queue']);
 
             }elseif($searchChairpersonID){
                 $query = ThesisTransaction::with(['student', 'degree', 'defense', 'recorder', 'createdBy', 'createdOn', 'adviser', 'chairperson'])
@@ -800,24 +820,24 @@ class ThesisMonitorController extends Controller
                 ->where('chairperson_id', $searchChairpersonID->id)
                 ->where('updated_on', $office->id)
                 ->where('created_on', $from_office->id)
-                ->whereIn('status', ['processing', 'On Queue']);    
+                ->whereIn('status', ['processing', 'On Queue']);
 
             }else{
-                abort(403, 'Unauthorized action.');
-               
-            }   
+   $query = ThesisTransaction::with(['student', 'degree', 'defense', 'recorder', 'createdBy', 'createdOn', 'adviser', 'chairperson'])
+                ->whereIn('status', ['not exist']);
+            }
         }else{
             $query = ThesisTransaction::with(['student', 'degree', 'defense', 'recorder', 'createdBy', 'createdOn', 'adviser', 'chairperson'])
             ->whereNull('deleted_at')
             ->where('updated_on', $office->id)
             ->where('created_on', $from_office->id)
             ->whereIn('status', ['processing', 'On Queue']);
-    
+
         }
 
 
         $transactions = $query->get();
-        
+
 
         return DataTables::of($transactions)
         ->addColumn('id', function($data) {
@@ -878,7 +898,7 @@ class ThesisMonitorController extends Controller
             return $data->created_at ? $data->created_at->format('m-d-Y') : 'N/A';
         })
         ->make(true);
-        
+
     }
 
     public function AccountList(Request $request)
@@ -897,28 +917,28 @@ class ThesisMonitorController extends Controller
                     ->where('chairperson_id', $searchChairpersonID->id)
                     ->where('adviser_id', $searchAdviserID->id)
                     ->where('updated_on', $office->id)
-                    ->whereIn('status', ['processing', 'On Queue']);    
+                    ->whereIn('status', ['processing', 'On Queue']);
                 }
-                
+
             }elseif($searchAdviserID){
                 $query = ThesisTransaction::with(['student', 'degree', 'defense', 'recorder', 'createdBy', 'createdOn', 'adviser', 'chairperson'])
                 ->whereNull('deleted_at')
                 ->where('adviser_id', $searchAdviserID->id)
                 ->where('updated_on', $office->id)
-                ->whereIn('status', ['processing', 'On Queue']);    
+                ->whereIn('status', ['processing', 'On Queue']);
 
             }elseif($searchChairpersonID){
                 $query = ThesisTransaction::with(['student', 'degree', 'defense', 'recorder', 'createdBy', 'createdOn', 'adviser', 'chairperson'])
                 ->whereNull('deleted_at')
                 ->where('chairperson_id', $searchChairpersonID->id)
                 ->where('updated_on', $office->id)
-                ->whereIn('status', ['processing', 'On Queue']);    
+                ->whereIn('status', ['processing', 'On Queue']);
 
             }else{
-                abort(403, 'Unauthorized action.');
-               
-            }    
-    
+   $query = ThesisTransaction::with(['student', 'degree', 'defense', 'recorder', 'createdBy', 'createdOn', 'adviser', 'chairperson'])
+                ->whereIn('status', ['not exist']);
+            }
+
         }else{
             $query = ThesisTransaction::with(['student', 'degree', 'defense', 'recorder', 'createdBy', 'createdOn', 'adviser', 'chairperson'])
             ->whereNull('deleted_at')
@@ -928,7 +948,7 @@ class ThesisMonitorController extends Controller
         }
 
         $transactions = $query->get();
-        
+
 
         return DataTables::of($transactions)
         ->addColumn('id', function($data) {
@@ -990,7 +1010,7 @@ class ThesisMonitorController extends Controller
         })
         ->make(true);
 
-       
+
     }
 
     public function CashierList(Request $request)
@@ -1010,28 +1030,28 @@ class ThesisMonitorController extends Controller
                     ->where('chairperson_id', $searchChairpersonID->id)
                     ->where('adviser_id', $searchAdviserID->id)
                     ->where('updated_on', $office->id)
-                    ->whereIn('status', ['processing', 'On Queue']);    
+                    ->whereIn('status', ['processing', 'On Queue']);
                 }
-                
+
             }elseif($searchAdviserID){
                 $query = ThesisTransaction::with(['student', 'degree', 'defense', 'recorder', 'createdBy', 'createdOn', 'adviser', 'chairperson'])
                 ->whereNull('deleted_at')
                 ->where('adviser_id', $searchAdviserID->id)
                 ->where('updated_on', $office->id)
-                ->whereIn('status', ['processing', 'On Queue']);    
+                ->whereIn('status', ['processing', 'On Queue']);
 
             }elseif($searchChairpersonID){
                 $query = ThesisTransaction::with(['student', 'degree', 'defense', 'recorder', 'createdBy', 'createdOn', 'adviser', 'chairperson'])
                 ->whereNull('deleted_at')
                 ->where('chairperson_id', $searchChairpersonID->id)
                 ->where('updated_on', $office->id)
-                ->whereIn('status', ['processing', 'On Queue']);    
+                ->whereIn('status', ['processing', 'On Queue']);
 
             }else{
-                abort(403, 'Unauthorized action.');
-               
-            }     
-    
+   $query = ThesisTransaction::with(['student', 'degree', 'defense', 'recorder', 'createdBy', 'createdOn', 'adviser', 'chairperson'])
+                ->whereIn('status', ['not exist']);
+            }
+
         }else{
             $query = ThesisTransaction::with(['student', 'degree', 'defense', 'recorder', 'createdBy', 'createdOn', 'adviser', 'chairperson'])
             ->whereNull('deleted_at')
@@ -1041,7 +1061,7 @@ class ThesisMonitorController extends Controller
         }
 
         $transactions = $query->get();
-        
+
 
         return DataTables::of($transactions)
         ->addColumn('id', function($data) {
@@ -1103,7 +1123,7 @@ class ThesisMonitorController extends Controller
         })
         ->make(true);
 
-       
+
     }
 
     public function honorarium_released(Request $request)
@@ -1122,9 +1142,9 @@ class ThesisMonitorController extends Controller
                     ->whereNull('deleted_at')
                     ->where('chairperson_id', $searchChairpersonID->id)
                     ->where('adviser_id', $searchAdviserID->id)
-                    ->where('status', 'Complete'); 
+                    ->where('status', 'Complete');
                 }
-                
+
             }elseif($searchAdviserID){
                 $query = ThesisTransaction::with(['student', 'degree', 'defense', 'recorder', 'createdBy', 'createdOn', 'adviser', 'chairperson'])
                 ->whereNull('deleted_at')
@@ -1135,13 +1155,13 @@ class ThesisMonitorController extends Controller
                 $query = ThesisTransaction::with(['student', 'degree', 'defense', 'recorder', 'createdBy', 'createdOn', 'adviser', 'chairperson'])
                 ->whereNull('deleted_at')
                 ->where('chairperson_id', $searchChairpersonID->id)
-                ->where('status', 'Complete');  
+                ->where('status', 'Complete');
 
             }else{
-                abort(403, 'Unauthorized action.');
-               
-            }    
-    
+   $query = ThesisTransaction::with(['student', 'degree', 'defense', 'recorder', 'createdBy', 'createdOn', 'adviser', 'chairperson'])
+                ->whereIn('status', ['not exist']);
+            }
+
         }else{
             $query = ThesisTransaction::with(['student', 'degree', 'defense', 'recorder', 'createdBy', 'createdOn', 'adviser', 'chairperson'])
             ->whereNull('deleted_at')
@@ -1149,7 +1169,7 @@ class ThesisMonitorController extends Controller
         }
 
         $transactions = $query->get();
-        
+
 
         return DataTables::of($transactions)
         ->addColumn('id', function($data) {

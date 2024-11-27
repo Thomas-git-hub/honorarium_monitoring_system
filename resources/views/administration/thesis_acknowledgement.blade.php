@@ -99,7 +99,7 @@
         var table = $('#acknowledgementTable').DataTable({
             processing: true,
             serverSide: true,
-            ajax: '{{route('thesis.acknowledgement.list')}}', 
+            ajax: '{{route('thesis.acknowledgement.list')}}',
             pageLength: 100,
             paging: true, // abled pagination
             dom: '<"top"lf>rt<"bottom"ip>',

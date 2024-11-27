@@ -248,6 +248,15 @@ class HistoryController extends Controller
             ->addColumn('updated_by', function($data) {
                 return $data->createdBy ? $data->createdBy->first_name  . ' ' . $data->createdBy->last_name: 'Unknown';
             })
+
+            ->addColumn('net', function($data) {
+                return $data->net_amount ?? 0;
+            })
+
+            ->addColumn('deduction', function($data) {
+                return $data->deduction ?? 0;
+            })
+
             ->addColumn('action', function($data) {
                 $usertype = Auth::user()->usertype->name;
                 if ( $usertype === 'Administrator' ||  $usertype === 'Accounting' ||$usertype === 'Superadmin') {

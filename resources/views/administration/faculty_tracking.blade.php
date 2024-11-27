@@ -15,13 +15,13 @@
     <div class="nav-align-top mb-6">
         <ul class="nav nav-pills nav-fill d-flex flex-nowrap overflow-auto mb-3 gap-2" id="ul-scroll" role="tablist">
             <li class="nav-item mb-1 mb-sm-0">
-                <button type="button" class="btn-label-primary text-primary nav-link office-btn" data-route="{{ route('faculty.bugs') }}" role="tab" aria-selected="true">
+                <button type="button" class="btn-label-primary text-primary nav-link office-btn active" data-route="{{ route('faculty.bugs') }}" role="tab" aria-selected="true">
                     <span class="d-none d-sm-block">
                         <i class="tf-icons bx bxs-home bx-sm me-1_5 align-text-bottom"></i>
                         BUGS Admin
                         <span class="badge rounded-pill badge-center position-absolute h-px-20 w-px-20 bg-danger ms-1 pt-50">{{$adminCount ?? 0}}</span>
                     </span>
-                    <i class="bx bx bxs-bank bx-sm d-sm-none"></i>
+                    <i class="bx bx bxs-home bx-sm d-sm-none"></i>
                 </button>
             </li>
             <li class="nav-item mb-1 mb-sm-0">
@@ -31,7 +31,7 @@
                         Budget Office
                         <span class="badge rounded-pill badge-center position-absolute h-px-20 w-px-20 bg-danger ms-1 pt-50">{{$budgtCount ?? 0}}</span>
                     </span>
-                    <i class="bx bx bxs-bank bx-sm d-sm-none"></i>
+                    <i class="bx bx bxs-coin bx-sm d-sm-none"></i>
                 </button>
             </li>
             <li class="nav-item">
@@ -41,7 +41,7 @@
                         Deans Office
                         <span class="badge rounded-pill badge-center position-absolute h-px-20 w-px-20 bg-danger ms-1 pt-50">{{$deanCount ?? 0}}</span>
                     </span>
-                    <i class="bx bx bxs-bank bx-sm d-sm-none"></i>
+                    <i class="bx bx bxs-graduation bx-sm d-sm-none"></i>
                 </button>
             </li>
             <li class="nav-item">
@@ -51,7 +51,7 @@
                         Accounting
                         <span class="badge rounded-pill badge-center position-absolute h-px-20 w-px-20 bg-danger ms-1 pt-50">{{$acctCount ?? 0}}</span>
                     </span>
-                    <i class="bx bx bxs-bank bx-sm d-sm-none"></i>
+                    <i class="bx bx bxs-calculator bx-sm d-sm-none"></i>
                 </button>
             </li>
             <li class="nav-item">
@@ -114,7 +114,6 @@
 @section('components.specific_page_scripts')
 
 <script>
-
     $(function () {
         var user_id = {!! json_encode($user->employee_id) !!}; // Retrieve user ID
         console.log(user_id);
@@ -153,6 +152,8 @@
                 { data: 'month.month_name', name: 'month', title: 'Month Of' },
                 { data: 'sem', name: 'sem', title: 'Semester' },
                 { data: 'year', name: 'year', title: 'Year' },
+                { data: 'deduction', name: 'deduction', title: 'Deduction Amount', defaultContent: "no added amount" },
+                { data: 'net_amount', name: 'net_amount', title: 'Net Amount', defaultContent: "no added amount" },
                 { data: 'status', name: 'status', title: 'Status' },
             ],
             createdRow: function(row, data) {
@@ -176,190 +177,19 @@
         // Automatically trigger the first button click to load the default route
         $('.office-btn').first().trigger('click');
     });
-</script>
 
+    // active button on click
+    $(document).ready(function () {
+        // Add click event listener to all buttons with class 'office-btn'
+        $(".office-btn").on("click", function () {
+            // Remove 'active' class from all buttons
+            $(".office-btn").removeClass("active");
 
-{{-- <script>
-
-
-    var table = $('#administrationTrackingTable').DataTable({
-        processing: true,
-        serverSide: false,
-        pageLength: 100,
-        paging: false, // Disable pagination
-        dom: '<"top"f>rt<"bottom"ip>',
-        language: {
-            search: "", // Remove the default search label
-            searchPlaceholder: "Search..." // Set the placeholder text
-        },
-        data: sampleData,
-        columns: [
-            { data: 'batch_id', name: 'batch_id', title: 'TN' },
-            { data: 'recieve', name: 'recieve', title: 'Recieved' },
-            { data: 'transact', name: 'transact', title: 'Transact' },
-            { data: 'honorarium', name: 'honorarium', title: 'Honorarium' },
-            { data: 'month_of', name: 'month_of' , title: 'Month Of' },
-            { data: 'semester', name: 'semester', title: 'Semester' },
-            { data: 'year', name: 'year', title: 'Year' },
-            { data: 'status', name: 'status', title: 'Status' },
-        ],
+            // Add 'active' class to the clicked button
+            $(this).addClass("active");
+        });
     });
-
-
-    // BUdGET OFFICE TRACKING TABLE
-        var table = $('#budgetTrackingTable').DataTable({
-            processing: true,
-            serverSide: false,
-            pageLength: 100,
-            paging: false, // Disable pagination
-            dom: '<"top"f>rt<"bottom"ip>',
-            language: {
-                search: "", // Remove the default search label
-                searchPlaceholder: "Search..." // Set the placeholder text
-            },
-            data: sampleData,
-            columns: [
-                { data: 'batch_id', name: 'batch_id', title: 'TN' },
-                { data: 'recieve', name: 'recieve', title: 'Recieved' },
-                { data: 'transact', name: 'transact', title: 'Transact' },
-                { data: 'honorarium', name: 'honorarium', title: 'Honorarium' },
-                { data: 'month_of', name: 'month_of' , title: 'Month Of' },
-                { data: 'semester', name: 'semester', title: 'Semester' },
-                { data: 'year', name: 'year', title: 'Year' },
-                { data: 'status', name: 'status', title: 'Status' },
-            ],
-        });
-
-
-        // DEAN OFFICE 1 TRACKING TABLE
-        var table = $('#dean1TrackingTable').DataTable({
-                    processing: true,
-            serverSide: false,
-            pageLength: 100,
-            paging: false, // Disable pagination
-            dom: '<"top"f>rt<"bottom"ip>',
-            language: {
-                search: "", // Remove the default search label
-                searchPlaceholder: "Search..." // Set the placeholder text
-            },
-            data: sampleData,
-            columns: [
-                { data: 'batch_id', name: 'batch_id', title: 'TN' },
-                { data: 'recieve', name: 'recieve', title: 'Recieved' },
-                { data: 'transact', name: 'transact', title: 'Transact' },
-                { data: 'honorarium', name: 'honorarium', title: 'Honorarium' },
-                { data: 'month_of', name: 'month_of' , title: 'Month Of' },
-                { data: 'semester', name: 'semester', title: 'Semester' },
-                { data: 'year', name: 'year', title: 'Year' },
-                { data: 'status', name: 'status', title: 'Status' },
-            ],
-        });
-
-        // ACCOUNTING TRACKING TABLE
-        var table = $('#accountingTrackingTable').DataTable({
-            processing: true,
-            serverSide: false,
-            pageLength: 100,
-            paging: false, // Disable pagination
-            dom: '<"top"f>rt<"bottom"ip>',
-            language: {
-                search: "", // Remove the default search label
-                searchPlaceholder: "Search..." // Set the placeholder text
-            },
-            data: sampleData,
-            columns: [
-                { data: 'batch_id', name: 'batch_id', title: 'TN' },
-                { data: 'recieve', name: 'recieve', title: 'Recieved' },
-                { data: 'transact', name: 'transact', title: 'Transact' },
-                { data: 'honorarium', name: 'honorarium', title: 'Honorarium' },
-                { data: 'month_of', name: 'month_of' , title: 'Month Of' },
-                { data: 'semester', name: 'semester', title: 'Semester' },
-                { data: 'year', name: 'year', title: 'Year' },
-                { data: 'status', name: 'status', title: 'Status' },
-            ],
-        });
-
-
-        // DEANS OFFICE 2 TRACKING TABLE
-        var table = $('#dean2TrackingTable').DataTable({
-            processing: true,
-            serverSide: false,
-            pageLength: 100,
-            paging: false, // Disable pagination
-            dom: '<"top"f>rt<"bottom"ip>',
-            language: {
-                search: "", // Remove the default search label
-                searchPlaceholder: "Search..." // Set the placeholder text
-            },
-            data: sampleData,
-            columns: [
-                { data: 'batch_id', name: 'batch_id', title: 'TN' },
-                { data: 'recieve', name: 'recieve', title: 'Recieved' },
-                { data: 'transact', name: 'transact', title: 'Transact' },
-                { data: 'honorarium', name: 'honorarium', title: 'Honorarium' },
-                { data: 'month_of', name: 'month_of' , title: 'Month Of' },
-                { data: 'semester', name: 'semester', title: 'Semester' },
-                { data: 'year', name: 'year', title: 'Year' },
-                { data: 'status', name: 'status', title: 'Status' },
-            ],
-        });
-
-        // CASHIER TRACKING TABLE
-        var table = $('#cashierTrackingTable').DataTable({
-            processing: true,
-            serverSide: false,
-            pageLength: 100,
-            paging: false, // Disable pagination
-            dom: '<"top"f>rt<"bottom"ip>',
-            language: {
-                search: "", // Remove the default search label
-                searchPlaceholder: "Search..." // Set the placeholder text
-            },
-            data: sampleData,
-            columns: [
-                { data: 'batch_id', name: 'batch_id', title: 'TN' },
-                { data: 'recieve', name: 'recieve', title: 'Recieved' },
-                { data: 'transact', name: 'transact', title: 'Transact' },
-                { data: 'honorarium', name: 'honorarium', title: 'Honorarium' },
-                { data: 'month_of', name: 'month_of' , title: 'Month Of' },
-                { data: 'semester', name: 'semester', title: 'Semester' },
-                { data: 'year', name: 'year', title: 'Year' },
-                { data: 'amount', name: 'amount', title: 'Amount' },
-                { data: 'status', name: 'status', title: 'Status' },
-            ],
-        });
-
-
-        // RELEASING TRACKING TABLE
-        var table = $('#releasingTrackingTable').DataTable({
-            processing: true,
-            serverSide: false,
-            pageLength: 100,
-            paging: false, // Disable pagination
-            dom: '<"top"f>rt<"bottom"ip>',
-            language: {
-                search: "", // Remove the default search label
-                searchPlaceholder: "Search..." // Set the placeholder text
-            },
-            data: sampleData,
-            columns: [
-                { data: 'batch_id', name: 'batch_id', title: 'TN' },
-                { data: 'recieve', name: 'recieve', title: 'Recieved' },
-                { data: 'transact', name: 'transact', title: 'Transact' },
-                { data: 'honorarium', name: 'honorarium', title: 'Honorarium' },
-                { data: 'month_of', name: 'month_of' , title: 'Month Of' },
-                { data: 'semester', name: 'semester', title: 'Semester' },
-                { data: 'year', name: 'year', title: 'Year' },
-                { data: 'amount', name: 'amount', title: 'Amount' },
-                { data: 'status', name: 'status', title: 'Status' },
-            ],
-        });
-
-
-
-
-
-</script> --}}
+</script>
 
 
 @endsection

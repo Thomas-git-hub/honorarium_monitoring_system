@@ -29,128 +29,6 @@
     <!-- Main JS -->
     <script src="assets/js/main.js"></script>
 
-    {{-- EMAIL DATATABLES START --}}
-    {{-- <script>
-         const user = @json(Auth::user());
-        $(function () {
-            var table = $('#inboxTable').DataTable({
-                processing: true,
-                serverSide: true,
-                ajax: '{{route('getEmails')}}',
-                pageLength: 100,
-                paging: false, // Disable pagination
-                dom: '<"top"f>rt<"bottom"ip>',
-                language: {
-                    search: "", // Remove the default search label
-                    searchPlaceholder: "Search..." // Set the placeholder text
-                },
-                columns: [
-                    {
-                        data: 'id',
-                        orderable: false,
-                        render: function(data, type, row) {
-                            return '<input type="checkbox" class="form-check-input row-checkbox">';
-                        }
-                    },
-                    { data: 'name', name: 'name', title: 'Name' },
-                    { data: 'subject', name: 'subject', title: 'Subject' },
-                    { data: 'date', name: 'date', title: 'Date' }
-                ],
-                createdRow: function(row, data) {
-                    // Add class to unopened rows
-                    if (data.status === 'Unread') {
-                        $(row).addClass('unopened').css('font-weight', 'bold');
-                    } else if (data.status === 'Read') {
-                        $(row).addClass('opened').css('font-weight', 'normal');
-                    }
-                }
-            });
-
-            // Function to update the Toggle Check button text
-            function updateToggleCheckButton() {
-                var allChecked = $('#inboxTable tbody input.row-checkbox').length === $('#inboxTable tbody input.row-checkbox:checked').length;
-                var anyChecked = $('#inboxTable tbody input.row-checkbox:checked').length > 0;
-
-                if (allChecked || anyChecked) {
-                    $('#toggleCheck').text('Uncheck');
-                } else {
-                    $('#toggleCheck').text('Check All');
-                }
-            }
-
-            // Initial call to set the button text based on initial state
-            updateToggleCheckButton();
-
-            // Prevent checkbox click from triggering row click event
-            $('#inboxTable tbody').on('click', 'input.row-checkbox', function(e) {
-                e.stopPropagation();
-                updateToggleCheckButton(); // Update button text when a checkbox is clicked
-            });
-
-            // Row click event
-            $('#inboxTable tbody').on('click', 'tr', function() {
-                var rowData = table.row($(this).closest('tr')).data();
-
-                // If the row is unopened, change its class to opened
-                if ($(this).hasClass('unopened')) {
-                    $(this).removeClass('unopened').addClass('opened');
-                }
-
-                $.ajax({
-                    url: '{{ route('updateEmailStatus') }}',
-                    type: 'POST',
-                    data: {
-                        _token: '{{ csrf_token() }}',
-                        id: rowData.id
-                    },
-                    success: function(response) {
-                        if (response.success) {
-                            console.log('Status updated to Read');
-                        } else {
-                            console.log('Error updating status');
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        console.log('AJAX Error:', error);
-                    }
-                });
-
-                // Redirect to another page with full details (example)
-                window.location.href = `/admin_open_email?id=${rowData.id}`;
-            });
-
-            // Toggle Check All/Uncheck All button click event
-            $('#toggleCheck').on('click', function() {
-                var allChecked = $('#inboxTable tbody input.row-checkbox').length === $('#inboxTable tbody input.row-checkbox:checked').length;
-
-                if (allChecked) {
-                    $('#inboxTable tbody input.row-checkbox').prop('checked', false);
-                    $('#toggleCheck').text('Check All');
-                } else {
-                    $('#inboxTable tbody input.row-checkbox').prop('checked', true);
-                    $('#toggleCheck').text('Uncheck');
-                }
-            });
-
-            // Delete Selected button click event
-            $('#deleteSelected').on('click', function() {
-                $('#inboxTable tbody input.row-checkbox:checked').each(function() {
-                    var row = $(this).closest('tr');
-                    table.row(row).remove().draw(false);
-                });
-                updateToggleCheckButton(); // Update button text after deletion
-            });
-
-            // Delete row button click event
-            $('#inboxTable tbody').on('click', '.delete-row', function(e) {
-                e.stopPropagation();
-                var row = $(this).closest('tr');
-                table.row(row).remove().draw(false);
-                updateToggleCheckButton(); // Update button text after deletion
-            });
-        });
-    </script> --}}
-
     <script>
         $(function () {
 
@@ -179,7 +57,7 @@
                     search: "", // Remove the default search label
                     searchPlaceholder: "Search..." // Set the placeholder text
                 },
-                order: [[3, 'desc']], // Sort by the 4th column (Date) in descending order
+                order: [[3, 'desc']], // Sort by the 4th column (Date) in descending order to ensure the latest date is on top
                 columns: [
                     {
                         data: 'id',

@@ -99,7 +99,7 @@
                         confirmButtonColor: '#007bff',
                         footer: 'Viewing members for thesis entry.'
                     });
-                
+
                 },
                 error: function(xhr) {
                     Swal.fire({
@@ -147,7 +147,7 @@
                 { data: 'created_on', name: 'created_on', title: 'Created On' },
                 { data: 'created_at', name: 'created_at', title: 'Date' },
                 // { data: 'action', name: 'action', title: 'Action' }
-                
+
             ],
             order: [[0, 'desc']],  // Sort by date created by default
             columnDefs: [
@@ -160,7 +160,7 @@
                 $(row).addClass('unopened');
             },
             drawCallback: function() {
-                
+
             },
 
         });
@@ -193,7 +193,7 @@
                         });
                         $('#thesisEntriesTable').DataTable().ajax.reload();
                         window.location.href = '/thesis-out-going';
-                        
+
 
                     }else{
                         Swal.fire({
@@ -215,7 +215,7 @@
             });
         });
 
-      
+
     });
 </script>
 

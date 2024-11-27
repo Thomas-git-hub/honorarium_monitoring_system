@@ -171,7 +171,7 @@ class SendEmailController extends Controller
                 return $data->subject;
             })
             ->addColumn('date', function ($data) {
-                return $data->created_at ? $data->created_at->format('m-d-Y') : 'N/A';
+                return $data->created_at ? $data->created_at->format('M d, Y g:i A') : 'N/A';
             })
 
             ->make(true);

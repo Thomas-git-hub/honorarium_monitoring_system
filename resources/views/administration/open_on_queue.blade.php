@@ -192,15 +192,17 @@
     <div class="col">
         <div class="row mb-2">
             @if($hasOnHoldStatus)
-
-            <div class="col-md mx-auto d-flex justify-content-end">
-                <button type="button" class="btn btn-danger gap-1" id="onHoldTransactionButton">On Hold<i class='bx bx-chevrons-right'></i></button>
-            </div>
-
+            @if(Auth::user()->usertype->name !== 'Superadmin')
+                <div class="col-md mx-auto d-flex justify-content-end">
+                    <button type="button" class="btn btn-danger gap-1" id="onHoldTransactionButton">On Hold<i class='bx bx-chevrons-right'></i></button>
+                </div>
+                @endif
             @else
-            <div class="col-md mx-auto d-flex justify-content-end">
-                <button type="button" class="btn btn-primary gap-1 d-none" id="proceedTransactionButton">Proceed<i class='bx bx-chevrons-right'></i></button>
-            </div>
+                @if(Auth::user()->usertype->name !== 'Superadmin')
+                <div class="col-md mx-auto d-flex justify-content-end">
+                    <button type="button" class="btn btn-primary gap-1 d-none" id="proceedTransactionButton">Proceed<i class='bx bx-chevrons-right'></i></button>
+                </div>
+                @endif
             @endif
 
         </div>

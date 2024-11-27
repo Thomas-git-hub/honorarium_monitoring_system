@@ -52,7 +52,7 @@
         </li>
 
         @if(Auth::user()->usertype->name !== 'Faculty')
-        <li class="menu-item {{ request()->is('thesis_acknowledgement') ? 'active' : '' }}">
+        <li class="menu-item {{ request()->is('thesisAcknowledgement') || request()->is('openThesisAcknowledgement') ? 'active' : '' }}">
             <a href="/thesisAcknowledgement" class="menu-link">
                 <i class='menu-icon tf-icons bx bx-archive-in'></i>
               <div class="text-truncate" data-i18n="Page 2">Acknowledgement</div>
