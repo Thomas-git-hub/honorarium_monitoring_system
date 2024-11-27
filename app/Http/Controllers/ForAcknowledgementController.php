@@ -21,6 +21,7 @@ class ForAcknowledgementController extends Controller
         if(Auth::user()->usertype->name !== 'Faculty'){
 
             if(Auth::user()->usertype->name === 'Superadmin'){
+                
                 $TransCountToday = Transaction::with(['honorarium', 'createdBy'])
                                         ->whereNull('deleted_at')
                                         ->where('status', 'On Queue')
@@ -99,9 +100,24 @@ class ForAcknowledgementController extends Controller
 
         if (Auth::user()->usertype->name === 'Superadmin' || Auth::user()->usertype->name === 'Administrator') {
             $acknowledgements = Acknowledgement::with(['user', 'office', 'transaction'])
-                ->select('batch_id', 'office_id', 'created_at', 'user_id')
-                ->groupBy('batch_id')
-                ->get();
+            ->select(
+                'acknowledgement.batch_id',
+                'acknowledgement.office_id',
+                'acknowledgement.created_at',
+                'acknowledgement.user_id'
+            )
+            ->joinSub(
+                DB::table('acknowledgement')
+                    ->select('batch_id', DB::raw('MAX(created_at) as latest_created_at'))
+                    ->groupBy('batch_id'),
+                'latest_acknowledgement',
+                function ($join) {
+                    $join->on('acknowledgement.batch_id', '=', 'latest_acknowledgement.batch_id')
+                        ->on('acknowledgement.created_at', '=', 'latest_acknowledgement.latest_created_at');
+                }
+            )
+            ->get();
+
         } elseif (Auth::user()->usertype->name === 'Budget Office') {
             $From_office = Office::whereIn('name', ['BUGS Administration', 'ICTO'])->pluck('id');
             $acknowledgements = Acknowledgement::with(['user', 'office', 'transaction'])
@@ -135,13 +151,16 @@ class ForAcknowledgementController extends Controller
         }else{
             $acknowledgements = collect();
         }
+        
 
         if(Auth::user()->usertype->name === 'Administrator' || Auth::user()->usertype->name === 'Superadmin'){
             // Filter out acknowledgements with a transaction count of 0
             $filteredAcknowledgements = $acknowledgements->filter(function ($acknowledgement) {
+
                 $countTran = Transaction::whereNull('deleted_at')
                 ->where('batch_id', $acknowledgement->batch_id)
                 ->where('status', 'On Queue')
+                ->where('office', $acknowledgement->office_id)
                 ->count();
                 return $countTran > 0; // Only keep acknowledgements with a transaction count greater than 0
             });
@@ -157,11 +176,8 @@ class ForAcknowledgementController extends Controller
                 ->count();
                 return $countTran > 0; // Only keep acknowledgements with a transaction count greater than 0
             });
-
-
+            
         }
-
-
 
         // Return data as JSON using DataTables
         return DataTables::of($filteredAcknowledgements)
@@ -177,7 +193,7 @@ class ForAcknowledgementController extends Controller
                     return Transaction::whereNull('deleted_at')
                     ->where('batch_id', $data->batch_id)
                     ->where('status', 'On Queue')
-                    ->where('from_office', Auth::user()->office_id)
+                    // ->where('from_office', Auth::user()->office_id)
                     ->count();
 
                 }else{

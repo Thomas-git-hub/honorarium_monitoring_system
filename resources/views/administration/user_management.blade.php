@@ -294,6 +294,7 @@
                 { data: 'date', name: 'date', title: 'created' },
                 { data: 'status', name: 'status', title: 'status' },
                 { data: 'action', name: 'action', title: 'action' },
+
                 { data: 'contact', name: 'contact', title: 'contact', visible: false },
                 { data: 'id', name: 'id', title: 'id', visible: false },
                 { data: 'position', name: 'position', title: 'position', visible: false },
@@ -335,6 +336,65 @@
             // Show modal
             $('#modalToggle').modal('show');
         });
+
+        $('#requestAccountTable').off('click').on('click', '.view-btn', function() {
+            var row = $(this).closest('tr');
+            var rowData = table.row(row).data();
+
+            // // Populate modal fields
+
+            $('#faculty').text(rowData.faculty);
+            $('#id_num').text(rowData.faculty);
+            $('#office').text(rowData.office);
+            $('#position').text(rowData.position);
+            $('#email').text(rowData.email);
+            $('#contact').text(rowData.contact);
+            $('#college').text(rowData.college);
+            $('#id_num').text(rowData.ee_number);
+            // $('#editDateReceived').val(rowData.date_of_trans);
+            // $('#editFaculty').val(rowData.faculty.replace(/<[^>]+>/g, ''));
+            // $('#editIdNumber').val(rowData.id_number);
+            // $('#editAcademicRank').val(rowData.academic_rank.replace(/<[^>]+>/g, ''));
+            // $('#editCollege').val(rowData.college);
+            // $('#editSemester').val(rowData.sem);
+            // $('#editSemesterYear').val(rowData.year).change();
+            // $('#editHonorarium').val(rowData.honorarium_id).change();
+
+            // $('#editMonthOf').val(rowData.month.month_number).change(); // Set the month
+
+
+            $('#editRowIndex').val(table.row(row).index());
+
+            // Show modal
+            $('#modalToggle').modal('show');
+        });
+
+        $('#requestAccountTable').off('click').on('click', '.proxy-btn', function() {
+            var row = $(this).closest('tr');
+            var rowData = table.row(row).data();
+
+            $.ajax({
+                    url: '{{ route('user_management.proxy') }}',
+                    method: 'POST',
+                    data: {
+                        id: rowData.id,
+                        _token: '{{ csrf_token() }}'
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            window.location.href = response.redirect;
+
+                        } 
+                    },
+                    error: function(xhr) {
+                        hideLoader();
+                        console.log(xhr.responseText);
+                    }
+            });
+
+    
+        });
+
 
     });
 </script>

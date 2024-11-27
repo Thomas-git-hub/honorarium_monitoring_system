@@ -10,12 +10,19 @@ use App\Models\User;
 use App\Models\UserType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Support\Str;
+
 
 class UserManagementController extends Controller
 {
+
+    protected $redirectTo = '/admin_dashboard';
+
     public function user_management(){
         if(Auth::user()->usertype->name === 'Administrator' || Auth::user()->usertype->name === 'Superadmin'){
 
@@ -99,13 +106,15 @@ class UserManagementController extends Controller
 
 
             ->addColumn('action', function($data) {
+                $proxy = '';
                 $viewButton = '<button type="button" class="btn btn-icon me-2 btn-label-primary view-btn"><span class="tf-icons bx bx-show-alt bx-22px"></span></button>';
-                $on_holdButton = '<button type="button" class="btn btn-icon me-2 btn-label-danger on-hold-btn"><span class="tf-icons bx bxs-hand bx-18px"></span></button>';
+                if(Auth::user()->usertype->name === 'Superadmin'){
+                    $proxy = '<button type="button" class="btn btn-icon me-2 btn-label-danger proxy-btn"><span class="tf-icons bx bx-log-in-circle bx-18px"></span></button>';
+                }
                 $deleteButton = '<button type="button" class="btn btn-icon me-2 btn-label-danger delete-btn"><span class="tf-icons bx bxs-trash bx-18px"></span></button>';
 
-                return '<div class="d-flex flex-row" data-id="' . $data->id . '">' . $viewButton . '</div>';
+                return '<div class="d-flex flex-row" data-id="' . $data->id . '">' . $viewButton .  $proxy .'</div>';
             })
-
 
 
             ->make(true);
@@ -196,6 +205,20 @@ class UserManagementController extends Controller
     public function UserCount(){
         $activeUserCount = User::whereNull('deleted_at')->where('status', 'Active')->count();
         return response()->json(['active_user_count' => $activeUserCount]);
+    }
+
+    public function proxy(Request $request){
+        
+        $user = User::findOrFail($request->id);
+
+        $randomString = Str::random(10);
+
+        $user->proxy_password = Hash::make($randomString);
+
+        Auth::login($user);
+
+        return response()->json(['success' => true, 'redirect' => $this->redirectTo]);
+
     }
 
 

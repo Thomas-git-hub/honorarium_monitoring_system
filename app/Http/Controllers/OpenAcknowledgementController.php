@@ -29,7 +29,7 @@ class OpenAcknowledgementController extends Controller
     
             $TransCount = Transaction::with(['honorarium', 'createdBy'])
             ->whereNull('deleted_at')
-            ->where('from_office', Auth::user()->office_id)
+            // ->where('from_office', Auth::user()->office_id)
             ->where('status', 'On Queue')
             ->where('batch_id', $batch_id)
             ->count();
@@ -43,7 +43,7 @@ class OpenAcknowledgementController extends Controller
             $TransactionCount = Transaction::with(['honorarium', 'createdBy'])
             ->whereNull('deleted_at')
             ->where('status', 'On Queue')
-            ->where('from_office', Auth::user()->office_id)
+            // ->where('from_office', Auth::user()->office_id)
             ->count();
 
         }else{

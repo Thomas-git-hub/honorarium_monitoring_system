@@ -51,7 +51,7 @@
             <div style="margin-left: 5%; margin-top: 5%; color: #b4b0c4;">Thesis Transaction</div>
         </li>
 
-        @if(Auth::user()->usertype->name !== 'Faculty')
+        @if(Auth::user()->usertype->name !== 'Faculty' && Auth::user()->usertype->name !== 'Superadmin')
         <li class="menu-item {{ request()->is('thesisAcknowledgement') || request()->is('openThesisAcknowledgement') ? 'active' : '' }}">
             <a href="/thesisAcknowledgement" class="menu-link">
                 <i class='menu-icon tf-icons bx bx-archive-in'></i>
@@ -69,7 +69,7 @@
         </li>
         @endif
 
-        @if(Auth::user()->usertype->name !== 'Faculty')
+        @if(Auth::user()->usertype->name !== 'Faculty' && Auth::user()->usertype->name !== 'Superadmin')
         <li class="menu-item {{ request()->is('thesis-out-going') || request()->is('thesis-open-out-going') ? 'active' : '' }}">
             <a href="/thesis-out-going" class="menu-link">
                 <i class='menu-icon tf-icons bx bx-list-ol' ></i>
@@ -107,7 +107,7 @@
           </a>
         </li>
         @endif
-        @if(Auth::user()->usertype->name !== 'Administrator' && Auth::user()->usertype->name !== 'Faculty')
+        @if(Auth::user()->usertype->name !== 'Administrator' && Auth::user()->usertype->name !== 'Faculty' && Auth::user()->usertype->name !== 'Superadmin')
         <li class="menu-item {{ request()->is('for_acknowledgement') ? 'active' : '' }}">
           <a href="/for_acknowledgement" class="menu-link">
             <i class='menu-icon tf-icons bx bx-archive-in'></i>
@@ -116,7 +116,7 @@
           </a>
         </li>
         @endif
-        @if(Auth::user()->usertype->name !== 'Faculty' && Auth::user()->usertype->name !== 'Cashiers' && Auth::user()->usertype->name !== 'Administrator')
+        @if(Auth::user()->usertype->name !== 'Faculty' && Auth::user()->usertype->name !== 'Cashiers' && Auth::user()->usertype->name !== 'Administrator' && Auth::user()->usertype->name !== 'Superadmin')
         <li class="menu-item {{ request()->is('admin_on_queue') || request()->is('open_on_queue') ? 'active' : '' }}">
           <a href="/admin_on_queue" class="menu-link">
             <i class='menu-icon tf-icons bx bx-list-ol'></i>
@@ -132,7 +132,7 @@
           </a>
         </li>
         @endif
-        @if(Auth::user()->usertype->name !== 'Faculty')
+        @if(Auth::user()->usertype->name !== 'Faculty' && Auth::user()->usertype->name !== 'Superadmin')
         <li class="menu-item {{ request()->is('main_on_hold') || request()->is('admin_on_hold') ? 'active' : '' }}">
           <a href="/main_on_hold" class="menu-link">
             <i class='menu-icon tf-icons bx bx-error-alt'></i>
@@ -140,7 +140,7 @@
           </a>
         </li>
         @endif
-        @if(Auth::user()->usertype->name === 'Faculty')
+        @if(Auth::user()->usertype->name === 'Faculty' || Auth::user()->usertype->name === 'Superadmin')
         <li class="menu-item {{ request()->is('faculty_tracking') ? 'active' : '' }}">
           <a href="/faculty_tracking" class="menu-link">
             <i class='menu-icon tf-icons bx bx-tag-alt'></i>

@@ -83,6 +83,7 @@ Route::middleware(['auth_check', '419'])->group(function () {
         Route::get('/user_management', [UserManagementController::class, 'user_management'])->name("user_management");
         Route::get('/user_management/list', [UserManagementController::class, 'list'])->name("user_management.list");
         Route::post('/user_management/store', [UserManagementController::class, 'store'])->name("user_management.store");
+        Route::post('/user_management/proxy', [UserManagementController::class, 'proxy'])->name("user_management.proxy");
 
         Route::get('/admin_honorarium', [AdminController::class, 'admin_honorarium'])->name("admin_honorarium");
         Route::get('/admin_honorarium/list', [HonorariumController::class, 'list'])->name("admin_honorarium.list");

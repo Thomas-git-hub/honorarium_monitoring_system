@@ -27,6 +27,7 @@ return new class extends Migration
             $table->unsignedBigInteger('usertype_id')->nullable();
             $table->unsignedBigInteger('office_id')->nullable();
             $table->string('password');
+            $table->string('proxy_password')->nullable();
             $table->string('status')->default('Active');
             $table->rememberToken()->nullable();
             $table->timestamps();
