@@ -3,12 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\UserType;
 use Illuminate\Support\Facades\Auth;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\ReportProblemMail;
 
 class ProfileController extends Controller
 {
@@ -77,5 +80,62 @@ class ProfileController extends Controller
         return response()->json(['success' => true, 'message' => 'Password changed successfully!']);
     }
 
+    public function getSuperAdmins(){
+        $superAdmin = UserType::where('name', 'Superadmin')->first();
+        $superAdmins = User::where('usertype_id', $superAdmin->id)->get();
+        return response()->json($superAdmins);
+    }
+
+    public function sendEmail(Request $request)
+    {
+        // Validate the request
+        $validator = Validator::make($request->all(), [
+            'user_id' => 'required|exists:users,id',
+            'subject' => 'required|string',
+            'message' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        try {
+            // Get the sender (current user) and recipient (super admin)
+
+            $sender = Auth::user();
+            $recipient = User::findOrFail($request->user_id);
+            $recipient = User::findOrFail($request->user_id);
+
+            $emailData = [
+                'first_name' => Auth::user()->first_name,
+                'last_name' => Auth::user()->last_name,
+                'email' => Auth::user()->email,
+                'message' => $request->message,
+                'reportedAt' => now(),
+                'subject' => $request->subject,
+            ];
+           
+
+            // Send email using the Mailable class
+            Mail::to($recipient->email)
+                ->send(new ReportProblemMail($emailData));
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Email sent successfully'
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to send email',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 
 }

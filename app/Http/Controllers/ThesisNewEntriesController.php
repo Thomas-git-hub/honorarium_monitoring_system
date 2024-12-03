@@ -22,6 +22,7 @@ use App\Mail\On_Hold_Email;
 use App\Mail\On_Hold_Email_two;
 use App\Mail\TransactionStatusChanged;
 use Illuminate\Support\Facades\Mail;
+use App\Jobs\SendTransactionEmailsJob;
 
 
 class ThesisNewEntriesController extends Controller
@@ -705,7 +706,8 @@ class ThesisNewEntriesController extends Controller
         }
     }
 
-    public function proceed(Request $request){
+    public function proceed(Request $request)
+    {
         $ibu_dbcon = DB::connection('ibu_test');
 
         $transactions = ThesisTransaction::whereNull('deleted_at')
@@ -720,43 +722,34 @@ class ThesisNewEntriesController extends Controller
         }
 
         $batchId = $transactions->first()->tracking_number;
-    
         $usertype = Auth::user()->usertype->name;
-        
         $office = Office::where('name', 'BUGS Administration')->first();
-       
-         // Update the status to 'On Queue'
-        if($usertype === 'Cashiers' ){
 
-            ThesisTransaction::whereNull('deleted_at')
-            ->where('tracking_number', $batchId)
-            ->where('status', 'processing')
-            ->where('created_on', Auth::user()->office_id)
-            ->where('created_by', Auth::user()->id)
-            ->update([
-                'status' => 'Complete',
-                'updated_on' =>  $office->id,
-                'created_by' => Auth::user()->id,
-                'updated_at' => now(),
-            ]);
+        // Update the status and dispatch email jobs
+        foreach ($transactions as $transaction) {
+            if ($usertype === 'Cashiers') {
+                $transaction->update([
+                    'status' => 'Complete',
+                    'updated_on' => $office->id,
+                    'created_by' => Auth::user()->id,
+                    'updated_at' => now(),
+                ]);
+            } else {
+                $transaction->update([
+                    'status' => 'On Queue',
+                    'updated_on' => $office->id,
+                    'created_by' => Auth::user()->id,
+                    'updated_at' => now(),
+                ]);
+            }
 
-        }else{
-
-            ThesisTransaction::whereNull('deleted_at')
-            ->where('tracking_number', $batchId)
-            ->where('status', 'processing')
-            ->where('created_on', Auth::user()->office_id)
-            ->where('created_by', Auth::user()->id)
-            ->update([
-                'status' => 'On Queue',
-                'updated_on' =>  $office->id,
-                'created_by' => Auth::user()->id,
-                'updated_at' => now(),
-            ]);
-
+            // Dispatch email job for each transaction
+            if ( $usertype === 'Cashiers' || $usertype === 'Dean') {
+                SendTransactionEmailsJob::dispatch($transaction)->onQueue('emails');
+            }
         }
-        return response()->json(['success' => true, 'message' => 'Transaction proceeded successfully.']);
 
+        return response()->json(['success' => true, 'message' => 'Transaction proceeded successfully.']);
     }
 
     public function getItems(){
@@ -769,4 +762,6 @@ class ThesisNewEntriesController extends Controller
 
         return response()->json(['transactions' => $transactions]);
     }
+
+    
 }

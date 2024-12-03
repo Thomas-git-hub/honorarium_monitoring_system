@@ -47,6 +47,8 @@ Route::middleware(['auth_check', '419'])->group(function () {
     Route::match(['post', 'put'], 'profile/update', [ProfileController::class, 'profile_update'])->name('profile.update');
     Route::post('/logout', [UserController::class, 'logout'])->name('logout');
     Route::post('/profile/change-password', [ProfileController::class, 'changePassword'])->name('password.change');
+    Route::get('/profile/get-super-admins', [ProfileController::class, 'getSuperAdmins'])->name('get.super.admins');
+    Route::post('/profile/send-email', [ProfileController::class, 'sendEmail'])->name('send.email');
 
 
     Route::middleware(['faculty'])->group(function () {

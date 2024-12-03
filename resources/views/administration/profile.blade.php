@@ -499,10 +499,118 @@ $(document).ready(function() {
                 }
             });
         });
-
-
     })
 </script>
+
+<script>
+
+    $('#sendEmailBtn').click(function() {
+        
+        $('#sendEmailToast').toast('show');
+        $('.checklist').hide();
+
+        $.ajax({
+            url: '{{ route("get.super.admins") }}',
+            method: 'GET',
+            success: function(response) {
+                
+                // Check if response is an array and has items
+                if (Array.isArray(response) && response.length > 0) {
+                    // Get the first super admin from the array
+                    const superAdmin = response[0];
+                    
+                    // Create formatted name
+                    const fullName = `${superAdmin.first_name} ${superAdmin.last_name}`;
+                    
+                    // Update the hidden input and the To: container
+                    $('#user_id').val(superAdmin.id);
+                    $('.card-body .send_to').html(`
+                        <b>To:&nbsp;</b> ${fullName}&nbsp;
+                        <small class="text-secondary" style="font-style: italic;">${superAdmin.email}</small>
+                    `);
+
+                   
+                    
+                    // Set default subject and clear message
+                    $('#floatingInput').val('Report a Problem');
+                } else {
+                    console.error('No super admins found');
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error(error);
+            }
+        }); 
+    });
+
+</script>
+
+{{-- SENDING EMAIL FOR SPINNER AND STATUS START --}}
+<script>
+    $(document).ready(function() {
+        // Ensure success and failed messages are hidden on page load
+        // $('#emailSuccess').hide();
+        // $('#emailFailed').hide();
+
+        $('#toastSuccess').show();
+        $('#sendingFailed').show();
+
+
+        $('#sendButton').on('click', function(event) {
+            event.preventDefault();
+            $('#spinner').show();
+
+            var formData = {
+                user_id: $('#user_id').val(),
+                subject: $('#floatingInput').val(),
+                message: $('#emailTextArea').val(),
+                employee_id: $('#facultySelect').val(),
+               
+            };
+
+            $.ajax({
+                type: 'POST',
+                url: '{{ route('send.email') }}',
+                data: formData,
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function(response) {
+                    $('#spinner').hide();
+
+                    if (response.success) {
+                        $('#toastSuccess').toast('show');
+
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Sent!',
+                            text: response.message,
+                        }).then(function() {
+                            // This will reload the page once the "OK" button is clicked
+                            location.reload();
+                        });
+
+
+                    } else {
+                        $('#sendingFailed').toast('show');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    $('#spinner').hide();
+                    $('#sendingFailed').toast('show');
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error Occurred During Form Submission',
+                        text: 'Please ensure all fields are filled out correctly and none are left blank',
+                    });
+                    console.error('AJAX Error:', status, error);
+                }
+            });
+        });
+
+    });
+</script>
+{{-- SENDING EMAIL FOR SPINNER AND STATUS END--}}
 
 
 @endsection

@@ -1,12 +1,18 @@
 <?php
 
-use App\Jobs\SendTransactionEmailsJob;
-use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
+use App\Models\ThesisTransaction;
+use App\Jobs\SendTransactionEmailsJob;
 
-// Artisan::command('inspire', function () {
-//     $this->comment(Inspiring::quote());
-// })->purpose('Display an inspiring quote')->hourly();
+Artisan::command('send:thesis-emails', function () {
+    $transactions = ThesisTransaction::where('status', 'On Queue')
+        ->whereNotNull('tracking_number')
+        ->get();
+
+    foreach ($transactions as $transaction) {
+        SendTransactionEmailsJob::dispatch($transaction)->onQueue('emails');
+    }
+})->purpose('Send emails for thesis transactions');
 
 
 

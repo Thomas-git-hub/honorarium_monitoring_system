@@ -67,7 +67,7 @@
 
             @if(Auth::user()->usertype->name !== 'Faculty')
 
-            <div class="mt-4">
+            <div class="mt-4 checklist">
                 <div>
                     <small class="text-danger">Check the missing document that needs for compliance</small>
                 </div>
