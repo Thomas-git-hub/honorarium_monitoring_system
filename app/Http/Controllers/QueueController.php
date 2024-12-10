@@ -267,11 +267,27 @@ class QueueController extends Controller
             return response()->json(['success' => false, 'message' => 'No office Found']);
         }
 
-        $ack = new Acknowledgement();
-        $ack->batch_id= $request->batch_id;
-        $ack->office_id = Auth::user()->office_id;
-        $ack->user_id = Auth::user()->id;
-        $ack->save();
+        // if(Auth::user()->usertype->name !== 'Dean'){
+
+            $ack = new Acknowledgement();
+            $ack->batch_id= $request->batch_id;
+            $ack->office_id = Auth::user()->office_id;
+            $ack->user_id = Auth::user()->id;
+            $ack->status = 'Pending';
+            $ack->save();
+
+            $acknowledgement = Acknowledgement::where('batch_id', $request->batch_id)
+                                ->where('office_id', '<>', Auth::user()->office_id)
+                                ->where('user_id', '<>', Auth::user()->id)
+                                ->where('status', 'Pending')
+                                ->orderBy('created_at', 'desc')
+                                ->first();
+
+            if($acknowledgement){
+                $acknowledgement->status = 'Acknowledged';
+                $acknowledgement->save();
+            }
+        // }
 
         // Update the status to 'On Queue'
         if($usertype === 'Cashiers' ){
@@ -740,6 +756,7 @@ class QueueController extends Controller
         // Fetch data from the Acknowledgement table
         $acknowledgements = collect(); // Initialize an empty collection
         DB::statement("SET SQL_MODE=''");
+        
 
         if (Auth::user()->usertype->name === 'Superadmin') {
             $acknowledgements = Acknowledgement::with(['user', 'office', 'transaction'])
@@ -752,9 +769,10 @@ class QueueController extends Controller
         }elseif(Auth::user()->usertype->name === 'Administrator'){
             $From_office = Office::where('name', 'BUGS Administration')->first();
             $acknowledgements = Acknowledgement::with(['user', 'office', 'transaction'])
-                ->select('batch_id', 'office_id', 'created_at', 'user_id')
+                ->select('batch_id', 'office_id', 'created_at', 'user_id', 'status')
                 ->where('office_id', Auth::user()->office_id)
                 ->where('user_id', Auth::user()->id)
+                ->where('status', 'Acknowledged')
                 ->groupBy('batch_id')
                 ->get();
         }
@@ -762,8 +780,9 @@ class QueueController extends Controller
         elseif (Auth::user()->usertype->name === 'Budget Office') {
             $From_office = Office::where('name', 'BUGS Administration')->first();
             $acknowledgements = Acknowledgement::with(['user', 'office', 'transaction'])
-                ->select('batch_id', 'office_id', 'created_at', 'user_id')
-                ->where('office_id', Auth::user()->office_id)
+                ->select('batch_id', 'office_id', 'created_at', 'user_id', 'status')
+                ->where('office_id',  $From_office->id)
+                ->where('status', 'Acknowledged')
                 ->groupBy('batch_id')
                 ->get();
 
@@ -777,15 +796,19 @@ class QueueController extends Controller
         } elseif (Auth::user()->usertype->name === 'Dean') {
             $From_office_acc = Office::where('name', 'Accounting')->first();
             $From_office_BO = Office::where('name', 'Budget Office')->first();
+
             $acknowledgements = Acknowledgement::with(['user', 'office', 'transaction'])
-                ->select('batch_id', 'office_id', 'created_at', 'user_id')
+                ->select('batch_id', 'office_id', 'created_at', 'user_id','status')
                 ->where('office_id', $From_office_acc->id)
                 ->orWhere('office_id', $From_office_BO->id)
+                ->where('status', 'Pending')
                 ->groupBy('batch_id')
                 ->get();
-        }else{
+
+        } else {
             $acknowledgements = collect();
         }
+
 
         if(Auth::user()->usertype->name === 'Administrator'){
             $filteredAcknowledgements = $acknowledgements->filter(function ($acknowledgement) {
@@ -814,13 +837,9 @@ class QueueController extends Controller
                 ->whereIn('status', ['Processing','On-hold'])
                 ->where('office', Auth::user()->office_id)
                 ->count();
-                return $countTran > 0;
+                return $countTran > 0; // Only keep acknowledgements with a transaction count greater than 0
             });
-
-
         }
-
-
 
         // Return data as JSON using DataTables
         return DataTables::of($filteredAcknowledgements)

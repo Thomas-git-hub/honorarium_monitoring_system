@@ -18,6 +18,8 @@ return new class extends Migration
             $table->foreign('office_id')->references('id')->on('office');
             $table->unsignedBigInteger('user_id')->nullable();
             $table->foreign('user_id')->references('id')->on('users');
+            $table->string('status')->default('Pending');
+
             $table->timestamps();
         });
     }

@@ -64,9 +64,10 @@ class HistoryController extends Controller
         }elseif(Auth::user()->usertype->name === 'Administrator'){
             $From_office = Office::where('name', 'BUGS Administration')->first();
             $acknowledgements = Acknowledgement::with(['user', 'office', 'transaction'])
-                ->select('batch_id', 'office_id', 'created_at', 'user_id')
+                ->select('batch_id', 'office_id', 'created_at', 'user_id', 'status')
                 ->where('office_id', Auth::user()->office_id)
                 ->where('user_id', Auth::user()->id)
+                ->whereIn('status', ['Acknowledged', 'History'])
                 ->groupBy('batch_id')
                 ->get();
         }
@@ -74,8 +75,9 @@ class HistoryController extends Controller
         elseif (Auth::user()->usertype->name === 'Budget Office') {
             $From_office = Office::where('name', 'BUGS Administration')->first();
             $acknowledgements = Acknowledgement::with(['user', 'office', 'transaction'])
-                ->select('batch_id', 'office_id', 'created_at', 'user_id')
-                ->where('office_id', Auth::user()->office_id)
+                ->select('batch_id', 'office_id', 'created_at', 'user_id', 'status')
+                ->where('office_id',  $From_office->id)
+                ->where('status', 'History')
                 ->groupBy('batch_id')
                 ->get();
         } elseif (Auth::user()->usertype->name === 'Dean') {

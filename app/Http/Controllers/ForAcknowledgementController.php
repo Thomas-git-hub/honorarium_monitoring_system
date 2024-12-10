@@ -121,31 +121,37 @@ class ForAcknowledgementController extends Controller
         } elseif (Auth::user()->usertype->name === 'Budget Office') {
             $From_office = Office::whereIn('name', ['BUGS Administration', 'ICTO'])->pluck('id');
             $acknowledgements = Acknowledgement::with(['user', 'office', 'transaction'])
-                ->select('batch_id', 'office_id', 'created_at', 'user_id')
+                ->select('batch_id', 'office_id', 'created_at', 'user_id', 'status')
                 ->whereIn('office_id', $From_office)
+                ->where('status', 'Pending')
                 ->groupBy('batch_id')
                 ->get();
-        } elseif (Auth::user()->usertype->name === 'Dean') {
-            $From_office = Office::where('name', 'Budget Office')->first();
-            $acknowledgements = Acknowledgement::with(['user', 'office', 'transaction'])
-                ->select('batch_id', 'office_id', 'created_at', 'user_id')
-                ->where('office_id', $From_office->id)
-                ->groupBy('batch_id')
-                ->get();
-        } elseif (Auth::user()->usertype->name === 'Accounting' || Auth::user()->usertype->name === 'Cashiers') {
+        } 
+        // elseif (Auth::user()->usertype->name === 'Dean') {
+        //     $From_office = Office::where('name', 'Budget Office')->first();
+        //     $acknowledgements = Acknowledgement::with(['user', 'office', 'transaction'])
+        //         ->select('batch_id', 'office_id', 'created_at', 'user_id', 'status')
+        //         ->where('office_id', $From_office->id)
+        //         ->where('status', 'Pending')
+        //         ->groupBy('batch_id')
+        //         ->get();
+        // } 
+        elseif (Auth::user()->usertype->name === 'Accounting' || Auth::user()->usertype->name === 'Cashiers') {
             $From_office = Office::where('name', 'Dean')->first();
             $acknowledgements = Acknowledgement::with(['user', 'office', 'transaction'])
-                ->select('batch_id', 'office_id', 'created_at', 'user_id')
+                ->select('batch_id', 'office_id', 'created_at', 'user_id', 'status')
                 ->where('office_id', $From_office->id)
+                ->where('status', 'Pending')
                 ->groupBy('batch_id')
                 ->get();
         } elseif (Auth::user()->usertype->name === 'Dean') {
             $From_office_acc = Office::where('name', 'Accounting')->first();
             $From_office_BO = Office::where('name', 'Budget Office')->first();
             $acknowledgements = Acknowledgement::with(['user', 'office', 'transaction'])
-                ->select('batch_id', 'office_id', 'created_at', 'user_id')
+                ->select('batch_id', 'office_id', 'created_at', 'user_id', 'status')
                 ->where('office_id', $From_office_acc->id)
                 ->orWhere('office_id', $From_office_BO->id)
+                ->where('status', 'Pending')
                 ->groupBy('batch_id')
                 ->get();
         }else{

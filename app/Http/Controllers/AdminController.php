@@ -38,13 +38,15 @@ class AdminController extends Controller
                 ->where('batch_id', '!=', NULL)
                 ->count();
             }
+            
 
 
             $OnHold = Transaction::whereNull('deleted_at')
+            ->where('batch_status', 'Batch On Hold')
             ->where('status', 'On-hold')
             ->where('batch_id', '!=', NULL)
-            ->where('office', Auth::user()->office_id)
-            ->where('created_by', Auth::user()->id)
+            // ->where('office', Auth::user()->office_id)
+            // ->where('created_by', Auth::user()->id)
             ->count();
 
             $TransactionCount = Transaction::with(['honorarium', 'createdBy'])
@@ -301,6 +303,8 @@ class AdminController extends Controller
                 ->count();
 
             }
+            
+
             return view('administration.admin_on_queue', compact('onQueue', 'EmailCount', 'TransactionCount'));
         }
 

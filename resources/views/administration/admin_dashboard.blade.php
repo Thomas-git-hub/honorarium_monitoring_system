@@ -45,9 +45,9 @@
                         <div class="badge bg-danger p-4 rounded mb-4">
                             <i class='bx bx-error-alt fs-3' ></i>
                         </div>
-                          <h3 class="text-danger fw-bold">{{$OnHold ? $OnHold : 0}} On-Hold Emails</h3>
+                          <h3 class="text-danger fw-bold">{{$OnHold ? $OnHold : 0}} On-Hold Trans</h3>
                     </div>
-                    <p class="fw-medium mb-0 d-flex justify-content-end"><a class="stretched-link" href="">Go to<i class='bx bx-chevron-right'></i></a></p>
+                    <p class="fw-medium mb-0 d-flex justify-content-end"><a class="stretched-link" href="/admin_on_hold">Go to<i class='bx bx-chevron-right'></i></a></p>
                   </div>
                 </div>
             </div>

@@ -55,7 +55,7 @@ class OpenAcknowledgementController extends Controller
     
             $TransCount = Transaction::with(['honorarium', 'createdBy'])
             ->whereNull('deleted_at')
-            ->where('from_office', Auth::user()->office_id)
+            ->where('office', Auth::user()->office_id)
             ->where('status', 'On Queue')
             ->where('batch_id', $batch_id)
             ->count();
@@ -205,14 +205,21 @@ class OpenAcknowledgementController extends Controller
 
         }
 
-        $acknowledgement = Acknowledgement::where('batch_id', $request->batchId)->first();
+        if(Auth::user()->usertype->name !== 'Dean'){
 
-        $ack = new Acknowledgement();
-        $ack->office_id = Auth::user()->office_id;
-        $ack->user_id = Auth::user()->id;
-        $ack->batch_id = $acknowledgement->batch_id;
-        $ack->save();
+            $acknowledgement = Acknowledgement::where('batch_id', $request->batchId)
+                            ->where('office_id', '<>', Auth::user()->office_id)
+                            ->where('user_id', '<>', Auth::user()->id)
+                            ->orderBy('created_at', 'desc')
+                            ->where('status', 'Pending')
+                            ->first();
 
+            if($acknowledgement){
+                $acknowledgement->status = 'Acknowledged';
+                $acknowledgement->save();
+            }
+        }
+        
         foreach ($transactions as $batch_id) {
             Transaction::whereNull('deleted_at')
             ->where('status', 'On Queue')
@@ -220,7 +227,7 @@ class OpenAcknowledgementController extends Controller
             ->where('office', Auth::user()->office_id)
             ->update([
                 'status' => 'Processing',
-                'batch_id' => $ack->batch_id,
+                'batch_id' => $request->batchId,
                 'office' => Auth::user()->office_id,
                 'created_by' => Auth::user()->id,
                 'updated_at' => now(),
@@ -233,7 +240,7 @@ class OpenAcknowledgementController extends Controller
                 'user_id' => $getCreateBy->createdBy->employee_id,
                 'employee_fname' => $getCreateBy->createdBy->first_name, //user who you will send an email to
                 'subject' => 'Batch Transaction was Acknowledged by ' . Auth::user()->office->name,
-                'batch_id' => $ack->batch_id,
+                'batch_id' => $request->batchId,
                 'office' => Auth::user()->office->name,
                 'action_by' => Auth::user()->first_name .  ' ' . Auth::user()->last_name, // user who is sending an email
                 'message' => 'Transaction was Acknowledged',
