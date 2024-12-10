@@ -384,7 +384,7 @@ class OnHoldController extends Controller
 
         foreach ($transactions as $transaction) {
 
-            if($transaction->office_from->name === 'Administrator'){
+            if($transaction->office_from->name === 'BUGS Administration'){
                 $office = Office::where('name', 'Budget Office')->first();
             }
             elseif($transaction->office_from->name === 'Budget Office' || $transaction->office_from->name === 'Accounting' ){

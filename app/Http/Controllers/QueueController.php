@@ -749,7 +749,7 @@ class QueueController extends Controller
                 ->select('batch_id', 'office_id', 'created_at', 'user_id')
                 ->groupBy('batch_id', 'user_id')
                 ->get();
-        }elseif(Auth::user()->usertype->name === 'Admin'){
+        }elseif(Auth::user()->usertype->name === 'Administrator'){
             $From_office = Office::where('name', 'BUGS Administration')->first();
             $acknowledgements = Acknowledgement::with(['user', 'office', 'transaction'])
                 ->select('batch_id', 'office_id', 'created_at', 'user_id')
@@ -793,7 +793,7 @@ class QueueController extends Controller
                 ->where('batch_id', $acknowledgement->batch_id)
                 ->where('office', Auth::user()->office_id)
                 ->where('created_by', Auth::user()->id)
-                ->where('status', 'Processing')
+                ->whereIn('status', ['Processing','On-hold'])
                 ->count();
                 return $countTran > 0;
             });
@@ -802,7 +802,7 @@ class QueueController extends Controller
             $filteredAcknowledgements = $acknowledgements->filter(function ($acknowledgement) {
                 $countTran = Transaction::whereNull('deleted_at')
                 ->where('batch_id', $acknowledgement->batch_id)
-                ->where('status', 'Processing')
+                ->whereIn('status', ['Processing','On-hold'])
                 ->count();
                 return $countTran > 0;
             });
@@ -811,7 +811,7 @@ class QueueController extends Controller
             $filteredAcknowledgements = $acknowledgements->filter(function ($acknowledgement) {
                 $countTran = Transaction::whereNull('deleted_at')
                 ->where('batch_id', $acknowledgement->batch_id)
-                ->where('status', 'Processing')
+                ->whereIn('status', ['Processing','On-hold'])
                 ->where('office', Auth::user()->office_id)
                 ->count();
                 return $countTran > 0;
