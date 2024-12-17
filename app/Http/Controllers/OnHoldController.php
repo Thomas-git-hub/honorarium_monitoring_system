@@ -155,13 +155,6 @@ class OnHoldController extends Controller
         $transaction->created_by = Auth::user()->id;
         $transaction->save();
 
-
-        $logs = new Activity_logs();
-        $logs->trans_id = $transaction->id;
-        $logs->office_id = Auth::user()->office_id;
-        $logs->user_id = $transaction->created_by;
-        $logs->save();
-
         return response()->json(['success' => true, 'message' => 'Form submitted successfully.']);
     }
 
@@ -204,12 +197,6 @@ class OnHoldController extends Controller
                 'created_by' => Auth::user()->id,
             ]);
 
-        $logs = new Activity_logs();
-        $logs->trans_id = $transaction->id;
-        $logs->office_id = Auth::user()->office_id;
-        $logs->user_id = Auth::user()->id;
-        $logs->save();
-
         $batchId = $transaction->batch_id;
 
         $employee = $ibu_dbcon->table('employee_user')
@@ -251,7 +238,6 @@ class OnHoldController extends Controller
         if(Auth::user()->usertype->name === 'Administrator' || Auth::user()->usertype->name === 'Superadmin'){
 
             $acknowledgements = Acknowledgement::with(['user', 'office', 'transaction'])
-            ->select('batch_id', 'office_id', 'created_at', 'user_id', 'updated_at')
             ->whereHas('transaction', function ($query) {
                 $query->where('status', 'On-hold');
             })
@@ -270,8 +256,7 @@ class OnHoldController extends Controller
         }else{
 
             $acknowledgements = Acknowledgement::with(['user', 'office', 'transaction'])
-            ->select('batch_id', 'office_id', 'created_at', 'user_id', 'updated_at')
-            ->where('office_id', Auth::user()->office_id)
+            // ->where('office_id', Auth::user()->office_id)
             ->groupBy('batch_id')
             ->get();
            // Filter out acknowledgements with a transaction count of 0
@@ -279,7 +264,7 @@ class OnHoldController extends Controller
                 $countTran = Transaction::whereNull('deleted_at')
                 ->where('batch_id', $acknowledgement->batch_id)
                 ->where('batch_status', 'Batch On Hold')
-                // ->where('office', Auth::user()->office_id)
+                // ->where('from_office', Auth::user()->office_id)
                 ->count();
                 return $countTran > 0; // Only keep acknowledgements with a transaction count greater than 0
             });
@@ -298,8 +283,8 @@ class OnHoldController extends Controller
                 ->where('batch_id', $data->batch_id)
                 ->where('batch_status', 'Batch On Hold')
                 ->first();
-                return $office_of->createdBy->first_name . ' ' . $office_of->createdBy->last_name . ' ' .
-                    '(' . $office_of->office_from->name . ')';
+                return 
+                    $office_of->office_from->name;
             })
             ->addColumn('count_transaction', function ($data) {
                 return Transaction::whereNull('deleted_at')
@@ -372,7 +357,7 @@ class OnHoldController extends Controller
             return response()->json(['success' => false, 'message' => 'No transactions found with status Processing']);
         }
 
-       
+        
 
         $batchId = $request->batch_id;
 
@@ -397,7 +382,7 @@ class OnHoldController extends Controller
                 return response()->json(['success' => false, 'message' => 'No office Found']);
             }
 
-
+          
             if($transaction->office_from->name === 'Cashiers' ){
 
                 Transaction::whereNull('deleted_at')
@@ -429,13 +414,6 @@ class OnHoldController extends Controller
                 ]);
 
             }
-
-
-            $logs = new Activity_logs();
-            $logs->trans_id = $transaction->id;
-            $logs->office_id = Auth::user()->office_id;
-            $logs->user_id = Auth::user()->id;
-            $logs->save();
 
             $employee = $ibu_dbcon->table('employee_user')
             ->where('id', $transaction->employee_id)

@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Mail\Acknowledge;
 use App\Models\Acknowledgement;
-use App\Models\Activity_logs;
 use App\Models\Emailing;
 use App\Models\Office;
 use App\Models\Transaction;
@@ -22,33 +21,28 @@ class OpenAcknowledgementController extends Controller
 
         if(Auth::user()->usertype->name === 'Superadmin'){
             $acknowledgements = Acknowledgement::with(['user', 'office', 'transaction'])
-            ->select('id','batch_id', 'office_id', 'created_at', 'user_id')
             ->where('batch_id', $batch_id)
             ->orderBy('id', 'desc')
             ->first();
     
             $TransCount = Transaction::with(['honorarium', 'createdBy'])
             ->whereNull('deleted_at')
-            // ->where('from_office', Auth::user()->office_id)
             ->where('status', 'On Queue')
             ->where('batch_id', $batch_id)
             ->count();
     
-            $office = Office::where('id', $acknowledgements->office_id)
+            $office = Office::where('id', $acknowledgements->from_office_id)
             ->first();
     
             $pendingMails = Emailing::where('status', 'Unread')->where('to_user', Auth::user()->employee_id);
             $EmailCount = $pendingMails->count();
     
-            $TransactionCount = Transaction::with(['honorarium', 'createdBy'])
-            ->whereNull('deleted_at')
-            ->where('status', 'On Queue')
-            // ->where('from_office', Auth::user()->office_id)
+           
+            $acknowledgementCount = Acknowledgement::where('office_id', Auth::user()->office_id)
             ->count();
 
         }else{
             $acknowledgements = Acknowledgement::with(['user', 'office', 'transaction'])
-            ->select('id','batch_id', 'office_id', 'created_at', 'user_id')
             ->where('batch_id', $batch_id)
             ->orderBy('id', 'desc')
             ->first();
@@ -60,23 +54,20 @@ class OpenAcknowledgementController extends Controller
             ->where('batch_id', $batch_id)
             ->count();
     
-            $office = Office::where('id', $acknowledgements->office_id)
+            $office = Office::where('id', $acknowledgements->from_office_id)
             ->first();
     
             $pendingMails = Emailing::where('status', 'Unread')->where('to_user', Auth::user()->employee_id);
             $EmailCount = $pendingMails->count();
     
-            $TransactionCount = Transaction::with(['honorarium', 'createdBy'])
-            ->whereNull('deleted_at')
-            ->where('status', 'On Queue')
-            ->where('from_office', Auth::user()->office_id)
+            $acknowledgementCount = Acknowledgement::where('office_id', Auth::user()->office_id)
             ->count();
 
         }
 
        
 
-        return view('administration.open_acknowledgement', compact('batch_id', 'acknowledgements', 'office', 'TransCount', 'EmailCount', 'TransactionCount'));
+        return view('administration.open_acknowledgement', compact('batch_id', 'acknowledgements', 'office', 'TransCount', 'EmailCount', 'acknowledgementCount'));
     }
 
     public function list(Request $request){
@@ -196,31 +187,16 @@ class OpenAcknowledgementController extends Controller
             return response()->json(['success' => false, 'message' => 'No transactions found with status Processing']);
         }
 
-        foreach ($transactions as $transaction) {
-            $logs = new Activity_logs();
-            $logs->trans_id = $transaction->id;
-            $logs->office_id = Auth::user()->office_id;
-            $logs->user_id = Auth::user()->id;
-            $logs->save();
-
-        }
-
-        if(Auth::user()->usertype->name !== 'Dean'){
-
             $acknowledgement = Acknowledgement::where('batch_id', $request->batchId)
-                            ->where('office_id', '<>', Auth::user()->office_id)
-                            ->where('user_id', '<>', Auth::user()->id)
-                            ->orderBy('created_at', 'desc')
-                            ->where('status', 'Pending')
+                            ->where('office_id', Auth::user()->office_id)
                             ->first();
 
             if($acknowledgement){
-                $acknowledgement->status = 'Acknowledged';
+                $acknowledgement->received_by = Auth::user()->id;
                 $acknowledgement->save();
             }
-        }
         
-        foreach ($transactions as $batch_id) {
+        foreach ($transactions as $transaction) {
             Transaction::whereNull('deleted_at')
             ->where('status', 'On Queue')
             ->where('batch_id', $transaction->batch_id)

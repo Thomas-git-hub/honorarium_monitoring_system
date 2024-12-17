@@ -113,13 +113,6 @@ class SendEmailController extends Controller
             $transaction->status = 'On-hold';
             $transaction->created_by = Auth::user()->id;
             $transaction->save();
-
-            // Log the activity
-            $logs = new Activity_logs();
-            $logs->trans_id = $transaction->id;
-            $logs->office_id = $office->id;
-            $logs->user_id = $transaction->created_by;
-            $logs->save();
         }
 
         if ($email) {

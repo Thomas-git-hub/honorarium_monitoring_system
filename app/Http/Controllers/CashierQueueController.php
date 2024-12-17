@@ -38,7 +38,6 @@ class CashierQueueController extends Controller
         $batch_id = $request->input('id');
 
         $acknowledgements = Acknowledgement::with(['user', 'office', 'transaction'])
-        ->select('batch_id', 'office_id', 'created_at', 'user_id')
         ->where('batch_id', $batch_id)
         ->first();
 
@@ -61,10 +60,9 @@ class CashierQueueController extends Controller
         $acknowledgements = collect(); // Initialize an empty collection
         DB::statement("SET SQL_MODE=''");
 
-        $From_office = Office::where('name', 'Dean')->first();
+        $office = Office::where('name', 'Dean')->first();
         $acknowledgements = Acknowledgement::with(['user', 'office', 'transaction'])
-            ->select('batch_id', 'office_id', 'created_at', 'user_id')
-            ->where('office_id', $From_office->id)
+            ->where('from_office_id', $office->id)
             ->groupBy('batch_id')
             ->get();
 
@@ -263,7 +261,7 @@ class CashierQueueController extends Controller
 
         // Check if the batch is already acknowledged by Accounting
         $batchAcknowledgedByAccounting = Acknowledgement::where('batch_id', $batchId)
-            ->where('office_id', $accountingOfficeId)
+            ->where('from_office_id', $accountingOfficeId)
             ->exists();
 
         // Check if the user is a Dean

@@ -282,7 +282,7 @@
                             text: response.message,
                         }).then((result) => {
                             if (result.isConfirmed) {
-                                window.location.href = '/history';
+                                window.location.href = '/faculty_tracking';
                             }
                         });
                     } else {

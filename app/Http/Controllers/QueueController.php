@@ -28,6 +28,8 @@ class QueueController extends Controller
     public function proceedToBudgetOffice(Request $request)
     {
         $ibu_dbcon = DB::connection('ibu_test');
+         
+        $office = Office::where('name', 'Budget Office')->first();
 
         // Fetch all transactions with status 'Processing' or 'On-hold'
         $transactions = Transaction::with(['honorarium', 'office'])
@@ -51,48 +53,12 @@ class QueueController extends Controller
 
         // If there is any 'On-hold' transaction, update all transactions in the batch
         if ($hasOnHold) {
-            $office = Office::where('name', 'BUGS Administration')->first();
+            $office = Office::where('name', 'Budget Office')->first();
             $batchId = $transactions->first()->batch_id;
-
-
-            Transaction::where('batch_id', $batchId)
-                ->whereNull('deleted_at')
-                ->where('status', 'Processing')
-                ->where('batch_status', '<>', 'Batch On Hold')
-                ->where('office', Auth::user()->office_id)
-                ->where('created_by', Auth::user()->id)
-                ->update([
-                    'from_office' =>  Auth::user()->office_id,
-                    'is_complete' => '1',
-                    'batch_status' => 'Batch On Hold',
-                    'requirement_status' => 'Complete',
-                    'office' => $office->id,
-                    'updated_at' => now(),
-            ]);
-
-            Transaction::where('batch_id', $batchId)
-                ->whereNull('deleted_at')
-                ->where('status', 'On-hold')
-                ->where('batch_status', '<>', 'Batch On Hold')
-                ->where('office', Auth::user()->office_id)
-                ->where('created_by', Auth::user()->id)
-                ->update([
-                    'from_office' =>  Auth::user()->office_id,
-                    'is_complete' => '0',
-                    'batch_status' => 'Batch On Hold',
-                    'office' => $office->id,
-                    'updated_at' => now(),
-            ]);
-
 
              // Emailing each transaction
              foreach ($transactions as $transaction) {
-                $logs = new Activity_logs();
-                $logs->trans_id = $transaction->id;
-                $logs->office_id = Auth::user()->office_id;
-                $logs->user_id = Auth::user()->id;
-                $logs->save();
-
+               
                 $employee = $ibu_dbcon->table('employee_user')
                 ->where('id', $transaction->employee_id)
                 ->first();
@@ -143,38 +109,44 @@ class QueueController extends Controller
                 }
 
             }
-        }
-
-        // Check if any transaction has no 'On-hold' status
-        $hasNoOnHold = $transactions->where('status', 'On-hold')->isEmpty();
-
-        if ($hasNoOnHold) {
-            $office = Office::where('name', 'Budget Office')->first();
-            $batchId = $transactions->first()->batch_id;
 
             Transaction::where('batch_id', $batchId)
                 ->whereNull('deleted_at')
-                ->where('batch_status', '<>', 'Batch On Hold')
                 ->where('status', 'Processing')
+                ->where('batch_status', '<>', 'Batch On Hold')
                 ->where('office', Auth::user()->office_id)
                 ->where('created_by', Auth::user()->id)
                 ->update([
-                    'status' => 'On Queue',
-                    'is_complete' => '1',
                     'from_office' =>  Auth::user()->office_id,
+                    'is_complete' => '1',
+                    'batch_status' => 'Batch On Hold',
+                    'requirement_status' => 'Complete',
                     'office' => $office->id,
-                    'created_by' => Auth::user()->id,
                     'updated_at' => now(),
-            ]);
+                ]);
 
+            Transaction::where('batch_id', $batchId)
+                ->whereNull('deleted_at')
+                ->where('status', 'On-hold')
+                ->where('batch_status', '<>', 'Batch On Hold')
+                ->where('office', Auth::user()->office_id)
+                ->where('created_by', Auth::user()->id)
+                ->update([
+                    'from_office' =>  Auth::user()->office_id,
+                    'is_complete' => '0',
+                    'batch_status' => 'Batch On Hold',
+                    'office' => $office->id,
+                    'updated_at' => now(),
+                ]);
+
+        }
+       
+        if (!$hasOnHold) {
+            $batchId = $transactions->first()->batch_id;
+        
             // Emailing each transaction
             foreach ($transactions as $transaction) {
                 if ($transaction->status === 'Processing') {
-                    $logs = new Activity_logs();
-                    $logs->trans_id = $transaction->id;
-                    $logs->office_id = Auth::user()->office_id;
-                    $logs->user_id = Auth::user()->id;
-                    $logs->save();
 
                     $employee = $ibu_dbcon->table('employee_user')
                         ->where('id', $transaction->employee_id)
@@ -223,9 +195,31 @@ class QueueController extends Controller
                     $email->save();
                 }
             }
+
+            Transaction::where('batch_id', $batchId)
+                ->whereNull('deleted_at')
+                ->where('batch_status', '<>', 'Batch On Hold')
+                ->where('status', 'Processing')
+                ->where('office', Auth::user()->office_id)
+                ->where('created_by', Auth::user()->id)
+                ->update([
+                    'status' => 'On Queue',
+                    'is_complete' => '1',
+                    'from_office' =>  Auth::user()->office_id,
+                    'office' => $office->id,
+                    'created_by' => Auth::user()->id,
+                    'updated_at' => now(),
+            ]);
         }
 
         $batchId = $transactions->first()->batch_id;
+
+        $ack = new Acknowledgement();
+        $ack->batch_id=  $batchId ;
+        $ack->office_id = $office->id;
+        $ack->from_office_id = Auth::user()->office_id;
+        $ack->from_user = Auth::user()->id;
+        $ack->save();
 
         return response()->json(['success' => true, 'batch_id'=> $batchId, 'message' => 'Transaction proceeded successfully']);
     }
@@ -267,27 +261,19 @@ class QueueController extends Controller
             return response()->json(['success' => false, 'message' => 'No office Found']);
         }
 
-        // if(Auth::user()->usertype->name !== 'Dean'){
-
-            $ack = new Acknowledgement();
-            $ack->batch_id= $request->batch_id;
-            $ack->office_id = Auth::user()->office_id;
-            $ack->user_id = Auth::user()->id;
-            $ack->status = 'Pending';
-            $ack->save();
-
             $acknowledgement = Acknowledgement::where('batch_id', $request->batch_id)
-                                ->where('office_id', '<>', Auth::user()->office_id)
-                                ->where('user_id', '<>', Auth::user()->id)
-                                ->where('status', 'Pending')
+                                ->where('office_id', Auth::user()->office_id)
+                                ->where('received_by', Auth::user()->id)
                                 ->orderBy('created_at', 'desc')
                                 ->first();
 
             if($acknowledgement){
-                $acknowledgement->status = 'Acknowledged';
+                $acknowledgement->office_id = $office->id;
+                $acknowledgement->from_office_id = Auth::user()->office_id;
+                $acknowledgement->from_user = Auth::user()->office_id;
+                $acknowledgement->received_by = null;
                 $acknowledgement->save();
             }
-        // }
 
         // Update the status to 'On Queue'
         if($usertype === 'Cashiers' ){
@@ -328,12 +314,6 @@ class QueueController extends Controller
         $batchId = $request->batch_id;
 
         foreach ($transactions as $transaction) {
-            $logs = new Activity_logs();
-            $logs->trans_id = $transaction->id;
-            $logs->office_id = Auth::user()->office_id;
-            $logs->user_id = Auth::user()->id;
-            $logs->save();
-
             $employee = $ibu_dbcon->table('employee_user')
             ->where('id', $transaction->employee_id)
             ->first();
@@ -434,6 +414,19 @@ class QueueController extends Controller
 
             $batchId = $transactions->first()->batch_id;
 
+            $acknowledgement = Acknowledgement::where('batch_id', $request->batch_id)
+                                ->where('office_id', Auth::user()->office_id)
+                                ->where('received_by', Auth::user()->id)
+                                ->first();
+
+            if($acknowledgement){
+                $acknowledgement->office_id = $office->id;
+                $acknowledgement->from_office_id = Auth::user()->office_id;
+                $acknowledgement->from_user = Auth::user()->office_id;
+                $acknowledgement->received_by = null;
+                $acknowledgement->save();
+            }
+
 
             Transaction::where('batch_id', $batchId)
                 ->whereNull('deleted_at')
@@ -469,11 +462,6 @@ class QueueController extends Controller
 
               // Emailing each transaction
             foreach ($transactions as $transaction) {
-                $logs = new Activity_logs();
-                $logs->trans_id = $transaction->id;
-                $logs->office_id = Auth::user()->office_id;
-                $logs->user_id = Auth::user()->id;
-                $logs->save();
 
                 $employee = $ibu_dbcon->table('employee_user')
                 ->where('id', $transaction->employee_id)
@@ -546,36 +534,11 @@ class QueueController extends Controller
             return response()->json(['success' => false, 'message' => 'No transactions found with status Processing']);
         }
 
-        foreach ($transactions as $transaction) {
-            $logs = new Activity_logs();
-            $logs->trans_id = $transaction->id;
-            $logs->office_id = Auth::user()->office_id;
-            $logs->user_id = Auth::user()->id;
-            $logs->save();
-
-        }
-
-        $usertype = Auth::user()->usertype->name;
-
         $office = Office::where('name','like', '%Cashier%')->first();
-
-        $ack = new Acknowledgement();
-        $ack->batch_id= $request->batch_id;
-        $ack->office_id = Auth::user()->office_id;
-        $ack->user_id = Auth::user()->id;
-        $ack->save();
-
-
 
         $batchId = $request->batch_id;
 
         foreach ($transactions as $transaction) {
-            $logs = new Activity_logs();
-            $logs->trans_id = $transaction->id;
-            $logs->office_id = Auth::user()->office_id;
-            $logs->user_id = Auth::user()->id;
-            $logs->save();
-
             $employee = $ibu_dbcon->table('employee_user')
             ->where('id', $transaction->employee_id)
             ->first();
@@ -621,6 +584,19 @@ class QueueController extends Controller
             $email->created_by = Auth::user()->id;
             $email->save();
 
+        }
+
+        $acknowledgement = Acknowledgement::where('batch_id', $request->batch_id)
+        ->where('office_id', Auth::user()->office_id)
+        ->where('received_by', Auth::user()->id)
+        ->first();
+
+        if($acknowledgement){
+            $acknowledgement->office_id = $office->id;
+            $acknowledgement->from_office_id = Auth::user()->office_id;
+            $acknowledgement->from_user = Auth::user()->office_id;
+            $acknowledgement->received_by = null;
+            $acknowledgement->save();
         }
 
         // Update the status to 'On Queue'
@@ -695,12 +671,6 @@ class QueueController extends Controller
         $transaction->updated_at = now();
         $transaction->save();
 
-        $logs = new Activity_logs();
-        $logs->trans_id = $transaction->id;
-        $logs->office_id = Auth::user()->office_id;
-        $logs->user_id = Auth::user()->id;
-        $logs->save();
-
         $employee = $ibu_dbcon->table('employee_user')
         ->where('id', $transaction->employee_id)
         ->first();
@@ -756,81 +726,43 @@ class QueueController extends Controller
         // Fetch data from the Acknowledgement table
         $acknowledgements = collect(); // Initialize an empty collection
         DB::statement("SET SQL_MODE=''");
-        
 
-        if (Auth::user()->usertype->name === 'Superadmin') {
+        if (Auth::user()->usertype->name === 'Superadmin' || Auth::user()->usertype->name === 'Administrator') {
             $acknowledgements = Acknowledgement::with(['user', 'office', 'transaction'])
                 ->whereHas('transaction', function($query) {
                     $query->whereColumn('office', '=', 'acknowledgement.office_id');
                 })
                 ->select('batch_id', 'office_id', 'created_at', 'user_id')
-                ->groupBy('batch_id', 'user_id')
-                ->get();
-        }elseif(Auth::user()->usertype->name === 'Administrator'){
-            $From_office = Office::where('name', 'BUGS Administration')->first();
-            $acknowledgements = Acknowledgement::with(['user', 'office', 'transaction'])
-                ->select('batch_id', 'office_id', 'created_at', 'user_id', 'status')
-                ->where('office_id', Auth::user()->office_id)
-                ->where('user_id', Auth::user()->id)
-                ->where('status', 'Acknowledged')
-                ->groupBy('batch_id')
-                ->get();
-        }
-
-        elseif (Auth::user()->usertype->name === 'Budget Office') {
-            $From_office = Office::where('name', 'BUGS Administration')->first();
-            $acknowledgements = Acknowledgement::with(['user', 'office', 'transaction'])
-                ->select('batch_id', 'office_id', 'created_at', 'user_id', 'status')
-                ->where('office_id',  $From_office->id)
-                ->where('status', 'Acknowledged')
-                ->groupBy('batch_id')
                 ->get();
 
-        } elseif (Auth::user()->usertype->name === 'Accounting') {
-            $From_office = Office::where('name', 'Dean')->first();
-            $acknowledgements = Acknowledgement::with(['user', 'office', 'transaction'])
-                ->select('batch_id', 'office_id', 'created_at', 'user_id')
-                ->where('office_id', $From_office->id)
-                ->groupBy('batch_id')
-                ->get();
-        } elseif (Auth::user()->usertype->name === 'Dean') {
-            $From_office_acc = Office::where('name', 'Accounting')->first();
-            $From_office_BO = Office::where('name', 'Budget Office')->first();
+                $filteredAcknowledgements = $acknowledgements->filter(function ($acknowledgement) {
+                    $countTran = Transaction::whereNull('deleted_at')
+                    ->where('batch_id', $acknowledgement->batch_id)
+                    ->where('office', Auth::user()->office_id)
+                    ->whereIn('status', ['Processing','On-hold'])
+                    ->count();
+                    return $countTran > 0;
+                });
+
+        }else{
+
+            if(Auth::user()->usertype->name === 'Budget Office'){
+                $office = Office::whereIn('name', ['BUGS Administration', 'ICTO'])->pluck('id');
+               
+            } elseif (Auth::user()->usertype->name === 'Accounting'){
+                $office = Office::whereIn('name', ['Dean'])->pluck('id');
+
+            } elseif (Auth::user()->usertype->name === 'Dean'){
+                $office = Office::whereIn('name', ['Accounting', 'Budget Office'])->pluck('id');
+            }
 
             $acknowledgements = Acknowledgement::with(['user', 'office', 'transaction'])
-                ->select('batch_id', 'office_id', 'created_at', 'user_id','status')
-                ->where('office_id', $From_office_acc->id)
-                ->orWhere('office_id', $From_office_BO->id)
-                ->where('status', 'Pending')
-                ->groupBy('batch_id')
-                ->get();
+            ->where('office_id', Auth::user()->office_id)
+            ->whereIn('from_office_id', $office)
+            ->where('received_by', Auth::user()->id)
+            ->groupBy('batch_id')
+            ->get();
 
-        } else {
-            $acknowledgements = collect();
-        }
-
-
-        if(Auth::user()->usertype->name === 'Administrator'){
-            $filteredAcknowledgements = $acknowledgements->filter(function ($acknowledgement) {
-                $countTran = Transaction::whereNull('deleted_at')
-                ->where('batch_id', $acknowledgement->batch_id)
-                ->where('office', Auth::user()->office_id)
-                ->where('created_by', Auth::user()->id)
-                ->whereIn('status', ['Processing','On-hold'])
-                ->count();
-                return $countTran > 0;
-            });
-
-        }elseif(Auth::user()->usertype->name === 'Superadmin'){
-            $filteredAcknowledgements = $acknowledgements->filter(function ($acknowledgement) {
-                $countTran = Transaction::whereNull('deleted_at')
-                ->where('batch_id', $acknowledgement->batch_id)
-                ->whereIn('status', ['Processing','On-hold'])
-                ->count();
-                return $countTran > 0;
-            });
-        }
-        else{
             $filteredAcknowledgements = $acknowledgements->filter(function ($acknowledgement) {
                 $countTran = Transaction::whereNull('deleted_at')
                 ->where('batch_id', $acknowledgement->batch_id)
@@ -840,6 +772,7 @@ class QueueController extends Controller
                 return $countTran > 0; // Only keep acknowledgements with a transaction count greater than 0
             });
         }
+        
 
         // Return data as JSON using DataTables
         return DataTables::of($filteredAcknowledgements)
@@ -878,7 +811,6 @@ class QueueController extends Controller
         $batch_id = $request->input('id');
 
         $acknowledgements = Acknowledgement::with(['user', 'office', 'transaction'])
-        ->select('batch_id', 'office_id', 'created_at', 'user_id')
         ->where('batch_id', $batch_id)
         ->first();
 
@@ -909,7 +841,7 @@ class QueueController extends Controller
 
         }
 
-        $office = Office::where('id', $acknowledgements->office_id)->first();
+        $office = Office::where('id', $acknowledgements->from_office_id)->first();
 
         return view('administration.open_on_queue', compact('batch_id', 'acknowledgements', 'office', 'TransCount', 'hasOnHoldStatus'));
     }

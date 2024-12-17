@@ -45,10 +45,9 @@ class ForAcknowledgementController extends Controller
                 $pendingMails = Emailing::where('status', 'Unread')->where('to_user', Auth::user()->employee_id);
                 $EmailCount = $pendingMails->count();
 
-                $TransactionCount = Transaction::with(['honorarium', 'createdBy'])
-                ->whereNull('deleted_at')
-                ->where('status', 'On Queue')
-                ->count();
+               
+            $acknowledgementCount = Acknowledgement::where('office_id', Auth::user()->office_id)
+            ->count();
         }else{
 
             $TransCountToday = Transaction::with(['honorarium', 'createdBy'])
@@ -77,15 +76,13 @@ class ForAcknowledgementController extends Controller
             $pendingMails = Emailing::where('status', 'Unread')->where('to_user', Auth::user()->employee_id);
             $EmailCount = $pendingMails->count();
 
-            $TransactionCount = Transaction::with(['honorarium', 'createdBy'])
-            ->whereNull('deleted_at')
-            ->where('status', 'On Queue')
-            ->where('office', Auth::user()->office_id)
+           
+            $acknowledgementCount = Acknowledgement::where('office_id', Auth::user()->office_id)
             ->count();
 
         }
 
-            return view('administration.for_acknowledgement', compact('TransCountToday', 'TransCountYesterday', 'TransCountDaysAgo', 'EmailCount', 'TransactionCount'));
+            return view('administration.for_acknowledgement', compact('TransCountToday', 'TransCountYesterday', 'TransCountDaysAgo', 'EmailCount', 'acknowledgementCount'));
 
         }else{
             abort(403, 'Unauthorized action.');
@@ -103,8 +100,9 @@ class ForAcknowledgementController extends Controller
             ->select(
                 'acknowledgement.batch_id',
                 'acknowledgement.office_id',
+                'acknowledgement.from_office_id',
                 'acknowledgement.created_at',
-                'acknowledgement.user_id'
+                'acknowledgement.from_user'
             )
             ->joinSub(
                 DB::table('acknowledgement')
@@ -118,49 +116,6 @@ class ForAcknowledgementController extends Controller
             )
             ->get();
 
-        } elseif (Auth::user()->usertype->name === 'Budget Office') {
-            $From_office = Office::whereIn('name', ['BUGS Administration', 'ICTO'])->pluck('id');
-            $acknowledgements = Acknowledgement::with(['user', 'office', 'transaction'])
-                ->select('batch_id', 'office_id', 'created_at', 'user_id', 'status')
-                ->whereIn('office_id', $From_office)
-                ->where('status', 'Pending')
-                ->groupBy('batch_id')
-                ->get();
-        } 
-        // elseif (Auth::user()->usertype->name === 'Dean') {
-        //     $From_office = Office::where('name', 'Budget Office')->first();
-        //     $acknowledgements = Acknowledgement::with(['user', 'office', 'transaction'])
-        //         ->select('batch_id', 'office_id', 'created_at', 'user_id', 'status')
-        //         ->where('office_id', $From_office->id)
-        //         ->where('status', 'Pending')
-        //         ->groupBy('batch_id')
-        //         ->get();
-        // } 
-        elseif (Auth::user()->usertype->name === 'Accounting' || Auth::user()->usertype->name === 'Cashiers') {
-            $From_office = Office::where('name', 'Dean')->first();
-            $acknowledgements = Acknowledgement::with(['user', 'office', 'transaction'])
-                ->select('batch_id', 'office_id', 'created_at', 'user_id', 'status')
-                ->where('office_id', $From_office->id)
-                ->where('status', 'Pending')
-                ->groupBy('batch_id')
-                ->get();
-        } elseif (Auth::user()->usertype->name === 'Dean') {
-            $From_office_acc = Office::where('name', 'Accounting')->first();
-            $From_office_BO = Office::where('name', 'Budget Office')->first();
-            $acknowledgements = Acknowledgement::with(['user', 'office', 'transaction'])
-                ->select('batch_id', 'office_id', 'created_at', 'user_id', 'status')
-                ->where('office_id', $From_office_acc->id)
-                ->orWhere('office_id', $From_office_BO->id)
-                ->where('status', 'Pending')
-                ->groupBy('batch_id')
-                ->get();
-        }else{
-            $acknowledgements = collect();
-        }
-        
-
-        if(Auth::user()->usertype->name === 'Administrator' || Auth::user()->usertype->name === 'Superadmin'){
-            // Filter out acknowledgements with a transaction count of 0
             $filteredAcknowledgements = $acknowledgements->filter(function ($acknowledgement) {
 
                 $countTran = Transaction::whereNull('deleted_at')
@@ -171,20 +126,37 @@ class ForAcknowledgementController extends Controller
                 return $countTran > 0; // Only keep acknowledgements with a transaction count greater than 0
             });
 
+        } else{
+            if (Auth::user()->usertype->name === 'Budget Office') {
+                $office = Office::whereIn('name', ['BUGS Administration', 'ICTO'])->pluck('id');
+               
+            } 
+            elseif (Auth::user()->usertype->name === 'Accounting' || Auth::user()->usertype->name === 'Cashiers') {
+                $office = Office::whereIn('name', ['Dean'])->pluck('id');
+               
+            } elseif (Auth::user()->usertype->name === 'Dean') {
+                $office = Office::whereIn('name', ['Accounting', 'Budget Office'])->pluck('id');
+            
+            }
+            
 
-        }else{
-           // Filter out acknowledgements with a transaction count of 0
+            $acknowledgements = Acknowledgement::with(['user', 'office', 'transaction'])
+            ->where('office_id', Auth::user()->office_id)
+            ->whereIn('from_office_id', $office)
+            ->groupBy('batch_id')
+            ->get();
+
             $filteredAcknowledgements = $acknowledgements->filter(function ($acknowledgement) {
                 $countTran = Transaction::whereNull('deleted_at')
                 ->where('batch_id', $acknowledgement->batch_id)
                 ->where('status', 'On Queue')
                 ->where('office', Auth::user()->office_id)
                 ->count();
-                return $countTran > 0; // Only keep acknowledgements with a transaction count greater than 0
+                return $countTran > 0;
             });
-            
-        }
 
+        }
+        
         // Return data as JSON using DataTables
         return DataTables::of($filteredAcknowledgements)
             ->addColumn('batch_id', function ($data) {

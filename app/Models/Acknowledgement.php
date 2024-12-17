@@ -24,17 +24,22 @@ class Acknowledgement extends Model
 
     public function office()
     {
-        return $this->belongsTo(Office::class, 'office_id');
+        return $this->belongsTo(Office::class, 'from_office_id', 'id');
     }
 
     public function user()
     {
-        return $this->belongsTo(User::class, 'user_id');
+        return $this->belongsTo(User::class, 'from_user', 'id');
     }
 
     public function transaction()
     {
         return $this->belongsTo(Transaction::class, 'batch_id', 'batch_id');
+    }
+
+    public function send_to_office()
+    {
+        return $this->belongsTo(Office::class, 'office_id', 'id');
     }
 
 

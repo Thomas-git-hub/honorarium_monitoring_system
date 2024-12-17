@@ -88,7 +88,7 @@ class FacultyTrackingController extends Controller
                 $college = 'No Assigned College';
             }
            
-        }else if (Auth::user()->usertype->name === 'Superadmin'){
+        }else{
 
             $pendingMails = Emailing::where('status', 'Unread')->where('to_user', Auth::user()->employee_id);
             $EmailCount = $pendingMails->count();
@@ -145,7 +145,6 @@ class FacultyTrackingController extends Controller
 
             $releaseCount = Transaction::with(['honorarium', 'createdBy'])
             ->whereNull('deleted_at')
-            ->where('employee_id',Auth::user()->employee_id)
             ->where('status', 'Complete')
             ->count();
 
@@ -157,11 +156,6 @@ class FacultyTrackingController extends Controller
                 $college = 'No Assigned College';
             }
             
-        }
-        
-        else{
-
-            abort(403, 'Unauthorized action.');
         }
 
         return view('administration.faculty_tracking', compact('user', 'college', 'adminCount', 'budgtCount', 'deanCount', 'acctCount', 'cashCount', 'releaseCount', 'EmailCount', 'deanCountTwo'));
@@ -175,7 +169,7 @@ class FacultyTrackingController extends Controller
         $query = array();
         $bugs_office = Office::where('name', 'BUGS Administration')->first();
 
-        if(Auth::user()->usertype->name === 'Superadmin'){
+        if(Auth::user()->usertype->name !== 'Faculty'){
             $query = Transaction::with(['honorarium', 'createdBy'])
                 ->whereNull('deleted_at')
                 ->where('office', $bugs_office->id)
@@ -259,7 +253,7 @@ class FacultyTrackingController extends Controller
         $query = array();
         $bugt_office = Office::where('name', 'Budget Office')->first();
 
-        if(Auth::user()->usertype->name === 'Superadmin'){
+        if(Auth::user()->usertype->name !== 'Faculty'){
             $query = Transaction::with(['honorarium', 'createdBy'])
                 ->whereNull('deleted_at')
                 ->where('office', $bugt_office->id)
@@ -344,7 +338,7 @@ class FacultyTrackingController extends Controller
         $dean_office = Office::where('name', 'Dean')->first();
         $BO_office = Office::where('name', 'Budget Office')->first();
 
-        if(Auth::user()->usertype->name === 'Superadmin'){
+        if(Auth::user()->usertype->name !== 'Faculty'){
             $query = Transaction::with(['honorarium', 'createdBy'])
             ->whereNull('deleted_at')
             ->where('office', $dean_office->id)
@@ -429,7 +423,7 @@ class FacultyTrackingController extends Controller
         $dean_office = Office::where('name', 'Dean')->first();
         $acct_office = Office::where('name', 'Accounting')->first();
 
-        if(Auth::user()->usertype->name === 'Superadmin'){
+        if(Auth::user()->usertype->name !== 'Faculty'){
             $query = Transaction::with(['honorarium', 'createdBy'])
                     ->whereNull('deleted_at')
                     ->where('office', $dean_office->id)
@@ -513,7 +507,7 @@ class FacultyTrackingController extends Controller
         $query = array();
         $Accounting_office = Office::where('name', 'Accounting')->first();
         
-        if(Auth::user()->usertype->name === 'Superadmin'){
+        if(Auth::user()->usertype->name !== 'Faculty'){
             $query = Transaction::with(['honorarium', 'createdBy'])
                     ->whereNull('deleted_at')
                     ->where('office', $Accounting_office->id)
@@ -596,7 +590,7 @@ class FacultyTrackingController extends Controller
         $Cashiers = Office::where('name', 'Cashiers')->first();
        
 
-        if(Auth::user()->usertype->name === 'Superadmin'){
+        if(Auth::user()->usertype->name !== 'Faculty'){
             $query = Transaction::with(['honorarium', 'createdBy'])
                     ->whereNull('deleted_at')
                     ->where('office', $Cashiers->id)
@@ -677,7 +671,7 @@ class FacultyTrackingController extends Controller
 
         $query = array();
         $faculty = Office::where('name', 'Faculty')->first();
-        if(Auth::user()->usertype->name === 'Superadmin'){
+        if(Auth::user()->usertype->name !== 'Faculty'){
             $query = Transaction::with(['honorarium', 'createdBy'])
                 ->whereNull('deleted_at')
                 ->where('status', 'Complete');

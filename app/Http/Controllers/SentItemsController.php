@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Mail\SendEmail;
+use App\Models\Acknowledgement;
 use App\Models\Emailing;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
@@ -19,10 +20,8 @@ class SentItemsController extends Controller
         $pendingMails = Emailing::where('status', 'Unread')->where('to_user', Auth::user()->employee_id);
         $EmailCount = $pendingMails->count();
 
-        $TransactionCount = Transaction::with(['honorarium', 'createdBy'])
-        ->whereNull('deleted_at')
-        ->where('status', 'On Queue')
-        ->where('office', Auth::user()->office_id)
+       
+        $acknowledgementCount = Acknowledgement::where('office_id', Auth::user()->office_id)
         ->count();
 
         return view('administration.sent_items', compact('EmailCount', 'TransactionCount'));
@@ -55,15 +54,13 @@ class SentItemsController extends Controller
         $pendingMails = Emailing::where('status', 'Unread')->where('to_user', Auth::user()->employee_id);
         $EmailCount = $pendingMails->count();
 
-        $TransactionCount = Transaction::with(['honorarium', 'createdBy'])
-        ->whereNull('deleted_at')
-        ->where('status', 'On Queue')
-        ->where('office', Auth::user()->office_id)
+       
+        $acknowledgementCount = Acknowledgement::where('office_id', Auth::user()->office_id)
         ->count();
 
         $docuJson = json_decode($data->documentation);
 
-        return view('administration.open_sent_items', compact('data', 'docuJson', 'EmailCount', 'TransactionCount', 'to_user', 'user_email', 'to_user_id'));
+        return view('administration.open_sent_items', compact('data', 'docuJson', 'EmailCount', 'acknowledgementCount', 'to_user', 'user_email', 'to_user_id'));
     }
 
     public function send_reply(Request $request){

@@ -112,7 +112,7 @@
           <a href="/for_acknowledgement" class="menu-link">
             <i class='menu-icon tf-icons bx bx-archive-in'></i>
             <div class="text-truncate" data-i18n="Page 2">Acknowledgement</div>
-            <span class="badge bg-danger badge-notifications p-1 fs-8">{{$TransactionCount ?? 0}}</span>
+            <span class="badge bg-danger badge-notifications p-1 fs-8">{{$acknowledgementCount ?? 0}}</span>
           </a>
         </li>
         @endif
@@ -140,22 +140,22 @@
           </a>
         </li>
         @endif
-        @if(Auth::user()->usertype->name === 'Faculty' || Auth::user()->usertype->name === 'Superadmin')
+        {{-- @if(Auth::user()->usertype->name === 'Faculty' || Auth::user()->usertype->name === 'Superadmin') --}}
         <li class="menu-item {{ request()->is('faculty_tracking') ? 'active' : '' }}">
           <a href="/faculty_tracking" class="menu-link">
             <i class='menu-icon tf-icons bx bx-tag-alt'></i>
             <div class="text-truncate" data-i18n="Page 2">Track & Monitor</div>
           </a>
         </li>
-        @endif
-        @if(Auth::user()->usertype->name !== 'Faculty')
+        {{-- @endif --}}
+        {{-- @if(Auth::user()->usertype->name !== 'Faculty')
         <li class="menu-item {{ request()->is('history') ? 'active' : '' }}">
           <a href="/history" class="menu-link">
             <i class='menu-icon tf-icons bx bx-history' ></i>
             <div class="text-truncate" data-i18n="Page 2">History</div>
           </a>
         </li>
-        @endif
+        @endif --}}
         @if(Auth::user()->usertype->name === 'Administrator' || Auth::user()->usertype->name === 'Superadmin')
         <li class="menu-item">
             <div style="margin-left: 5%; margin-top: 5%; color: #b4b0c4;">Users</div>

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Mail\TempPasswordMail;
+use App\Models\Acknowledgement;
 use App\Models\Emailing;
 use App\Models\Office;
 use App\Models\Transaction;
@@ -29,13 +30,11 @@ class UserManagementController extends Controller
             $pendingMails = Emailing::where('status', 'Unread')->where('to_user', Auth::user()->employee_id);
             $EmailCount = $pendingMails->count();
 
-            $TransactionCount = Transaction::with(['honorarium', 'createdBy'])
-            ->whereNull('deleted_at')
-            ->where('status', 'On Queue')
-            ->where('office', Auth::user()->office_id)
+           
+            $acknowledgementCount = Acknowledgement::where('office_id', Auth::user()->office_id)
             ->count();
 
-            return view('administration.user_management', compact('EmailCount', 'TransactionCount'));
+            return view('administration.user_management', compact('EmailCount', 'acknowledgementCount'));
         }else{
             abort(403, 'Unauthorized action.');
         }

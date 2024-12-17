@@ -49,13 +49,10 @@ class AdminController extends Controller
             // ->where('created_by', Auth::user()->id)
             ->count();
 
-            $TransactionCount = Transaction::with(['honorarium', 'createdBy'])
-            ->whereNull('deleted_at')
-            ->where('status', 'On Queue')
-            ->where('office', Auth::user()->office_id)
+            $acknowledgementCount = Acknowledgement::where('office_id', Auth::user()->office_id)
             ->count();
 
-            return view('administration.admin_dashboard', compact('EmailCount', 'OnQueue', 'OnHold', 'TransactionCount'));
+            return view('administration.admin_dashboard', compact('EmailCount', 'OnQueue', 'OnHold', 'acknowledgementCount'));
         }else{
             abort(403, 'Unauthorized action.');
         }
@@ -73,13 +70,11 @@ class AdminController extends Controller
         $pendingMails = Emailing::where('status', 'Unread')->where('to_user', Auth::user()->employee_id);
         $EmailCount = $pendingMails->count();
 
-        $TransactionCount = Transaction::with(['honorarium', 'createdBy'])
-        ->whereNull('deleted_at')
-        ->where('status', 'On Queue')
-        ->where('office', Auth::user()->office_id)
+       
+        $acknowledgementCount = Acknowledgement::where('office_id', Auth::user()->office_id)
         ->count();
 
-        return view('administration.admin_email', compact('emailtoday', 'UnreadCount', 'EmailCount', 'TransactionCount'));
+        return view('administration.admin_email', compact('emailtoday', 'UnreadCount', 'EmailCount', 'acknowledgementCount'));
     }
 
     public function admin_open_email(Request $request){
@@ -89,16 +84,14 @@ class AdminController extends Controller
         $pendingMails = Emailing::where('status', 'Unread')->where('to_user', Auth::user()->employee_id);
         $EmailCount = $pendingMails->count();
 
-        $TransactionCount = Transaction::with(['honorarium', 'createdBy'])
-        ->whereNull('deleted_at')
-        ->where('status', 'On Queue')
-        ->where('office', Auth::user()->office_id)
+       
+        $acknowledgementCount = Acknowledgement::where('office_id', Auth::user()->office_id)
         ->count();
 
         $docuJson = json_decode($data->documentation);
 
 
-        return view('administration.admin_open_email', compact('data', 'docuJson', 'EmailCount', 'TransactionCount'));
+        return view('administration.admin_open_email', compact('data', 'docuJson', 'EmailCount', 'acknowledgementCount'));
     }
 
     public function admin_faculty(){
@@ -115,13 +108,11 @@ class AdminController extends Controller
             $pendingMails = Emailing::where('status', 'Unread')->where('to_user', Auth::user()->employee_id);
             $EmailCount = $pendingMails->count();
 
-            $TransactionCount = Transaction::with(['honorarium', 'createdBy'])
-            ->whereNull('deleted_at')
-            ->where('status', 'On Queue')
-            ->where('office', Auth::user()->office_id)
+           
+            $acknowledgementCount = Acknowledgement::where('office_id', Auth::user()->office_id)
             ->count();
 
-                return view('administration.admin_faculty', compact('newAccountsToday', 'EmailCount', 'TransactionCount'));
+                return view('administration.admin_faculty', compact('newAccountsToday', 'EmailCount', 'acknowledgementCount'));
 
         }else{
             abort(403, 'Unauthorized action.');
@@ -219,12 +210,6 @@ class AdminController extends Controller
         $transaction->created_by = Auth::user()->id;
         $transaction->save();
 
-        $logs = new Activity_logs();
-        $logs->trans_id = $transaction->id;
-        $logs->office_id = Auth::user()->office_id;
-        $logs->user_id = $transaction->created_by;
-        $logs->save();
-
         return response()->json(['success' => true, 'message' => 'Form submitted successfully.']);
     }
 
@@ -258,14 +243,6 @@ class AdminController extends Controller
         $transaction->created_by = Auth::user()->id;
         $transaction->save();
 
-
-        $logs = new Activity_logs();
-        $logs->trans_id = $transaction->id;
-        $logs->office_id = Auth::user()->office_id;
-        $logs->user_id = $transaction->created_by;
-        $logs->save();
-
-
         return response()->json(['success' => true, 'message' => 'Form submitted successfully.']);
     }
 
@@ -280,10 +257,8 @@ class AdminController extends Controller
             $pendingMails = Emailing::where('status', 'Unread')->where('to_user', Auth::user()->employee_id);
             $EmailCount = $pendingMails->count();
 
-            $TransactionCount = Transaction::with(['honorarium', 'createdBy'])
-            ->whereNull('deleted_at')
-            ->whereIn('status', ['On Queue'])
-            ->where('office', Auth::user()->office_id)
+          
+            $acknowledgementCount = Acknowledgement::where('office_id', Auth::user()->office_id)
             ->count();
 
 
@@ -305,7 +280,7 @@ class AdminController extends Controller
             }
             
 
-            return view('administration.admin_on_queue', compact('onQueue', 'EmailCount', 'TransactionCount'));
+            return view('administration.admin_on_queue', compact('onQueue', 'EmailCount', 'acknowledgementCount'));
         }
 
 
@@ -322,9 +297,8 @@ class AdminController extends Controller
 
             $batch_id = $request->input('id');
 
-            $TransactionCount = Transaction::with(['honorarium', 'createdBy'])
-            ->whereNull('deleted_at')
-            ->where('batch_status', 'Batch On Hold')
+           
+            $acknowledgementCount = Acknowledgement::where('office_id', Auth::user()->office_id)
             ->count();
 
             $pendingMails = Emailing::where('status', 'Unread')->where('to_user', Auth::user()->employee_id);
@@ -355,9 +329,9 @@ class AdminController extends Controller
             $hasForCompliance = $OnHoldTransaction->where('requirement_status', 'For Compliance')->isNotEmpty();
 
 
-            $office = Office::where('id', $OnHoldData->office)->first();
+            $office = Office::where('id', $OnHoldData->from_office)->first();
 
-            return view('administration.admin_on_hold', compact('OnHold', 'EmailCount', 'TransactionCount', 'OnHoldData', 'office', 'hasForCompliance'));
+            return view('administration.admin_on_hold', compact('OnHold', 'EmailCount', 'acknowledgementCount', 'OnHoldData', 'office', 'hasForCompliance'));
 
         }
     }
@@ -503,15 +477,8 @@ class AdminController extends Controller
         $transactions = Transaction::whereNull('deleted_at')
         ->where('batch_status', '<>', 'Batch On Hold')
         ->where('office', Auth::user()->office_id)
-        // whereNull('batch_id')
         ->where('created_by', Auth::user()->id)
         ->get();
-
-
-
-        // if ($transactions->isEmpty()) {
-        //     return response()->json(['success'=> false, 'message' => 'No transactions found']);
-        // }
 
         if ($transactions->isEmpty()) {
             // Find the last batch_id
@@ -581,13 +548,6 @@ class AdminController extends Controller
             $transaction->batch_id = $newBatchId;
             $transaction->save();
         }
-
-        $ack = new Acknowledgement();
-        $ack->batch_id= $newBatchId;
-        $ack->office_id = Auth::user()->office_id;
-        $ack->user_id = Auth::user()->id;
-        $ack->save();
-
 
         // Count total transactions for the new batch_id
         $totalTransactions = Transaction::whereNull('deleted_at')
